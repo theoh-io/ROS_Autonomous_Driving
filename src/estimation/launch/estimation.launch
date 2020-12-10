@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- ESTIMATION -->
+    <node pkg="estimation" type="estimation.py" name="estimation" output="screen">
+        <param name="dt_estimation" value="0.1" />
+    </node>
+    <node pkg="estimation" type="mapping.py" name="mapping" output="screen">
+        <param name="dt_mapping" value="0.1" />
+    </node>
+
+</launch>

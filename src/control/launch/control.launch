@@ -1,0 +1,12 @@
+<launch>
+
+    <!-- CONTROL -->
+    <node pkg="control" type="control.py" name="control" output="screen">
+        <param name="dt_control" value="0.2" />
+        <param name="wheel_base" value="0.5" />
+        <param name="v_max" value="0.5" />
+        <param name="control_prediction_horizon" value="1.0" />
+        <param name="n_states" value="3" />
+    </node>
+
+</launch>
