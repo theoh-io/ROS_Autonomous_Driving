@@ -98,21 +98,6 @@ def plot_MPC(x0, points):
         distance = mpc_module.calc_distance(final_pos, current_pos)
         display_figure(points, current_pos)
 
-
-        #De-comment to see the updates
-        #print("\n NEW ITERATION : \n")
-        #print("Distance until final destination :", distance)
-        #print("New U vector : ", new_u)
-        #print("New DU vector : ", new_dU)
-        #print("New state :", new_state)
-
-
-
-    #De-comment to see the records
-    #print("States : ",states)
-    #print("U_vectors : ", u_vectors)
-    #print("dU_vectors : ", dU_vectors)
-
     return 0
 
 plt.show()

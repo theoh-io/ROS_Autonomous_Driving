@@ -29,6 +29,14 @@ def list2StateArray(data):
     return array_path
 
 
+def list2Position(data):
+    position = Position()
+    position.x = data[0]
+    position.y = data[1]
+
+    return position
+
+
 def list2PositionArray(data):
     perception_command = PositionArray()
     perception_command.objects = []
@@ -73,6 +81,11 @@ def list2ControlCmd(data):
 
     return cmd
 
+
+def Position2list(data):
+
+    return [data.x, data.y]
+    
 
 def State2list(data):
     

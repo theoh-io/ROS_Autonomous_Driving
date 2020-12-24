@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # VITA, EPFL
-import cv2
-import socket
 import sys
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+import cv2
+sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
+import socket
 import numpy as np
 import struct
 import select
@@ -12,22 +14,19 @@ import rospy
 
 class SocketLoomo:
     # Initialize socket connection
-    def __init__(self, port, dt, host, data_size = 0, packer = 'f f f f f', unpacker = 'f f'):
+    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f '):
         self.data_size = data_size
         self.max_waiting_time = dt/10
         self.received_data = []
         self.received_ok = False
         self.received_data_unpacked = []
-        rospy.loginfo('# Creating perception socket')
 
         try:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         except socket.error:
-            rospy.logerr('Failed to create perception socket')
+            rospy.logerr('Failed to create socket')
             sys.exit()
-
-        rospy.loginfo('# Getting remote IP address')
 
         try:
             remote_ip = socket.gethostbyname(host)
@@ -55,7 +54,6 @@ class SocketLoomo:
         # Set a timout value
         ready = select.select([self.s], [], [], self.max_waiting_time)
         self.received_ok = False
-
         # If data received before timeout value
         if ready[0]:
             self.received_ok = True
@@ -78,24 +76,47 @@ class SocketLoomo:
 
 class DetectorConfiguration:
     # Initialize detector and its main properties
-    def __init__(self, width, height, channels, downscale, global_path, detector):
+    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv"):
         # Detector expected input image dimensions
-        self.width = int(width/downscale)
-        self.height = int(height/downscale)
+        self.width = int(width)
+        self.height = int(height)
+        self.downscale = downscale
+
+        if self.downscale == 1:
+            self.scale_necessary = False
+
+        else:
+            self.scale_necessary = True
+
         # Image received size data.
-        self.data_size = width * height * channels
+        self.data_size = int(width * height * channels/downscale)
         self.global_path = global_path
         self.detector = detector
-        self.detector.load(global_path)
+        self.type_input = type_input
+
+        if load:
+            self.detector.load(global_path)
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (self.width, self.height), received_image)
+        pil_image = Image.frombytes('RGB', (80,60), received_image)
+
+        if self.scale_necessary:
+            maxsize = (self.width, self.height)
+            pil_image = pil_image.resize(maxsize, Image.ANTIALIAS)
+
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
         cv2.waitKey(1)
-        bbox_list, bbox_label = self.detector.forward(opencvImage)
+
+        if self.type_input == "opencv":
+            image = opencvImage
+        
+        elif self.type_input == "pil":
+            image = pil_image
+
+        bbox_list, bbox_label = self.detector.forward(image, self.downscale)
 
         return bbox_list, bbox_label
 

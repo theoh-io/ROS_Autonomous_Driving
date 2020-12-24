@@ -32,18 +32,18 @@ class MPC:
         ####### Weights:
 
         # w_Q + w_dR = 1
-        w_Q = 0.1
-        w_dR = 0.9
+        w_Q = 0.2
+        w_dR = 0.8
 
         # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
-        w_Q_ex = 0.25
-        w_Q_ey = 0.25
-        w_Q_eheading = 0.5
+        w_Q_ex = 0.3
+        w_Q_ey = 0.3
+        w_Q_eheading = 0.4
 
 
         # w_dR_steer + w_dR_torque = 1
-        w_dR_v = 0.2
-        w_dR_w = 0.8
+        w_dR_v = 0.5
+        w_dR_w = 0.5
 
 
         ####### Maximum admissible values:
@@ -51,11 +51,11 @@ class MPC:
         # Maximum admissible error in the states:
         ex_max = 0.2 # m
         ey_max = 0.2 # m
-        eheading_max = 5.0 * (math.pi/180.0) # degrees --> rad
+        eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
 
         # Maximum output rate:
-        self.dv_max = 0.5 * self.dt # m/s
-        self.dw_max = 1.0 * self.dt # rad/s
+        self.dv_max = 0.25 * self.dt # m/s
+        self.dw_max = 0.5 * self.dt # rad/s
 
 
         ####### Q and dR matrices:
@@ -71,22 +71,22 @@ class MPC:
         self.dR = w_dR*np.array([dR_v,dR_w])
 
         ####### Boundaries:
-        self.bnds_v = ((-mobile_robot.v_max, mobile_robot.v_max), ) * self.N
+        self.bnds_v = ((0.0, mobile_robot.v_max), ) * self.N
         self.bnds_w = ((-mobile_robot.w_max, mobile_robot.w_max), ) * self.N
         self.bnds = self.bnds_v + self.bnds_w
 
 
-    def get_next_state(self, x0, u0):
+    def get_next_state(self, x0, u):
 
         dt = self.dt
 
         x, y, heading = x0
-        v, w = u0
+        v, w = u
 
         # Inverse kinematics of a two-wheel robot --> Local coordinates
-        x_n = x + v * dt * np.cos(w*dt)
-        y_n = y + v * dt * np.sin(w*dt)
         heading_n = heading + dt * w
+        x_n = x + v * dt * np.cos(heading_n)
+        y_n = y + v * dt * np.sin(heading_n)
 
         state = np.array([x_n, y_n, heading_n])
         return state
@@ -113,7 +113,6 @@ class MPC:
             state = self.get_next_state(state, uu)
             states.append(state)
 
-        self.predicted_states = states
         xy_ref = [np.array([ref[0],ref[1]]) for ref in self.xref]
         xy_state = [np.array([state[0], state[1]]) for state in states]
 
@@ -165,19 +164,31 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.debug_activated = False
 
     if mpc.debug_activated:
-        print("-------------------NEW CONTROL COMMAND----------------------")
-        #rospy.loginfo("Message Control" + str(res.message))
+        rospy.loginfo("Message Control" + str(res.message))
         #rospy.loginfo("CONTROL TIME: " + str(end_time - start_time))
         rospy.loginfo("CONTROL Mean Squared Error Total: " + str(mse))
         rospy.loginfo("CONTROL Mean Squared Error x: " + str(mpc.x_error))
         rospy.loginfo("CONTROL Mean Squared Error y: " + str(mpc.y_error))
         rospy.loginfo("CONTROL Mean Squared Error heading: " + str(mpc.heading_error))
         #rospy.loginfo("STATE: " + str(x0))
-        #rospy.loginfo("PLANNER: " + str(xref))
-        #rospy.loginfo("ACTUAL CONTROL COMMANDS: " + str(control_command))
-        #rospy.loginfo("NEXT CONTROL COMMANDS: " + str(mpc.u_total_prev))
-        #rospy.loginfo("PREDICTED STATES: " + str(mpc.predicted_states))
-        #print("-----------------------------------------------------------")
+        rospy.loginfo("PLANNER: " + str(xref))
+        rospy.loginfo("ACTUAL CONTROL COMMANDS: " + str(control_command))
+        rospy.loginfo("NEXT CONTROL COMMANDS: " + str(mpc.u_total_prev))
+        rospy.loginfo("PREDICTED STATES: " + str(mpc.predicted_states))
+
+    state = mpc.x0
+    states = []
+    u_v = mpc.u_total_prev[:mpc.N]
+    u_w = mpc.u_total_prev[mpc.N:]
+    u_r = np.zeros((mpc.N,2))
+    u_r[:,0] = u_v
+    u_r[:,1] = u_w
+
+    for uu in u_r:
+        state = mpc.get_next_state(state, uu)
+        states.append(state)
+
+    mpc.predicted_states = states
 
     return [control_command, mpc.predicted_states]
 

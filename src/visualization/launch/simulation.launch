@@ -1,7 +1,0 @@
-<launch>
-
-    <!-- VISUALIZATION -->
-    <node pkg="visualization" type="visualization" name="visualization" output="screen">
-    </node>
-
-</launch>

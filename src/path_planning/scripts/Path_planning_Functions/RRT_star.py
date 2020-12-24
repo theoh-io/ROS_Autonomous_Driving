@@ -13,14 +13,11 @@ import rospy
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/tools')))
-from tools.classconverter import *
-from tools.classes import *
-from tools.transformations import *
-from tools.utilities import *
+from tools import classconverter, classes, transformations, utilities
 
 try:
     from rrt import RRT
-    from rrt_with_pathsmoothing import *
+    import rrt_with_pathsmoothing
 
 except ImportError:
     raise
@@ -84,22 +81,19 @@ class RRTStar(RRT):
             if animation:
                 self.draw_graph(rnd)
 
-            #print("Current object: " + str(self.current_object))
-            #print("Current time: " + str(current_time))
-
             if ((not self.search_until_max_iter)
                     and new_node):  # if reaches goal
                 last_index = self.search_best_goal_node(current_time)
                 if last_index is not None:
                     return self.generate_final_course(last_index)
 
-        print("reached max iteration")
+        rospy.logwarn("planner reached max iteration")
 
         last_index = self.search_best_goal_node(current_time)
         if last_index is not None:
             return self.generate_final_course(last_index)
 
-        return None
+        return []
 
     def choose_parent(self, new_node, near_inds, current_time):
         """
@@ -124,14 +118,17 @@ class RRTStar(RRT):
         for i in near_inds:
             near_node = self.node_list[i]
             t_node = self.steer(near_node, new_node)
+
             if t_node and self.check_collision(t_node, self.obstacle_list, self.prediction_activated, current_time):
                 costs.append(self.calc_new_cost(near_node, new_node))
+
             else:
                 costs.append(float("inf"))  # the cost of collision node
+        
         min_cost = min(costs)
 
         if min_cost == float("inf"):
-            print("There is no good path.")
+            rospy.logwarn("There is no good path.")
             return None
 
         min_ind = near_inds[costs.index(min_cost)]
@@ -141,17 +138,13 @@ class RRTStar(RRT):
         return new_node
 
     def search_best_goal_node(self, current_time):
-        dist_to_goal_list = [
-            self.calc_dist_to_goal(n.x, n.y) for n in self.node_list
-        ]
-        goal_inds = [
-            dist_to_goal_list.index(i) for i in dist_to_goal_list
-            if i <= self.expand_dis
-        ]
-
+        dist_to_goal_list = [self.calc_dist_to_goal(n.x, n.y) for n in self.node_list]
+        goal_inds = [dist_to_goal_list.index(i) for i in dist_to_goal_list if i <= self.expand_dis]
         safe_goal_inds = []
+
         for goal_ind in goal_inds:
             t_node = self.steer(self.node_list[goal_ind], self.goal_node)
+
             if self.check_collision(t_node, self.obstacle_list, self.prediction_activated, current_time):
                 safe_goal_inds.append(goal_ind)
 
@@ -159,7 +152,9 @@ class RRTStar(RRT):
             return None
 
         min_cost = min([self.node_list[i].cost for i in safe_goal_inds])
+
         for i in safe_goal_inds:
+
             if self.node_list[i].cost == min_cost:
                 return i
 
@@ -182,13 +177,13 @@ class RRTStar(RRT):
         """
         nnode = len(self.node_list) + 1
         r = self.connect_circle_dist * math.sqrt((math.log(nnode) / nnode))
-        # if expand_dist exists, search vertices in a range no more than
-        # expand_dist
+
         if hasattr(self, 'expand_dis'):
             r = min(r, self.expand_dis)
-        dist_list = [(node.x - new_node.x)**2 + (node.y - new_node.y)**2
-                     for node in self.node_list]
+        
+        dist_list = [(node.x - new_node.x)**2 + (node.y - new_node.y)**2 for node in self.node_list]
         near_inds = [dist_list.index(i) for i in dist_list if i <= r**2]
+
         return near_inds
 
     def rewire(self, new_node, near_inds, current_time):
@@ -209,10 +204,11 @@ class RRTStar(RRT):
         for i in near_inds:
             near_node = self.node_list[i]
             edge_node = self.steer(new_node, near_node)
+
             if not edge_node:
                 continue
+            
             edge_node.cost = self.calc_new_cost(new_node, near_node)
-
             no_collision = self.check_collision(edge_node, self.obstacle_list, self.prediction_activated, current_time)
             improved_cost = near_node.cost > edge_node.cost
 
@@ -225,25 +221,27 @@ class RRTStar(RRT):
                 near_node.parent = edge_node.parent
                 self.propagate_cost_to_leaves(new_node)
 
-            #print(edge_node.cost)
-
     def calc_new_cost(self, from_node, to_node):
         d, _ = self.calc_distance_and_angle(from_node, to_node)
+
         return from_node.cost + d
 
     def propagate_cost_to_leaves(self, parent_node):
 
         for node in self.node_list:
+
             if node.parent == parent_node:
                 node.cost = self.calc_new_cost(parent_node, node)
                 self.propagate_cost_to_leaves(node)
 
 
 def distance_AB(A, B):
+
     return math.sqrt((A[0]-B[0])**2 + (A[1]-B[1])**2)
 
 
 def triangleArea(a,b,c):
+
     return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
 
 
@@ -257,6 +255,7 @@ def MPC_planner(points, v , t):
     heading_ant = 0.0
 
     for i in range(1,80):
+
         while dist < e and it < len(points):
             distAB = distance_AB(points[it-2], points[it-1])
             dist = dist + distAB
@@ -288,6 +287,7 @@ def MPC_Planner_restrictions(mobile_robot, points, v, t):
     heading_ant = 0.0
 
     for i in range(1,80):
+        
         while dist < e and it < len(points):
             distAB = distance_AB(points[it-2], points[it-1])
             dist = dist + distAB
@@ -341,7 +341,7 @@ def add_correction(mobile_robot, dt, start, goal):
     return added_points
 
 
-def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0.0, 0.0], prediction_activated=False):
+def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0.0, 0.0], N=1, prediction_activated=False):
 
     obstacle_list = []
     are_obstacles = True
@@ -354,7 +354,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
                 pass
 
             elif len(e2)>0:
-                obstacle_list.append((e2[0], e2[1], 0.25, e2[2]))
+                obstacle_list.append((e2[0], e2[1], 0.5, e2[2]))
 
     if len(obstacle_list) < 1:
         are_obstacles = False
@@ -384,15 +384,19 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
         i = 0
 
         while no_obstacles_in_path and i<(len(path)-1):
-            no_obstacles_in_path = line_collision_check(path[i], path[i+1], obstacle_list, i*dt_control)
+            no_obstacles_in_path = rrt_with_pathsmoothing.line_collision_check(path[i], path[i+1], obstacle_list, i*dt_control)
             i = i + 1
+    
+    goal_angle = 0.0
 
-    goal_angle = math.atan2((path[1][1]),(path[1][0]))
+    if len(path)>0:
+        goal_angle = math.atan2((path[1][1]),(path[1][0]))
+    
     smooth_path = path
 
     if not no_obstacles_in_path:
         rospy.logwarn("Found obstacle in path")
-        path = rrt_star.planning(animation=visualization)
+        path = rrt_star.planning(animation=False)
 
         if visualization:
             rrt_star.draw_graph()
@@ -406,8 +410,12 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
             x_list = []
             y_list = []
             path = path[1:][::-1]
-            goal_angle = math.atan2((path[1][1]-path[0][1]),(path[1][0]-path[0][0]))
-            rotated_path = rotate(path, goal_angle)
+            rotated_path = path
+            if len(path)>0:
+                goal_angle = math.atan2((path[1][1]-path[0][1]),(path[1][0]-path[0][0]))
+                rotated_path = transformations.rotate(path, goal_angle)
+
+            
 
             for e in rotated_path:
 
@@ -416,15 +424,15 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
                     y_list.append(e[1])
                     x_ant = e[0]
 
-    if len(x_list)>3 and not no_obstacles_in_path:
+    if len(x_list)>4 and not no_obstacles_in_path:
         smooth_path_rotated = []
-        path_spline = UnivariateSpline(x_list, y_list, k=3)
+        path_spline = UnivariateSpline(x_list, y_list, k=4)
         path_spline.set_smoothing_factor(0.8)
 
         for e in x_list:
             smooth_path_rotated.append([e,path_spline(e)])
 
-        smooth_path = rotate(smooth_path_rotated, -goal_angle)
+        smooth_path = transformations.rotate(smooth_path_rotated, -goal_angle)
 
     mpc_planner = MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
 
@@ -445,15 +453,12 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
             for i,e in enumerate(obstacle_list):
                 rrt_star.plot_circle(e[0], e[1], e[2])
                 plt.annotate('%s' % i,(e[0], e[1]))
-                plt.grid(True)
 
         plt.plot([x for (x, y) in path], [y for (x, y) in path], 'r--')
-        plt.pause(0.01)
         plt.plot([x for [x, y] in smooth_path], [y for [x, y] in smooth_path], 'b--')
-        plt.grid(True)
-        plt.pause(0.01)
+        plt.pause(1)
 
-    return mpc_planner
+    return mpc_planner, goal
 
 
 if __name__ == '__main__':

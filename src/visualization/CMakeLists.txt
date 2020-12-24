@@ -127,9 +127,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/upc_driverless_visualizer_node.cpp)
 
-add_executable(rviz_visualizer src/rviz_visualizer.cpp)
-target_link_libraries(rviz_visualizer ${catkin_LIBRARIES})
-add_dependencies(rviz_visualizer beginner_tutorials_generate_messages_cpp)
+# add_executable(rviz_visualizer src/rviz_visualizer.cpp)
+# target_link_libraries(rviz_visualizer ${catkin_LIBRARIES})
+# add_dependencies(rviz_visualizer beginner_tutorials_generate_messages_cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

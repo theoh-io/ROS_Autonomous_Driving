@@ -92,7 +92,7 @@ def line_collision_check(first, second, obstacleList, current_time):
         d = abs(a * ox + b * oy + c) / (math.sqrt(a * a + b * b))
 
         if d <= size and ox>0.0:
-            print([ox,oy])
+
             return False
 
     return True  # OK

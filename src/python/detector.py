@@ -93,18 +93,12 @@ class Detector(object):
         img[:,:,:,0] = ch3
         img[:,:,:,2] = ch1
 
-        # print(img.shape)   
-        # print(img)
-
         ##Preprocess
         img = (img - self.mean)/self.std
 
         ##Transpose to model format
         if(img.shape[1] != self.num_channels):
             img = img.transpose((0,3,1,2))
-
-        # print(img.shape)
-        # print(img)
 
         ##Detect
         with torch.no_grad():

@@ -82,7 +82,7 @@ class Detector(object):
         self.model.load_state_dict(torch.load(PATH))
         self.model.eval()
 
-    def forward(self, img):   
+    def forward(self, img, downscale=1):   
         ##Add a dimension
         img = np.expand_dims(img.transpose(1,0,2), 0) / 255
 
@@ -92,18 +92,12 @@ class Detector(object):
         img[:,:,:,0] = ch3
         img[:,:,:,2] = ch1
 
-        # print(img.shape)   
-        # print(img)
-
         ##Preprocess
         img = (img - self.mean)/self.std
 
         ##Transpose to model format
         if(img.shape[1] != self.num_channels):
             img = img.transpose((0,3,1,2))
-
-        # print(img.shape)
-        # print(img)
 
         ##Detect
         with torch.no_grad():

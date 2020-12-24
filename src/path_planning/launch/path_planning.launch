@@ -1,9 +1,0 @@
-<launch>
-
-    <!-- PATH PLANNING -->
-    <node pkg="path_planning" type="path_planning.py" name="path_planning" output="screen">
-        <param name="speed" value="0.5" />
-        <param name="dt_path_planning" value="0.2" />
-    </node>
-
-</launch>

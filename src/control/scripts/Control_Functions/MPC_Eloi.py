@@ -51,14 +51,17 @@ class MPC_model:
         self.bounds = bounds
 
     def F_x(self, D, v_x):
+
         return self.C_m * D - self.C_r0 - self.C_r2 * (v_x ** 2)
 
     def MSE(self, x_k, x_k_ref):
         dX = (x_k[0] - x_k_ref[0]) * (x_k[0] - x_k_ref[0]) / self.max_err_X
         dY = (x_k[1] - x_k_ref[1]) * (x_k[1] - x_k_ref[1]) / self.max_err_Y
+
         return self.q_MSE * (dX + dY) / 2
 
     def error_R(self, u, dU):
+
         return self.q_Rs * np.matmul(np.matmul(u.T, self.R_U), u) + self.q_dRs * np.matmul(np.matmul(dU.T, self.R_dU), dU)
 
     def f_next_state(self, x_k, u_k):
@@ -67,7 +70,7 @@ class MPC_model:
         second = x_k[1] + self.delta_time * (u_k[0] * mt.sin(x_k[2]))
         third = x_k[2] + self.delta_time * u_k[1]
         to_ret = np.array([first, second, third])
-        #print(to_ret)
+
         return to_ret
 
 
@@ -86,19 +89,18 @@ class MPC_model:
         # we calculate the next HORIZON_N states of the car according to those Us
         new_state = np.ones((self.HORIZON_N, 3))
         new_state[0] = self.x0
-        #print("first position is ", new_state[0])
+
         for i in range(1, self.HORIZON_N, 1):
-            #print("We have to calculate the next state with the current been : ",new_state[i-1], "the u been : ", u_ks[i], " and the dU been : ", dU[i])
             new_state[i] = self.f_next_state(new_state[i - 1], u_k[i])
-            #print("the ", i, "-value : ", new_state[i])
 
         self.new_state = new_state
 
         # given the computed states, we compute the error between the wanted position of the car (path) and those states
         error = 0
+
         for i in range(self.HORIZON_N - 1):
            error += self.MSE(new_state[i], self.path[i]) + self.error_R(u_k[i], dU[i])
-        #print("EEEEEEERRRRRRRRROOOOOOOOORRRR IS : ", error)
+
         return error
 
 
@@ -112,13 +114,10 @@ class MPC_model:
         self.previous_states = np.array(result.x).reshape((self.HORIZON_N,2))
 
         to_return = np.array([result.x[0], result.x[self.HORIZON_N]])
-        #print("result are : \n", result.x)
         self.previous_good_state = to_return
 
         end = datetime.datetime.now()
         duration = end - start
-        #print("algo took (in s)", duration)
-        #print(self.delta_time)
 
         return to_return, self.new_state
 

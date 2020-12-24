@@ -1,0 +1,74 @@
+<launch>
+
+    <!-- global parameters -->
+    <param name="ip_address" value="192.168.43.84" />
+    <param name="speed" value="0.5" />
+    <param name="goal_x" value="7.0" />
+    <param name="goal_y" value="2.0" />
+    <param name="v_max" value="0.5" />
+    <param name="wheel_base" value="0.5" />
+
+
+    <!-- Percpetion: Default, Openpifpaf -->
+    <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
+    <param name="dt_perception" value="0.25" />
+
+    <!-- Robot_State: Default, EPFL_Driverless -->
+    <param name="ROBOT_STATE_FUNCTION" value="Default" />
+    <param name="dt_robot_state" value="0.05" />
+
+    <!-- Map_State: Default -->
+    <param name="MAP_STATE_FUNCTION" value="Default" />
+    <param name="mapping_activated" value="True" />
+    <param name="map_state_activated" value="False" />
+    <param name="dt_map_state" value="0.05" />
+
+    <!-- Prediction: Default, Trajnet -->
+    <param name="PREDICTION_FUNCTION" value="Default" />
+    <param name="prediction_activated" value="True" />
+    <param name="dt_prediction" value="0.05" />
+    <param name="time_horizon_prediction" value="4.0" />
+    <param name="past_observations" value="10" />
+
+    <!-- Path_Planning: Default -->
+    <param name="PATH_PLANNING_FUNCTION" value="Default" />
+    <param name="dt_path_planning" value="0.2" />
+
+    <!-- Control: Default, EPFL_Driverless -->
+    <param name="CONTROL_FUNCTION" value="Default" />
+    <param name="dt_control" value="0.5" />
+    <param name="time_horizon_control" value="3.0" />
+    <param name="n_states" value="3" />
+
+    <!-- Visualization: Default -->
+    <param name="visualization_activated" value="True" />
+    <param name="dt_visualization" value="0.2" />
+
+
+    <!-- PERCEPTION -->
+    <node pkg="perception" type="perception.py" name="perception" output="screen">
+    </node>
+
+    <!-- STATE_ESTIMATION -->
+    <node pkg="state_estimation" type="robot_state.py" name="robot_state" output="screen">
+    </node>
+    <node pkg="state_estimation" type="map_state.py" name="map_state" output="screen">
+    </node>
+
+    <!-- PREDICTION -->
+    <node pkg="prediction" type="prediction.py" name="prediction" output="screen">
+    </node>
+
+    <!-- PLANNING-->
+    <node pkg="path_planning" type="path_planning.py" name="path_planning" output="screen">
+    </node>
+
+    <!-- CONTROL -->
+    <node pkg="control" type="control.py" name="control" output="screen">
+    </node>
+
+    <!-- VISUALIZATION -->
+    <node pkg="visualization" type="visualization.py" name="visualization" output="screen">
+    </node>
+
+</launch>

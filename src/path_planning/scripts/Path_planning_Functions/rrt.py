@@ -139,11 +139,10 @@ class RRT(object):
 
         if node is None:
             return False
+        
+        current_object_position = []
 
-        if not prediction_activated:
-            current_object_position = obstacleList[0]
-
-        else:
+        if prediction_activated:
             i = 0
             t_min = 100
             for (ox, oy, size, time) in obstacleList:
@@ -154,13 +153,15 @@ class RRT(object):
 
                 elif abs(t) < abs(t_min):
                     t_min = t
-                    current_object_position = []
                     current_object_position.append(obstacleList[i])
 
                 elif abs(t) == abs(t_min):
                     current_object_position.append(obstacleList[i])
 
                 i = i + 1
+
+        else:
+            current_object_position = obstacleList
 
         self.current_objects = current_object_position
 
@@ -171,7 +172,6 @@ class RRT(object):
 
             if min(d_list) <= size**2:
                 return False  # collision
-
 
         return True  # safe
 

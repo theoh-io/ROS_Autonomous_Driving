@@ -67,15 +67,16 @@ def add_detections_to_past(pos_detections, past_pos_detections, past_number): # 
                         d.append([detection[0],detection[1],detection[2]])
 
                     past_pos_detections.append(d)
-                    past_for_predictions.append(list(d))
 
                 else:
                     past_pos_detections[detection[2]-1].append([detection[0],detection[1], detection[2]])
-                    past_for_predictions.append(list(past_pos_detections[detection[2]-1]))
 
     for idx in range(len(past_pos_detections)):
 
         if idx not in list_idx:
-            past_pos_detections[idx].append([past_pos_detections[idx][past_number-1][0], past_pos_detections[idx][past_number-1][1]])
+            past_pos_detections[idx].append([past_pos_detections[idx][past_number-1][0], past_pos_detections[idx][past_number-1][1], idx+1])
+        
+        else:
+            past_for_predictions.append(list(past_pos_detections[idx]))
 
     return past_pos_detections, past_for_predictions
