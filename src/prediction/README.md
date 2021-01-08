@@ -1,71 +1,6 @@
-# ROS Structure
+# Prediction
 
-<center>
-
-![alt text](./Images/Software_pipeline.png)
-
-</center>
-
-## Perception
-
-**1. Detector initialization:** Modify parameters if a new detector is set.
-``` python 
-# Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfig(width = w, height = h,
-                                            channels = c, downscale = d,
-                                            global_path = 'path',
-                                            detector = detector_class()) 
-```
-
-**2. Receive image** from Loomo via Socket.
-
-**3. Detector function Requirements**: 
-| Variable                             | Input/Output        | Description                 | Example                |
-| :----:                               | :------:            | :-----:                     | :-------:              |
-| opencvImage                       | Input               | List of data_size RGB data  | [255, 5, 8, 157, 255, 0, ...]  |
-| bbox_list                            | Output              | List of bounding boxes      |[[x<sub>center</sub>, y<sub>center</sub>, width, height]<sub>1</sub>, ...].|
-| label_list                           | Output              | List of labels              | [label<sub>1</sub>, ...]   |
-
-``` python
-def detect(self, received_image):
-    pil_image = Image.frombytes('RGB', (width/downscale, height/downscale), received_image)
-    opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-    opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-    bbox_list, bbox_label = detector.forward(opencvImage)
-```
-
-**4. perception.launch**
-Change the IP address and the time period of perception if needed:
-``` html
-<param name="ip_address" value="" />
-<param name="dt_perception" value="" />
-```
-
-### Software Architecture
-
-<center>
-
-![alt text](./Images/Software_perception.png)
-
-</center>
-
-## Robot State
-
-<center>
-
-![alt text](./Images/Software_robot_state.png)
-
-</center>
-
-## Map State
-
-<center>
-
-![alt text](./Images/Software_map_state.png)
-
-</center>
-
-## Prediction
+## prediction.py
 
 <center>
 
@@ -73,19 +8,42 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Path Planning
+### Predictor
 
-<center>
+It is an optional algorithm to predict the trajectory of the detections. It only runs if ```prediction_activated``` in loomo.launch is set to:
 
-![alt text](./Images/Software_path_planning.png)
+```html
+<param name="prediction_activated" value="True" />
+``` 
 
-</center>
+We offer two different predictors, both built in VITA laboratory: 
 
-## Control
+* **Linear (Default)** 
 
-<center>
+Linear fast trajectory predictor. It assumes that future states depend linearly on previous ones. Based on kinematics. Here we show the predictor's configuration:
 
-![alt text](./Images/Software_control.png)
+```python
+predictor = linear_prediction.LinealPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
+``` 
+  
+* **trajNet++** 
 
-</center>
+Human trajectory predictor. Reference: https://github.com/vita-epfl/trajnetplusplusbaselines
+
+In order to configure it, we require the following function:
+
+```python
+predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations, model_name=model_name, model="Occupancy", tag=2)
+```
+
+Where ```model_name``` can be set to ```"SGAN"``` or  ```"LSTM"``` architecture, and the other parameters can be changed if needed in loomo.launch.
+
+Both detectors require previous ```n_past_observations```  of the object/person, and also past and current detections: 
+
+```python
+past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, n_past_observations)
+predicted_trajectories = predictor.prediction_function(past_present_positions)
+```
+
+We recommend to activate both mapping and prediction in order to generate future trajectories because the generated map assotiates the current with the previous observations. This fact helps to identify every different person even if there is motion.
 
