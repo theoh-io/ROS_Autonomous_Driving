@@ -11,7 +11,7 @@
 **1. Detector initialization:** Modify parameters if a new detector is set.
 ``` python 
 # Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfiguration(width = w, height = h,
+detection_image = DetectorConfig(width = w, height = h,
                                             channels = c, downscale = d,
                                             global_path = 'path',
                                             detector = detector_class()) 
@@ -49,13 +49,19 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Estimation
-
-### Software Architecture
+## Robot State
 
 <center>
 
-![alt text](./Images/Software_estimation.png)
+![alt text](./Images/Software_robot_state.png)
+
+</center>
+
+## Map State
+
+<center>
+
+![alt text](./Images/Software_map_state.png)
 
 </center>
 
