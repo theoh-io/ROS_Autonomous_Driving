@@ -1,12 +1,10 @@
-# ROS Pipeline User Guide
+# ROS Structure
 
-## Perception
+<center>
 
-## Prediction
+![alt text](./prediction/Images/Software_pipeline.png)
 
-## Estimation
+</center>
 
-## Path Planning
 
-## Control
 
