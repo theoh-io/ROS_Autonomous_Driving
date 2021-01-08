@@ -6,13 +6,13 @@
 
 </center>
 
-##Detector
+## Detector
 
 We offer two different detectors, built by VITA laboratory: 
 * **Default:** Minion images detector. https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py
 * **Openpifpaf:** Human detector. https://github.com/vita-epfl/openpifpaf
 
-| Detector Name     | $(w, h, c)$   | $dt_{perception}$ | $dt_{control}$    | time_horizon_control  | type_input    |
+| Detector Name     | (w, h, c)     | dt_perception     | dt_control        | time_horizon_control  | type_input    |
 | :----:            | :------:      | :------:          | :------:          | :------:              | :------:      |
 | Default           | (80, 60, 3)   | $0.1 s$           | $0.2 s$           | $1 s$                 | $opencv$      |
 | Openpifpaf        | (161, 107, 3) | $0.25 s$          | $0.5 s$           | $3 s$                 | $pil$         |
