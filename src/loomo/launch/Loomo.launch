@@ -13,7 +13,7 @@
     <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
     <param name="dt_perception" value="0.25" />
 
-    <!-- Robot_State: Default, EPFL_Driverless -->
+    <!-- Robot_State: Default, Kalman_filter -->
     <param name="ROBOT_STATE_FUNCTION" value="Default" />
     <param name="dt_robot_state" value="0.05" />
 

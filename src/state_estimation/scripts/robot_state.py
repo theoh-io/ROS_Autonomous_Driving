@@ -42,11 +42,11 @@ def main():
     # Parameter Initialization
     ESTIMATION_FUNCTION = rospy.get_param("/ROBOT_STATE_FUNCTION")
 
-    if ESTIMATION_FUNCTION == "EPFL_Driverless":
+    if ESTIMATION_FUNCTION == "Kalman_filter":
         estimator = motion_estimation_robot.Driverless_Estimation()
 
     # Variable Initialization
-    new_states = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    new_states = (0.0, 0.0, 0.0, 0.0, 0.0)
     past_states = new_states
     initial_states = new_states
     states = new_states
@@ -78,7 +78,7 @@ def main():
                 # Send state estimation topics via ROS
                 sender.send(new_states)
 
-            elif ESTIMATION_FUNCTION == "EPFL_Driverless":
+            elif ESTIMATION_FUNCTION == "Kalman_filter":
                 states = IMU_data.state_with_initial_calibration(initial_states, states)
                 new_states = estimator.kalman(states)
                 # Send state estimation topics via ROS

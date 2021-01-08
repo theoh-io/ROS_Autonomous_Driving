@@ -1,12 +1,14 @@
 # Perception
 
+## perception.py
+
 <center>
 
 ![alt text](./Images/Software_perception.png)
 
 </center>
 
-## Detector
+### Detector
 
 We offer two different detectors, built by VITA laboratory: 
 * **Default:** Minion images detector. Reference: https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py

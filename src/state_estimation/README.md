@@ -1,55 +1,6 @@
-# ROS Structure
+# State Estimation
 
-<center>
-
-![alt text](./Images/Software_pipeline.png)
-
-</center>
-
-## Perception
-
-**1. Detector initialization:** Modify parameters if a new detector is set.
-``` python 
-# Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfig(width = w, height = h,
-                                            channels = c, downscale = d,
-                                            global_path = 'path',
-                                            detector = detector_class()) 
-```
-
-**2. Receive image** from Loomo via Socket.
-
-**3. Detector function Requirements**: 
-| Variable                             | Input/Output        | Description                 | Example                |
-| :----:                               | :------:            | :-----:                     | :-------:              |
-| opencvImage                       | Input               | List of data_size RGB data  | [255, 5, 8, 157, 255, 0, ...]  |
-| bbox_list                            | Output              | List of bounding boxes      |[[x<sub>center</sub>, y<sub>center</sub>, width, height]<sub>1</sub>, ...].|
-| label_list                           | Output              | List of labels              | [label<sub>1</sub>, ...]   |
-
-``` python
-def detect(self, received_image):
-    pil_image = Image.frombytes('RGB', (width/downscale, height/downscale), received_image)
-    opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-    opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-    bbox_list, bbox_label = detector.forward(opencvImage)
-```
-
-**4. perception.launch**
-Change the IP address and the time period of perception if needed:
-``` html
-<param name="ip_address" value="" />
-<param name="dt_perception" value="" />
-```
-
-### Software Architecture
-
-<center>
-
-![alt text](./Images/Software_perception.png)
-
-</center>
-
-## Robot State
+## robot_state.py
 
 <center>
 
@@ -57,7 +8,26 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Map State
+We offer two different ways of estimating the autonomous vehicle's state: 
+
+* **Default** 
+ 
+Directly based on IMU data from the state variables. It includes an initial calibration.
+
+``` python 
+new_states = IMU_data.state_with_initial_calibration(initial_states, states)
+```
+
+* **Kalman Filtering** 
+
+Comparing the model of the vehicle with the sensor's data in order to obtain a more reliable estimation. First, the initial calibration is required. Designed by EPFL Racing Team.
+
+``` python 
+states = IMU_data.state_with_initial_calibration(initial_states, states)
+new_states = estimator.kalman(states)
+```
+
+## map_state.py
 
 <center>
 
@@ -65,27 +35,32 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Prediction
+It is an optional algorithm to store the previous detections. It only runs if ```mapping_activated``` in loomo.launch is set to:
 
-<center>
+```html
+<param name="mapping_activated" value="True" />
+``` 
 
-![alt text](./Images/Software_prediction.png)
+* **SLAM** 
 
-</center>
+First, we need to configure the sensors' parameters used for mapping.
 
-## Path Planning
+``` python 
+slam = SLAM.SlamConfiguration(range_sensor=max_range, error_sensor=max_error)
+```
 
-<center>
+Where ```max_range``` is the maximum distance, in which the depth sensor can detect an obstacle, and ```max_error``` is the maximum distance error that the depth sensor has. 
 
-![alt text](./Images/Software_path_planning.png)
+Another way to estimate the vehicle's state could be generating a map with previous detections, actual detections and other sensors' information. It could estimate with better accuracy than kalman fliters. It has not been implemented already, but the algorithm is prepared for it. If used, ```map_state_activated``` in loomo.launch should be:
 
-</center>
+```html
+<param name="map_state_activated" value="True" />
+``` 
 
-## Control
+This state estimation using SLAM should be built. In addition, we offer an algorithm for assotiating previous and current data and generate a map with all observations.
 
-<center>
+```python 
+map_total, map_state = slam.mapping(state, list_positions)
+```
 
-![alt text](./Images/Software_control.png)
-
-</center>
 
