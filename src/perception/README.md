@@ -1,47 +1,4 @@
-# ROS Structure
-
-<center>
-
-![alt text](./Images/Software_pipeline.png)
-
-</center>
-
-## Perception
-
-**1. Detector initialization:** Modify parameters if a new detector is set.
-``` python 
-# Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfig(width = w, height = h,
-                                            channels = c, downscale = d,
-                                            global_path = 'path',
-                                            detector = detector_class()) 
-```
-
-**2. Receive image** from Loomo via Socket.
-
-**3. Detector function Requirements**: 
-| Variable                             | Input/Output        | Description                 | Example                |
-| :----:                               | :------:            | :-----:                     | :-------:              |
-| opencvImage                       | Input               | List of data_size RGB data  | [255, 5, 8, 157, 255, 0, ...]  |
-| bbox_list                            | Output              | List of bounding boxes      |[[x<sub>center</sub>, y<sub>center</sub>, width, height]<sub>1</sub>, ...].|
-| label_list                           | Output              | List of labels              | [label<sub>1</sub>, ...]   |
-
-``` python
-def detect(self, received_image):
-    pil_image = Image.frombytes('RGB', (width/downscale, height/downscale), received_image)
-    opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-    opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-    bbox_list, bbox_label = detector.forward(opencvImage)
-```
-
-**4. perception.launch**
-Change the IP address and the time period of perception if needed:
-``` html
-<param name="ip_address" value="" />
-<param name="dt_perception" value="" />
-```
-
-### Software Architecture
+# Perception
 
 <center>
 
@@ -49,43 +6,31 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Robot State
+##Detector
 
-<center>
+We offer two different detectors, built by VITA laboratory: 
+* **Default:** Minion images detector. https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py
+* **Openpifpaf:** Human detector. https://github.com/vita-epfl/openpifpaf
 
-![alt text](./Images/Software_robot_state.png)
+| Detector Name     | $(w, h, c)$   | $dt_{perception}$ | $dt_{control}$    | time_horizon_control  | type_input    |
+| :----:            | :------:      | :------:          | :------:          | :------:              | :------:      |
+| Default           | (80, 60, 3)   | $0.1 s$           | $0.2 s$           | $1 s$                 | $opencv$      |
+| Openpifpaf        | (161, 107, 3) | $0.25 s$          | $0.5 s$           | $3 s$                 | $pil$         |
 
-</center>
+All real time detectors can be added inside the pipeline, setting the required parameters.
 
-## Map State
+``` python 
+detection_image = DetectorConfig(width=w, height=h, channels=c, downscale=d,
+                                        global_path='path', detector=detector_class(),
+                                        load=bool, type_input=t) 
+```
+Where ```width```, ```height``` and ```channels``` are the sizes expected by ```detector```, and ```downscale``` is the resize relation between detection size product $(w·h·c)$ and Loomo camera size multiplication $(80·60·3)$. If we need to load a model for the detector, we use parameter ```load=True ``` and we add set ```global_path='path_to_model'```. ```type_input``` depends on detector's input requirements, usually varying between $opencv$ and $pil$ modules.
 
-<center>
+Finally, in every iteretion, attribute ```detect``` from class ```DetectorConfig``` is used in order to output bounding boxes and labels with the remarked observations. 
 
-![alt text](./Images/Software_map_state.png)
+``` python
+bbox_list, label_list = detection_image.detect(received_image)
+```
 
-</center>
 
-## Prediction
-
-<center>
-
-![alt text](./Images/Software_prediction.png)
-
-</center>
-
-## Path Planning
-
-<center>
-
-![alt text](./Images/Software_path_planning.png)
-
-</center>
-
-## Control
-
-<center>
-
-![alt text](./Images/Software_control.png)
-
-</center>
 
