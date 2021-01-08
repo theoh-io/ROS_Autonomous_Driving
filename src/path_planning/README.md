@@ -1,79 +1,6 @@
-# ROS Structure
+# Path Planning
 
-<center>
-
-![alt text](./Images/Software_pipeline.png)
-
-</center>
-
-## Perception
-
-**1. Detector initialization:** Modify parameters if a new detector is set.
-``` python 
-# Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfig(width = w, height = h,
-                                            channels = c, downscale = d,
-                                            global_path = 'path',
-                                            detector = detector_class()) 
-```
-
-**2. Receive image** from Loomo via Socket.
-
-**3. Detector function Requirements**: 
-| Variable                             | Input/Output        | Description                 | Example                |
-| :----:                               | :------:            | :-----:                     | :-------:              |
-| opencvImage                       | Input               | List of data_size RGB data  | [255, 5, 8, 157, 255, 0, ...]  |
-| bbox_list                            | Output              | List of bounding boxes      |[[x<sub>center</sub>, y<sub>center</sub>, width, height]<sub>1</sub>, ...].|
-| label_list                           | Output              | List of labels              | [label<sub>1</sub>, ...]   |
-
-``` python
-def detect(self, received_image):
-    pil_image = Image.frombytes('RGB', (width/downscale, height/downscale), received_image)
-    opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-    opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-    bbox_list, bbox_label = detector.forward(opencvImage)
-```
-
-**4. perception.launch**
-Change the IP address and the time period of perception if needed:
-``` html
-<param name="ip_address" value="" />
-<param name="dt_perception" value="" />
-```
-
-### Software Architecture
-
-<center>
-
-![alt text](./Images/Software_perception.png)
-
-</center>
-
-## Robot State
-
-<center>
-
-![alt text](./Images/Software_robot_state.png)
-
-</center>
-
-## Map State
-
-<center>
-
-![alt text](./Images/Software_map_state.png)
-
-</center>
-
-## Prediction
-
-<center>
-
-![alt text](./Images/Software_prediction.png)
-
-</center>
-
-## Path Planning
+## path_planning.py
 
 <center>
 
@@ -81,11 +8,32 @@ Change the IP address and the time period of perception if needed:
 
 </center>
 
-## Control
+### Path planning method
 
-<center>
+The aim of the algorithm is to calculate the desired trajectory for the mobile robot from a start to a goal. We have designed in VITA a fucntion based on a well-known method used for obstacle avoidance, RRT*, including the observations' motion over time (predictions). Other methods can be implemented inside the pipeline by changing parameters.
 
-![alt text](./Images/Software_control.png)
+* **Prediction RRT Star**
 
-</center>
+As we mentioned before, RRT* is an algorithm for obstacle avoidance. Our main goal is not to crash with other objects or humans, depending on the detector used. We have taken into consideration all predictions in order to generate the path.
 
+First of all, we define vehicle's constraints:
+
+``` python
+loomo = classes.MobileRobot(wheel_base, v_max)
+```
+
+Afterwards, we convert the global coordinates of the goal into local:
+
+``` python
+goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
+```
+
+Where ```x0``` is the current state (received from the state estimator), and ```goal_global``` contains the goal position from the initial state.
+
+Finally, we generate the desired path using all the parameters required.  
+
+``` python
+path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, prediction_activated=prediction_activated)
+```
+
+If ```prediction_activated``` was false, we only calculate the next states depending on the current objects' position, ```objects_now```.
