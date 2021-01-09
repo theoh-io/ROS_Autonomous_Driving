@@ -2,7 +2,17 @@
 
 ## User Guide
 
+<center>
 
+![Alt Text](./src/control/Images/3_Obstacles_2.gif)
+
+</center>
+
+<center>
+
+![Alt Text](./src/control/Images/3_Obstacles_1.gif)
+
+</center>
 
 ### Quick Start
 
