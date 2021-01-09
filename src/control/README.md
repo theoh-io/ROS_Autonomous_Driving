@@ -1,91 +1,62 @@
-# ROS Structure
+# Control
 
-<center>
-
-![alt text](./Images/Software_pipeline.png)
-
-</center>
-
-## Perception
-
-**1. Detector initialization:** Modify parameters if a new detector is set.
-``` python 
-# Initialize Detector Configuration --> Loomo received image dimensions: 80x60x3
-detection_image = DetectorConfig(width = w, height = h,
-                                            channels = c, downscale = d,
-                                            global_path = 'path',
-                                            detector = detector_class()) 
-```
-
-**2. Receive image** from Loomo via Socket.
-
-**3. Detector function Requirements**: 
-| Variable                             | Input/Output        | Description                 | Example                |
-| :----:                               | :------:            | :-----:                     | :-------:              |
-| opencvImage                       | Input               | List of data_size RGB data  | [255, 5, 8, 157, 255, 0, ...]  |
-| bbox_list                            | Output              | List of bounding boxes      |[[x<sub>center</sub>, y<sub>center</sub>, width, height]<sub>1</sub>, ...].|
-| label_list                           | Output              | List of labels              | [label<sub>1</sub>, ...]   |
-
-``` python
-def detect(self, received_image):
-    pil_image = Image.frombytes('RGB', (width/downscale, height/downscale), received_image)
-    opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-    opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-    bbox_list, bbox_label = detector.forward(opencvImage)
-```
-
-**4. perception.launch**
-Change the IP address and the time period of perception if needed:
-``` html
-<param name="ip_address" value="" />
-<param name="dt_perception" value="" />
-```
-
-### Software Architecture
-
-<center>
-
-![alt text](./Images/Software_perception.png)
-
-</center>
-
-## Robot State
-
-<center>
-
-![alt text](./Images/Software_robot_state.png)
-
-</center>
-
-## Map State
-
-<center>
-
-![alt text](./Images/Software_map_state.png)
-
-</center>
-
-## Prediction
-
-<center>
-
-![alt text](./Images/Software_prediction.png)
-
-</center>
-
-## Path Planning
-
-<center>
-
-![alt text](./Images/Software_path_planning.png)
-
-</center>
-
-## Control
+## control.py
 
 <center>
 
 ![alt text](./Images/Software_control.png)
 
 </center>
+
+### Control method
+
+The main goal of the controller is to follow the desired path until the goal set by the user. We have implemented two different methods of Model Predictive Control, one designed in the VITA laboratory (kinematic), and the other in the EPFL Racing Team (dynamic).
+
+Both of them require a common initialization step in order to set the mobile robot's constraints required:
+
+```python
+loomo = classes.MobileRobot(wheel_base, v_max)
+```
+
+* **Kinematic Model Predictive Control (Default)**
+
+First of all, we need to configure the MPC with all parameters:
+
+```python
+mpc = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon)
+```
+
+Then, in every iteration, we need to find in what position (local coordinates) of the desired path we are:
+
+```python
+state_local = transformations.Global_to_Local(planner_state, [robot_state])[0]
+```
+
+Finally, we calculate the optimal control commands and the future states with a solver (we use ```scipy.optimize.minimize(method="SLSQP")```).
+
+```python
+control_cmd, predicted_states_local = MPC_Control.mpc_control_loomo(mpc, state_local, desired_path_local)
+```
+
+
+* **Dynamic Model Predictive Control (EPFL Driverless)**
+
+Initially, we set all controller parameters:
+
+```python
+mpc = MPC_Eloi.MPC_model()
+```
+
+Afterwards, as in the kinematic MPC, we need to find in what position of the desired path we are:
+
+```python
+state_local = transformations.Global_to_Local(planner_state, [robot_state])[0]
+```
+
+As the design of the class ```MPC``` is different, before running the solver, we first need to add the path into the class. Finally, the solver and the method used is the same as in the kinematic one.
+
+```python
+mpc.acquire_path(desired_path_global)
+control_cmd, predicted_states_global = mpc.run_MPC(actual_state)
+```
 

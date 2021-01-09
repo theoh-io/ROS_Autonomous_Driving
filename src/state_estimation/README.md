@@ -10,7 +10,7 @@
 
 We offer two different ways of estimating the autonomous vehicle's state: 
 
-* **Default** 
+* **Initial Calibration (Default)** 
  
 Directly based on IMU data from the state variables. It includes an initial calibration.
 
