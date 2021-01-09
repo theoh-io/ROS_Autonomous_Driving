@@ -8,15 +8,17 @@
 
 ### Structure
 
-**Autonomous Pipeline**
-│─── **Loomo** ───> Launch file with all configurable parameters.
-│─── **Perception** ───> Perceive and detect objects/persons from cameras and depth sensors.
-│─── **Estimation** ───> Estimate current state from sensors information.
-│─── **Prediction** ───> Generate future predicted positions (motion) for detections.
-│─── **Path Planning** ───> Calculate the desired path for the robot in order to avoid collision.
-│─── **Control** ───> Ensure that the robot is following the desired path.
-│─── **Visualization** ───> Plotting tools for all nodes.
-└─── **Message Types** ───> Contains all types of messages for topics.
+```console
+Autonomous Pipeline
+│─── Loomo ───> Launch file with all configurable parameters.
+│─── Perception ───> Perceive and detect objects/persons from cameras and depth sensors.
+│─── Estimation ───> Estimate current state from sensors information.
+│─── Prediction ───> Generate future predicted positions (motion) for detections.
+│─── Path Planning ───> Calculate the desired path for the robot in order to avoid collision.
+│─── Control ───> Ensure that the robot is following the desired path.
+│─── Visualization ───> Plotting tools for all nodes.
+└─── Message Types ───> Contains all types of messages for topics.
+```
 
 ### Examples
 
