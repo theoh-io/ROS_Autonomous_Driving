@@ -44,43 +44,43 @@ We present other modules, which are required for our ROS pipeline.
 
 * **math**
 
-```console
+```shell
 pip install python-math
 ```
 
 * **numpy**
 
-```console
+```shell
 pip install numpy
 ```
 
 * **scipy**
 
-```console
+```shell
 pip install scipy
 ```
 
 * **matplotlib**
 
-```console
+```shell
 pip install matplotlib
 ```
 
 * **PIL**
 
-```console
+```shell
 python3 -m pip install Pillow
 ```
 
 * **torch 1.7.1**
 
-```console
+```shell
 pip install torch
 ```
 
 * **collections**
 
-```console
+```shell
 pip install collections-extended
 ```
 
