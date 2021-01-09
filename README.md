@@ -8,7 +8,7 @@
 
 ### Structure
 
-```console
+```shell
 Autonomous Pipeline
 │─── Loomo ───> Launch file with all configurable parameters.
 │─── Perception ───> Perceive and detect objects/persons from cameras and depth sensors.
