@@ -6,7 +6,7 @@
 
 Mobile Robot                |  ROS Pipeline
 :-------------------------: |:-------------------------:
-<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="195"/> | <img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="400"/>
+<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="250"/> | <img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="500"/>
 
 </center>
 
