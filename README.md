@@ -2,9 +2,37 @@
 
 ## User Guide
 
+
+
 ### Quick Start
 
+First of all, we need to clone all the ```./src``` folder inside a new ROS folder:
 
+```shell
+mkdir ROS_AD_pipeline
+cd ROS_AD_pipeline
+git clone https://github.com/cconejob/Autonomous_driving_pipeline.git
+```
+
+Once we have installed all dependencies (see subsection below), we need to build the ```devel``` and ```build``` folders by typing inside the ```ROS_AD_pipeline``` folder:
+
+```shell
+catkin_make
+```
+
+If the command ```catkin_make``` fails, try executing it again and check if the percentage is growing.
+
+In the same folder, type the following command before launching all packages.
+
+```shell
+source devel/setup.bash
+```
+
+Now, we are ready to launch:
+
+```shell
+roslaunch loomo Loomo.launch
+```
 
 ### Structure
 
@@ -15,26 +43,22 @@ Autonomous Pipeline
 │
 │─── Message Types ───> Package which includes all types of messages for topics.
 │
-│─── Perception ───> Package and node to perceive and detect objects/persons from cameras and depth sensors.
+│─── Perception ───> Package and node to perceive and detect from cameras and depth sensors.
 │
 │─── Estimation ───> Package to estimate current state from sensors information.
 │       │
 │       │─── Robot State ───> Node to estimate the state from IMU and GPS.
 │       │
-│       └─── Map State ───> Node to generate a map and estimate the state from IMU, GPS and cameras.
+│       └─── Map State ───> Node to generate a map and estimate the state from all sensors.
 │
-│─── Prediction ───> Package and node to generate future predicted positions (motion) for detections.
+│─── Prediction ───> Package and node to generate future positions (motion) for detections.
 │
-│─── Path Planning ───> Package and node to calculate the desired path for the robot in order to avoid collision.
+│─── Path Planning ───> Package and node to calculate robot's desired path to avoid collision.
 │
 │─── Control ───> Package and node to ensure that the robot is following the desired path.
 │
 └─── Visualization ───> Plotting tools for all nodes current data.
 ```
-
-### Examples
-
-
 
 ## Dependencies
 
