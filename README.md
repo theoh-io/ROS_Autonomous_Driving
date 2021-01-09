@@ -1,6 +1,24 @@
 # Autonomous Driving Pipeline in ROS
 
-## Example
+## User Guide
+
+### Quick Start
+
+
+
+### Structure
+
+**Autonomous Pipeline**
+│─── **Loomo** ───> Launch file with all configurable parameters.
+│─── **Perception** ───> Perceive and detect objects/persons from cameras and depth sensors.
+│─── **Estimation** ───> Estimate current state from sensors information.
+│─── **Prediction** ───> Generate future predicted positions (motion) for detections.
+│─── **Path Planning** ───> Calculate the desired path for the robot in order to avoid collision.
+│─── **Control** ───> Ensure that the robot is following the desired path.
+│─── **Visualization** ───> Plotting tools for all nodes.
+└─── **Message Types** ───> Contains all types of messages for topics.
+
+### Examples
 
 
 
@@ -29,7 +47,6 @@ We strongly recommend to install both versions: python 2 and 3.
 ### Openpifpaf
 
 * **Version 0.11.9:** https://pypi.org/project/openpifpaf/
-* **Cython 0.29.21**
 
 ### TrajNet++
 Follow instructions on https://thedebugger811.github.io/posts/2020/03/intro_trajnetpp/
@@ -84,3 +101,8 @@ pip install torch
 pip install collections-extended
 ```
 
+* **cython 0.29.21** 
+
+```shell
+pip install Cython
+```
