@@ -3,9 +3,11 @@
 ## User Guide
 
 <center>
-<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="195"/>
 
-<img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="400"/>
+Mobile Robot                |  ROS Pipeline
+:-------------------------: |:-------------------------:
+<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="150"/> | <img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="300"/>
+
 </center>
 
 ### Quick Start
