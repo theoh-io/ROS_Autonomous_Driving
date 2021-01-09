@@ -1,7 +1,5 @@
 # Autonomous Driving Pipeline in ROS
 
-## User Guide
-
 <center>
 
 Mobile Robot                |  ROS Pipeline
@@ -9,6 +7,8 @@ Mobile Robot                |  ROS Pipeline
 <img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="250"/> | <img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="500"/>
 
 </center>
+
+## User Guide
 
 ### Quick Start
 
@@ -42,6 +42,8 @@ roslaunch loomo Loomo.launch
 
 ### Structure
 
+We present all the different pillars of the pipeline and a brief explanation of each one.
+
 ```
 Autonomous Pipeline
 │
@@ -66,13 +68,35 @@ Autonomous Pipeline
 └─── Visualization ───> Plotting tools for all nodes current data.
 ```
 
-## Dependencies
+#### ROS Structure
 
-### Ubuntu
+After the short description, we show how we connect all different nodes and the topics used.
+
+* In a green rectangle, we represent the mobile robot (Segway Loomo in the project), with sensors and motors.
+
+* In red rectangles, all nodes of the ROS structure. 
+  * If the contour is continuous, it means that the node is essential for the pipeline to work. 
+  * If the contour is discontinuous, its use is optional depending on user's needs.
+
+* All connections grepresent the data flow between different pillars.
+  * In red, data acquired from the autonomous vehicle.
+  * In green, data received by the mobile robot.
+  * In black, all topics inside the ROS pipeline.
+
+
+<center>
+
+![alt text](./src/prediction/Images/Software_pipeline.png)
+
+</center>
+
+### Dependencies
+
+#### Ubuntu
 
 * **Version 16.04:** https://releases.ubuntu.com/16.04/
 
-### Python
+#### Python
 
 We strongly recommend to install both versions: python 2 and 3.
 
@@ -80,26 +104,26 @@ We strongly recommend to install both versions: python 2 and 3.
 
 * **Version 3.7:** https://websiteforstudents.com/installing-the-latest-python-3-7-on-ubuntu-16-04-18-04/
 
-### ROS Kinetic
+#### ROS Kinetic
 
 * **Kinetic:** http://wiki.ros.org/kinetic/Installation/Ubuntu
 
-### OpenCV
+#### OpenCV
 
 * **Version 3.3:** https://gist.github.com/danigosa/367b8a8cbc8d883df80c5c071423e4b2
 
-### Openpifpaf
+#### Openpifpaf
 
 * **Version 0.11.9:** https://pypi.org/project/openpifpaf/
 
-### TrajNet++
+#### TrajNet++
 Follow instructions on https://thedebugger811.github.io/posts/2020/03/intro_trajnetpp/
 
 * **trajnetplusplusbaselines**
 * **trajnetplusplusdataset**
 * **trajnetv**
 
-### Other modules
+#### Other modules
 
 We present other modules, which are required for our ROS pipeline.
 
