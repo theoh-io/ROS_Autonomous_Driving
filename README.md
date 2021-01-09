@@ -11,21 +11,25 @@
 ```
 Autonomous Pipeline
 │
-│─── Loomo ───> Launch file with all configurable parameters.
+│─── Loomo ───> Package which contains the launch file with all configurable parameters.
 │
-│─── Perception ───> Perceive and detect objects/persons from cameras and depth sensors.
+│─── Message Types ───> Package which includes all types of messages for topics.
 │
-│─── Estimation ───> Estimate current state from sensors information.
+│─── Perception ───> Package and node to perceive and detect objects/persons from cameras and depth sensors.
 │
-│─── Prediction ───> Generate future predicted positions (motion) for detections.
+│─── Estimation ───> Package to estimate current state from sensors information.
+│       │
+│       │─── Robot State ───> Node to estimate the state from IMU and GPS.
+│       │
+│       └─── Map State ───> Node to generate a map and estimate the state from IMU, GPS and cameras.
 │
-│─── Path Planning ───> Calculate the desired path for the robot in order to avoid collision.
+│─── Prediction ───> Package and node to generate future predicted positions (motion) for detections.
 │
-│─── Control ───> Ensure that the robot is following the desired path.
+│─── Path Planning ───> Package and node to calculate the desired path for the robot in order to avoid collision.
 │
-│─── Visualization ───> Plotting tools for all nodes.
+│─── Control ───> Package and node to ensure that the robot is following the desired path.
 │
-└─── Message Types ───> Contains all types of messages for topics.
+└─── Visualization ───> Plotting tools for all nodes current data.
 ```
 
 ### Examples
