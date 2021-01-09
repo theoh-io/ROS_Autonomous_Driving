@@ -3,15 +3,9 @@
 ## User Guide
 
 <center>
+<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="195"/>
 
-![Alt Text](./src/control/Images/3_Obstacles_2.gif)
-
-</center>
-
-<center>
-
-![Alt Text](./src/control/Images/3_Obstacles_1.gif)
-
+<img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="400"/>
 </center>
 
 ### Quick Start
