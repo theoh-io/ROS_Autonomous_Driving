@@ -50,7 +50,7 @@ It contains all types of messages for the different topics we need for the pipel
 
 ## Visualization
 
-Finally, we visualize the most essential ROS topics. 
+Finally, we visualize the most essential ROS topics in order to check if all algorithms are working correctly. 
 
 
 

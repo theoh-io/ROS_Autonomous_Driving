@@ -24,6 +24,6 @@ The desired destination for our robot. Shown with a red cross.
 
 Path planned represented with a red discontinous line.
 
-* **Control future States** 
+* **Control Future States** 
 
 States predicted by Model Predictive Control. Plotted with a green continous line. 
