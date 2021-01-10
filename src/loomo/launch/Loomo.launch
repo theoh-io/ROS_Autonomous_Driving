@@ -8,7 +8,6 @@
     <param name="v_max" value="0.5" />
     <param name="wheel_base" value="0.5" />
 
-
     <!-- Percpetion: Default, Openpifpaf -->
     <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
     <param name="dt_perception" value="0.25" />
@@ -26,9 +25,9 @@
     <!-- Prediction: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />
     <param name="prediction_activated" value="True" />
-    <param name="dt_prediction" value="0.05" />
     <param name="time_horizon_prediction" value="4.0" />
     <param name="past_observations" value="10" />
+    <param name="dt_prediction" value="0.05" />
 
     <!-- Path_Planning: Default -->
     <param name="PATH_PLANNING_FUNCTION" value="Default" />
@@ -36,9 +35,9 @@
 
     <!-- Control: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.5" />
     <param name="time_horizon_control" value="3.0" />
     <param name="n_states" value="3" />
+    <param name="dt_control" value="0.5" />
 
     <!-- Visualization: Default -->
     <param name="visualization_activated" value="True" />
