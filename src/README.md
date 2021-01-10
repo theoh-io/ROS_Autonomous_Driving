@@ -2,6 +2,14 @@
 
 We present a brief explanation of all ROS packages we use for the **Autonomous Driving Pipeline**. We remind all users that this pipeline is designed to be flexible, and this means that modifying algorithms inside packages should not affect to the robustness of the structure. 
 
+All different ROS nodes are explained with a diagram, which structure is shown below:
+
+<center>
+
+![alt text](./control/Images/Software_tutorial.png)
+
+</center>
+
 ## Loomo
 
 In this package, the user can change the main parameters of the pipeline. It includes the launch file that enables running all nodes at the same time. 
@@ -51,6 +59,7 @@ It contains all types of messages for the different topics we need for the pipel
 ## Visualization
 
 Finally, we visualize the most essential ROS topics in order to check if all algorithms are working correctly. 
+
 
 
 
