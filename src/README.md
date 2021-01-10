@@ -10,6 +10,27 @@ All different ROS nodes are explained with a diagram, which structure is shown b
 
 </center>
 
+**ROS Structure**
+
+After the short description, we show how we connect all different nodes and the topics used:
+
+* In a **green rectangle**, we represent the mobile robot (Segway Loomo in the project), with sensors and motors.
+
+* In **red rectangles**, all nodes of the ROS structure. 
+  * If the contour is continuous, it means that the node is essential for the pipeline to work. 
+  * If the contour is discontinuous, its use is optional depending on user's needs.
+
+* All **connections** represent the data flow between different pillars.
+  * In red, data acquired from the autonomous vehicle.
+  * In green, data received by the mobile robot.
+  * In black, all topics inside the ROS pipeline.
+
+<center>
+
+![alt text](./control/Images/Software_pipeline.png)
+
+</center>
+
 ## Loomo
 
 In this package, the user can change the main parameters of the pipeline. It includes the launch file that enables running all nodes at the same time. 
