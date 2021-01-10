@@ -20,7 +20,7 @@ cd ROS_AD_pipeline
 git clone https://github.com/cconejob/Autonomous_driving_pipeline.git
 ```
 
-Once we have installed all dependencies (see subsection below), we need to build the ```devel``` and ```build``` folders by typing inside the ```ROS_AD_pipeline``` folder:
+Once we have installed all **dependencies** (see subsection below), we need to build the ```devel``` and ```build``` folders by typing inside the ```ROS_AD_pipeline``` folder:
 
 ```shell
 catkin_make
@@ -70,25 +70,25 @@ Autonomous Pipeline
 
 #### ROS Structure
 
-After the short description, we show how we connect all different nodes and the topics used.
+After the short description, we show how we connect all different nodes and the topics used:
 
-* In a green rectangle, we represent the mobile robot (Segway Loomo in the project), with sensors and motors.
+* In a **green rectangle**, we represent the mobile robot (Segway Loomo in the project), with sensors and motors.
 
-* In red rectangles, all nodes of the ROS structure. 
+* In **red rectangles**, all nodes of the ROS structure. 
   * If the contour is continuous, it means that the node is essential for the pipeline to work. 
   * If the contour is discontinuous, its use is optional depending on user's needs.
 
-* All connections grepresent the data flow between different pillars.
+* All **connections** represent the data flow between different pillars.
   * In red, data acquired from the autonomous vehicle.
   * In green, data received by the mobile robot.
   * In black, all topics inside the ROS pipeline.
-
 
 <center>
 
 ![alt text](./src/prediction/Images/Software_pipeline.png)
 
 </center>
+
 
 ### Dependencies
 
@@ -104,7 +104,7 @@ We strongly recommend to install both versions: python 2 and 3.
 
 * **Version 3.7:** https://websiteforstudents.com/installing-the-latest-python-3-7-on-ubuntu-16-04-18-04/
 
-#### ROS Kinetic
+#### ROS
 
 * **Kinetic:** http://wiki.ros.org/kinetic/Installation/Ubuntu
 
