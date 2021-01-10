@@ -10,7 +10,7 @@
 
 ### Control method
 
-The main goal of the controller is to follow the desired path until the goal set by the user. We have implemented two different methods of Model Predictive Control, one designed in the VITA laboratory (kinematic), and the other in the EPFL Racing Team (dynamic).
+The controller's main goal is to follow the desired path until the user's goal. We have implemented two different Model Predictive Control methods, one designed in the VITA laboratory (kinematic), and the other in the EPFL Racing Team (dynamic).
 
 Both of them require a common initialization step in order to set the mobile robot's constraints required:
 
@@ -53,7 +53,7 @@ Afterwards, as in the kinematic MPC, we need to find in what position of the des
 state_local = transformations.Global_to_Local(planner_state, [robot_state])[0]
 ```
 
-As the design of the class ```MPC``` is different, before running the solver, we first need to add the path into the class. Finally, the solver and the method used is the same as in the kinematic one.
+As the class ```MPC``` design is different, before running the solver, we first need to add the path into the class. Finally, the solver and the method used is the same as in the kinematic one.
 
 ```python
 mpc.acquire_path(desired_path_global)

@@ -1,6 +1,6 @@
 # ROS Packages Summary 
 
-We present a brief explanation of all ROS packages we use for the **Autonomous Driving Pipeline**. We remind all users that this pipeline is designed to be flexible, and this means that modifying algorithms inside packages should not affect to the robustness of the structure. 
+We present a brief explanation of all ROS packages we use for the **Autonomous Driving Pipeline**. We remind all users that this pipeline is designed to be flexible, and this means that modifying algorithms inside packages should not affect the robustness of the structure. 
 
 All different ROS nodes are explained with a diagram, which structure is shown below:
 
@@ -14,11 +14,11 @@ All different ROS nodes are explained with a diagram, which structure is shown b
 
 After the short description, we show how we connect all different nodes and the topics used:
 
-* In a **green rectangle**, we represent the mobile robot (Segway Loomo in the project), with sensors and motors.
+* We represent the mobile robot (Segway Loomo in the project) in a **green rectangle**, with sensors and motors.
 
 * In **red rectangles**, all nodes of the ROS structure. 
   * If the contour is continuous, it means that the node is essential for the pipeline to work. 
-  * If the contour is discontinuous, its use is optional depending on user's needs.
+  * If the contour is discontinuous, its use is optional depending on the user's needs.
 
 * All **connections** represent the data flow between different pillars.
   * In red, data acquired from the autonomous vehicle.
@@ -45,31 +45,31 @@ In this project, we used a Loomo Segway robot. Anyway, the structure could be im
 
 ## Perception
 
-The main goal of the package is to detect objects, animals or humans (depending on the detector used) inside raw images that come from the robot, and send bounding boxes to the loomo. 
+The package's main goal is to detect objects, animals or humans (depending on the detector used) inside raw images from the robot and send bounding boxes to the Loomo.
 
 We implement a simple **Minion** images detector and a complex human detector, called **Openpifpaf**.
 
 ## State Estimation
 
-Using estimation algorithms, the state can be acquired in a more accurate way than the sensor's data. We also give the possibility of storing a map that contains all previous observations with the last observation.
+The state can be acquired more accurately than the sensor's data using estimation algorithms. We also give the possibility of storing a map that contains all previous observations with the last observation.
 
-**Extended Kalman Filters** (with kinematic model) and **Data Assotiation** (mapping) are included inside the package.
+**Extended Kalman Filters** (with kinematic model) and **Data Association** (mapping) are included inside the package.
 
 ## Prediction
 
-Inside this package, we predict the future positions of the detections, depending on their motion during the last frames. The user can change the predictor algorithm depending on the requirements.
+We predict the detections' future positions inside this package, depending on their motion during the last frames. The user can change the predictor algorithm depending on the requirements.
 
 We include simple **Linear Predictor** and **TrajNet++** in the pipeline.
 
 ## Path Planning
 
-The main goal is to design a path for the mobile robot in order to avoid object collision, to follow a person, etc. 
+The main goal is to design a path for the mobile robot to avoid object collision, follow a person, etc.
 
-In this project we use **Prediction RRT*** to avoid object collision going from a start point to a goal, considering possible motion of the observations.
+In this project, we use Prediction RRT* to avoid object collision going from a start point to a goal, considering the observations' possible motion.
 
 ## Control
 
-In the Control package, we design an algorithm to follow the previosly calculated desired path. 
+In the Control package, we design an algorithm to follow the previously calculated desired path. 
 
 We implemented a **Model Predictive Control** with a kinematic model.
 
@@ -79,7 +79,7 @@ It contains all types of messages for the different topics we need for the pipel
 
 ## Visualization
 
-Finally, we visualize the most essential ROS topics in order to check if all algorithms are working correctly. 
+Finally, we visualize the essential ROS topics in order to check if all algorithms are working correctly. 
 
 
 

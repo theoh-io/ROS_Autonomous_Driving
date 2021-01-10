@@ -10,7 +10,7 @@
 
 ### Path planning method
 
-The aim of the algorithm is to calculate the desired trajectory for the mobile robot from a start to a goal. We have designed in VITA a fucntion based on a well-known method used for obstacle avoidance, RRT*, including the observations' motion over time (predictions). Other methods can be implemented inside the pipeline by changing parameters.
+The algorithm aims to calculate the desired trajectory for the mobile robot from a start to a goal. We have designed in VITA a function based on a well-known method used for obstacle avoidance, RRT*, including the observations' motion over time (predictions). Other methods can be implemented inside the pipeline by changing parameters.
 
 * **Prediction RRT Star (Default)**
 
