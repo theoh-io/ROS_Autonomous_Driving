@@ -28,25 +28,22 @@ class Sender(object):
 def main():
     # Initialize ROS
     rospy.init_node("robot_state")
-    dt_estimation = rospy.get_param("/dt_robot_state")
-    rate = rospy.Rate(int(1/dt_estimation))
+    dt_robot_state = rospy.get_param("/dt_robot_state")
+    rate = rospy.Rate(int(1/dt_robot_state))
     sender = Sender()
 
     # Initialize socket connections
     ip_address = rospy.get_param("/ip_address")
-    socket2 = classes.SocketLoomo(8082, dt_estimation/4, ip_address, unpacker=5*'f ')
-
-    # Estimation visualization tools activated?
-    visualization = False
+    socket2 = classes.SocketLoomo(8082, dt_robot_state/4, ip_address, unpacker=5*'f ')
 
     # Parameter Initialization
-    ESTIMATION_FUNCTION = rospy.get_param("/ROBOT_STATE_FUNCTION")
+    ROBOT_STATE_FUNCTION = rospy.get_param("/ROBOT_STATE_FUNCTION")
 
-    if ESTIMATION_FUNCTION == "Kalman_filter":
+    if ROBOT_STATE_FUNCTION == "EPFL_Driverless":
         estimator = motion_estimation_robot.Driverless_Estimation()
 
     # Variable Initialization
-    new_states = (0.0, 0.0, 0.0, 0.0, 0.0)
+    new_states = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     past_states = new_states
     initial_states = new_states
     states = new_states
@@ -54,7 +51,7 @@ def main():
 
     rospy.loginfo("Robot_State Node Ready")
 
-    rospy.sleep(3.)
+    rospy.sleep(1.5)
 
     while not rospy.is_shutdown():
         start = time.time()
@@ -65,7 +62,7 @@ def main():
         if socket2.received_ok:
             states = list(socket2.received_data_unpacked)
             #rospy.loginfo("(ax, ay):  (" + str(states[5])+ ", " + str(states[6]) + ")")
-            a = (states[3]-past_states[3])/dt_estimation
+            a = (states[3]-past_states[3])/dt_robot_state
             states.append(a)
             past_states = states
             if i <= 0:
@@ -73,12 +70,12 @@ def main():
                 initial_states = states
 
             # Transform data in relation to the initial point
-            if ESTIMATION_FUNCTION == "Default":
+            if ROBOT_STATE_FUNCTION == "Default":
                 new_states = IMU_data.state_with_initial_calibration(initial_states, states)
                 # Send state estimation topics via ROS
                 sender.send(new_states)
 
-            elif ESTIMATION_FUNCTION == "Kalman_filter":
+            elif ROBOT_STATE_FUNCTION == "EPFL_Driverless":
                 states = IMU_data.state_with_initial_calibration(initial_states, states)
                 new_states = estimator.kalman(states)
                 # Send state estimation topics via ROS
@@ -87,8 +84,8 @@ def main():
         # Calculate node computation time
         computation_time = time.time() - start
         
-        if computation_time > dt_estimation:
-            rospy.logwarn("Estimation computation time higher than node period by " + str(computation_time-dt_estimation) + " seconds")
+        if computation_time > dt_robot_state:
+            rospy.logwarn("Estimation computation time higher than node period by " + str(computation_time-dt_robot_state) + " seconds")
 
         rate.sleep()
 

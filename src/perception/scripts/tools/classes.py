@@ -74,7 +74,7 @@ class SocketLoomo:
         self.s.send(packed_data)
 
 
-class DetectorConfiguration:
+class DetectorConfig:
     # Initialize detector and its main properties
     def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv"):
         # Detector expected input image dimensions

@@ -26,9 +26,9 @@ class Sender(object):
 
 def callback_estimation(data):
 
-    global detections
+    global map_detections
 
-    detections = classconverter.PositionArray2list(data)
+    map_detections = classconverter.PositionArray2list(data)
 
 
 def main():
@@ -51,25 +51,27 @@ def main():
 
     # Initialize prediction parameters
     time_horizon_prediction = rospy.get_param("/time_horizon_prediction")
-    past_number = rospy.get_param("/past_observations")
+    n_past_observations = rospy.get_param("/past_observations")
 
     if PREDICTION_FUNCTION == "Default":
-        predictor = linear_prediction.LinealPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=past_number)
+        predictor = linear_prediction.LinealPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
     
     elif PREDICTION_FUNCTION == "Trajnet":
-        predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=past_number, model_name="SGAN", model="Occupancy", tag=2)
+        predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
 
     # Initialize prediction variables
-    global detections
+    global map_detections
 
     detections = []
+    map_detections = []
     past_detections = []
 
     rospy.loginfo("Prediction Node Ready")
-    rospy.sleep(5.)
+    rospy.sleep(1.7)
 
     while not rospy.is_shutdown() and prediction_activated:
         start = time.time()
+        detections = map_detections
 
         # Receive detection positions (x, y) in relation to the Loomo
         if not mapping_activated:
@@ -85,7 +87,7 @@ def main():
                     detections.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
 
         # Add present detections to past in a buffer and predict trajectories
-        past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, past_number)
+        past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, n_past_observations)
         predicted_trajectories = predictor.prediction_function(past_present_positions)
 
         # Send prediction topic via ROS

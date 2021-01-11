@@ -83,12 +83,12 @@ def main():
     control_prediction_horizon = rospy.get_param("/time_horizon_control") # s
 
     if CONTROL_FUNCTION == "Default":
-        mpc = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon)
-        N = mpc.N
+        controller = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon)
+        N = controller.N
 
     elif CONTROL_FUNCTION == "EPFL_Driverless":
-        mpc = MPC_Eloi.MPC_model()
-        N = mpc.HORIZON_N
+        controller = MPC_Eloi.MPC_model()
+        N = controller.HORIZON_N
 
     n_states = rospy.get_param("/n_states")
 
@@ -106,7 +106,7 @@ def main():
     local_predictions = []
 
     rospy.loginfo("Control Node Ready")
-    rospy.sleep(5.)
+    rospy.sleep(3.)
 
     while not rospy.is_shutdown():
         start = time.time()
@@ -132,11 +132,11 @@ def main():
             if len(desired_path_global)>int(N):
 
                 if CONTROL_FUNCTION == "Default":
-                    control_cmd, predicted_states_local = MPC_Control.mpc_control_loomo(mpc, state_local, desired_path_local)
+                    control_cmd, predicted_states_local = MPC_Control.mpc_control_loomo(controller, state_local, desired_path_local)
 
                 elif CONTROL_FUNCTION == "EPFL_Driverless":
-                    mpc.acquire_path(desired_path_global)
-                    control_cmd, predicted_states_global = mpc.run_MPC(actual_state)
+                    controller.acquire_path(desired_path_global)
+                    control_cmd, predicted_states_global = controller.run_MPC(actual_state)
                     predicted_states_local = transformations.Global_to_Local(actual_state, predicted_states_global)
 
             else:

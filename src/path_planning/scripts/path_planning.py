@@ -88,13 +88,11 @@ def main():
     goal_global = [goal_x, goal_y]
     state = [0.0, 0.0, 0.0]
     objects_now = []
-    cnt = 1
 
     rospy.loginfo("Path Planning Node Ready")
-    rospy.sleep(6.)
+    rospy.sleep(2.)
 
     while not rospy.is_shutdown():
-        cnt = cnt - 1
 
         if not prediction_activated and not mapping_activated:
             # Receive detection positions (x, y) in relation to the Loomo
@@ -109,31 +107,29 @@ def main():
                     if position[0]!=0.0:
                         array_predictions.append([list(position)+[idx+1]+[0.0]])
 
-        if cnt <= 0:
-            start = time.time()
-            x0 = state
-            goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
-            array_total = array_predictions + array_mapping
+        start = time.time()
+        x0 = state
+        goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
+        array_total = array_predictions + array_mapping
 
-            # Actual detection movement prediction
-            if len(array_total) > 0:
-                objects_now = transformations.Global_to_Local_prediction(x0, array_total)
+        # Actual detection movement prediction
+        if len(array_total) > 0:
+            objects_now = transformations.Global_to_Local_prediction(x0, array_total)
 
-            # Obstacle avoidance path calculation
-            path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, prediction_activated=prediction_activated)
- 
-            if len(path)>5:
-                # Send commands to the ROS Structure
-                sender.send(path, objects_now, x0, goal_local)
-                cnt = 5
+        # Obstacle avoidance path calculation
+        path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, prediction_activated=prediction_activated)
 
-            # Calculate node computation time
-            computation_time = time.time() - start
+        if len(path)>N:
+            # Send commands to the ROS Structure
+            sender.send(path, objects_now, x0, goal_local)
 
-            if computation_time > dt_path_planning:
-                rospy.logwarn("Path planning computation time higher than node period by " + str(computation_time-dt_path_planning) + " seconds")
+        # Calculate node computation time
+        computation_time = time.time() - start
 
-            objects_now = []
+        if computation_time > dt_path_planning:
+            rospy.logwarn("Path planning computation time higher than node period by " + str(computation_time-dt_path_planning) + " seconds")
+
+        objects_now = []
 
         rate.sleep()
 

@@ -77,8 +77,8 @@ def callback_prediction(data):
 def visualization_function(predictions, planning, control, state_list, state, goal, gt, all_gt_global):
     plt.clf()
     plt.plot(goal[0], goal[1], "rx")
-    plt.plot([x for (x,y,heading) in state_list], [y for (x,y,heading) in state_list], "r-")
-    plt.plot(state[0], state[1], "ro")
+    #plt.plot([x for (x,y,heading) in state_list], [y for (x,y,heading) in state_list], "r-")
+    #plt.plot(state[0], state[1], "ro")
     plt.plot([x for (x,y,heading) in all_gt_global], [y for (x,y,heading) in all_gt_global], "b--")
     
     if len(gt) > 0:
@@ -113,7 +113,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
 
     plt.axis([0, 6, -3, 3])
     plt.plot([x for (x, y, heading) in planning], [y for (x, y, heading) in planning], 'r--')
-    plt.plot([x for (x, y, heading) in control], [y for (x, y, heading) in control], 'g-.')
+    plt.plot([x for (x, y, heading) in control], [y for (x, y, heading) in control], 'g-.', linewidth=2)
     plt.pause(0.001)
 
 
@@ -129,7 +129,9 @@ def main():
         sub_prediction = rospy.Subscriber('/Visualization/predictions_local', TrajectoryArray, callback_prediction, queue_size = 1)
         sub_gt = rospy.Subscriber('/State_Estimation/ground_truth', State, callback_gt, queue_size = 1)
         sub_goal = rospy.Subscriber('/Visualization/goal_local', Position, callback_goal, queue_size = 1)
-
+        
+    goal_x = rospy.get_param("/goal_x")
+    goal_y = rospy.get_param("/goal_y")
     dt_visualization = rospy.get_param("/dt_control")
     rate = rospy.Rate(int(1/dt_visualization))
 
@@ -144,7 +146,7 @@ def main():
     planning_global = []
     control_local = []
     control_global = []
-    goal_global = [0.0, 0.0]
+    goal_global = [goal_x, goal_y]
     state_local = [0.0, 0.0, 0.0]
     x0 = [0.0, 0.0 , 0.0]
     gt =[0.0, 0.0, 0.0]
@@ -156,7 +158,7 @@ def main():
     start_node = True
 
     rospy.loginfo("Visualization Node Ready")
-    rospy.sleep(7.)
+    rospy.sleep(3.)
 
     while not rospy.is_shutdown() and visualization_activated:
 

@@ -66,7 +66,7 @@ class Driverless_Estimation:
 
         a261 = float((1/x[5]**2) * (dt*x[4]*np.cos(dt*x[5]+x[2])-dt*(-dt*x[4]*x[5]-[3]*x[5])*np.sin(dt*x[5]+x[2])+x[3]*np.cos(x[2])+(-dt*x[4]-x[3])*np.cos(dt*x[5]+x[2])))
         a262 = float((1/x[5]**3) * (-x[4]*np.sin(x[2])+x[4]*np.sin(dt*x[5]+x[2])+x[3]*x[5]*np.cos(x[2])+(-dt*x[4]*x[5]-x[3]*x[5])*np.cos(dt*x[5]+x[2])))
-        a26 = a261-2*a262
+        a26 = a161-2*a162
 
 
         JA = np.matrix([[1.0, 0.0, a13, a14, a15, a16],
@@ -108,8 +108,9 @@ class Driverless_Estimation:
 
 
     def kalman(self,mes):
+
+
         measurements = np.matrix([mes]).T
-        
         if self.first_mes:
             self.x = measurements
             self.first_mes = False

@@ -17,56 +17,60 @@ from tools import classconverter, classes, transformations, utilities
 
 try:
     from rrt import RRT
-    import rrt_with_pathsmoothing
 
 except ImportError:
     raise
 
 visualization = False
 
+# Class for RRT Star planning
 class RRTStar(RRT):
-    """
-    Class for RRT Star planning
-    """
-
+    
     class Node(RRT.Node):
         def __init__(self, x, y):
             super(RRTStar.Node,self).__init__(x, y)
             self.cost = 0.0
 
-    def __init__(self, mobile_robot, start, goal, obstacle_list, rand_area, prediction_activated, speed, expand_dis=0.2, path_resolution=0.2, goal_sample_rate=20, max_iter=500, connect_circle_dist=10.0, search_until_max_iter=False):
+    def __init__(self, mobile_robot, start, goal, obstacle_list, rand_area, prediction_activated, speed, expand_dis=0.2, path_resolution=0.2, goal_sample_rate=5, max_iter=700, connect_circle_dist=1.5, search_until_max_iter=True):
+        
         """
-        Setting Parameter
-        start:Start Position [x,y]c
-        goal:Goal Position [x,y]
+        Parameters
+        start: Start Position [x,y]
+        goal: Goal Position [x,y]
         obstacleList:obstacle Positions [[x,y,size],...]
-        randArea:Random Sampling Area [min,max]
+        randArea:Random Sampling Area [min_x,max_x,min_y,max_y]
+        prediction_activated: Do we need prediction?
+        speed: Constant speed of the robot
+        expand_dis: maximum distance between two consecutive nodes
+        path_resolution: Maximum accepted distance between goal and last node
+        goal_sample_rate: Probability of rejecting a new node (0-100)
+        max_iter: Maximum number of iterations
+        connect_circle_dist: Radius of reestructuration for RRT* nodes
+        search_until_max_iter: Do we need to search until the end?
         """
+
         super(RRTStar,self).__init__(mobile_robot, start, goal, obstacle_list, rand_area, prediction_activated, speed, expand_dis, path_resolution, goal_sample_rate, max_iter)
         self.connect_circle_dist = connect_circle_dist
         self.goal_node = self.Node(goal[0], goal[1])
         self.search_until_max_iter = search_until_max_iter
 
     def planning(self, animation=False):
-        """
-        rrt star path planning
-        animation: flag for animation on or off .
-        """
-
         self.node_list = [self.start]
+
         for i in range(self.max_iter):
             rnd = self.get_random_node()
             nearest_ind = self.get_nearest_node_index(self.node_list, rnd)
             new_node = self.steer(self.node_list[nearest_ind], rnd, self.expand_dis, self.max_w*self.dt)
             near_node = self.node_list[nearest_ind]
-            new_node.cost = near_node.cost + \
-                            math.hypot(new_node.x-near_node.x,
-                                       new_node.y-near_node.y)
-
+            
+            # Calculate cost in distance
+            new_node.cost = near_node.cost + math.hypot(new_node.x-near_node.x, new_node.y-near_node.y)
             current_distance = self.node_list[nearest_ind].cost
-
+            
+            # Calculate cost in time for prediction
             current_time = current_distance/self.speed
 
+            # Check if it exists collision in the path between nodes
             if self.check_collision(new_node, self.obstacle_list, self.prediction_activated, current_time):
                 near_inds = self.find_near_nodes(new_node)
                 node_with_updated_parent = self.choose_parent(new_node, near_inds, current_time)
@@ -81,19 +85,20 @@ class RRTStar(RRT):
             if animation:
                 self.draw_graph(rnd)
 
-            if ((not self.search_until_max_iter)
-                    and new_node):  # if reaches goal
+            # if reaches goal
+            if ((not self.search_until_max_iter) and new_node):  
                 last_index = self.search_best_goal_node(current_time)
+                
                 if last_index is not None:
                     return self.generate_final_course(last_index)
-
-        rospy.logwarn("planner reached max iteration")
 
         last_index = self.search_best_goal_node(current_time)
         if last_index is not None:
             return self.generate_final_course(last_index)
 
-        return []
+        rospy.logwarn("planner reached max iteration without a solution")
+
+        return None
 
     def choose_parent(self, new_node, near_inds, current_time):
         """
@@ -161,6 +166,7 @@ class RRTStar(RRT):
         return None
 
     def find_near_nodes(self, new_node):
+        
         """
         1) defines a ball centered on new_node
         2) Returns all nodes of the tree that are inside this ball
@@ -175,6 +181,7 @@ class RRTStar(RRT):
                     List with the indices of the nodes inside the ball of
                     radius r
         """
+
         nnode = len(self.node_list) + 1
         r = self.connect_circle_dist * math.sqrt((math.log(nnode) / nnode))
 
@@ -187,6 +194,7 @@ class RRTStar(RRT):
         return near_inds
 
     def rewire(self, new_node, near_inds, current_time):
+        
         """
             For each node in near_inds, this will check if it is cheaper to
             arrive to them from new_node.
@@ -201,6 +209,7 @@ class RRTStar(RRT):
                     nodes within a circle of a given radius.
             Remark: parent is designated in choose_parent.
         """
+
         for i in near_inds:
             near_node = self.node_list[i]
             edge_node = self.steer(new_node, near_node)
@@ -234,49 +243,62 @@ class RRTStar(RRT):
                 node.cost = self.calc_new_cost(parent_node, node)
                 self.propagate_cost_to_leaves(node)
 
+def line_collision_check(first, second, obstacleList, current_time):
+    # Line Equation
+    x1 = first[0]
+    y1 = first[1]
+    x2 = second[0]
+    y2 = second[1]
 
+    try:
+        a = y2 - y1
+        b = -(x2 - x1)
+        c = y2 * (x2 - x1) - x2 * (y2 - y1)
+
+    except ZeroDivisionError:
+
+        return False
+
+    i = 0
+    t_min = 100
+
+    for (ox, oy, size, time) in obstacleList:
+        t = current_time - time
+
+        if i >= len(obstacleList):
+            break
+
+        elif abs(t) < abs(t_min):
+            t_min = t
+            current_object_position = []
+            current_object_position.append(obstacleList[i])
+
+        elif abs(t) == abs(t_min):
+            current_object_position.append(obstacleList[i])
+
+        i = i + 1
+
+    for (ox, oy, size, time) in current_object_position:
+        d = abs(a * ox + b * oy + c) / (math.sqrt(a * a + b * b))
+
+        if d <= size and ox>0.0:
+            rospy.logwarn("Found Obstacle in " + str([ox, oy]))
+
+            return False
+
+    return True  # OK
+
+# Calculate distance between 2 points
 def distance_AB(A, B):
 
     return math.sqrt((A[0]-B[0])**2 + (A[1]-B[1])**2)
 
-
+# Calculate the area of a triangle
 def triangleArea(a,b,c):
 
     return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
 
-
-def MPC_planner(points, v , t):
-    e = v*t
-    plan = [[0.0, 0.0, 0.0, 0.0]]
-    dist = 0.0
-    it = 2
-    x_ant = 0.0
-    y_ant = 0.0
-    heading_ant = 0.0
-
-    for i in range(1,80):
-
-        while dist < e and it < len(points):
-            distAB = distance_AB(points[it-2], points[it-1])
-            dist = dist + distAB
-            it = it + 1
-
-        if dist >= e:
-            it = it - 1
-            d = dist - e
-            prop = d/distAB
-            x = points[it-1][0] - prop*(points[it-1][0] - points[it-2][0])
-            y = points[it-1][1] - prop*(points[it-1][1] - points[it-2][1])
-            heading = math.atan2((y - y_ant),(x - x_ant))
-            plan.append([x, y, heading, v])
-            dist = d
-            x_ant = x
-            y_ant = y
-            it = it + 1
-
-    return plan
-
-
+# Apply Kinematic Restrictions to the planner, and adapt it for MPC.
 def MPC_Planner_restrictions(mobile_robot, points, v, t):
     e = v*t
     plan = [[0.0, 0.0, 0.0, 0.0]]
@@ -315,9 +337,7 @@ def MPC_Planner_restrictions(mobile_robot, points, v, t):
 
     return plan
 
-
-
-
+# If we need to rotate the mobile robot before going forward
 def add_correction(mobile_robot, dt, start, goal):
     heading = start
     error_angle = goal-start
@@ -340,12 +360,21 @@ def add_correction(mobile_robot, dt, start, goal):
 
     return added_points
 
-
 def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0.0, 0.0], N=1, prediction_activated=False):
 
     obstacle_list = []
     are_obstacles = True
+    no_obstacles_in_path = True
+    size_obstacles = 0.25
 
+    # Set a middle goal not too far from the robot
+    if goal[0] > 3.0 and goal[1] > 1.0:
+        goal = [3.0, 1.0]
+
+    elif goal[0] > 3.0 and goal[1] < -1.0:
+        goal = [3.0, -1.0]
+
+    # Store all obstacles including its predictions
     for e1 in array_predictions:
 
         for i,e2 in enumerate(e1):
@@ -354,18 +383,22 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
                 pass
 
             elif len(e2)>0:
-                obstacle_list.append((e2[0], e2[1], 0.5, e2[2]))
+                # Add a safety distance between the detection and the robot
+                safety_distance = 0.05
+                obstacle_list.append((e2[0], e2[1], size_obstacles + safety_distance, e2[2]))
 
     if len(obstacle_list) < 1:
         are_obstacles = False
 
+    # If we found obstacles in this iteration
     if are_obstacles:
-        # Set Initial parameters
-        rrt_star = RRTStar(mobile_robot, start=[0, 0], goal=[goal[0], goal[1]], obstacle_list=obstacle_list, rand_area=[0, goal[0]], prediction_activated=prediction_activated, speed=speed)
+        # Set Initial parameters for RRT Star
+        rrt_star = RRTStar(mobile_robot, start=[0, 0], goal=[goal[0], goal[1]], obstacle_list=obstacle_list, rand_area=[0, goal[0], -1, 1], prediction_activated=prediction_activated, speed=speed)
 
     path = []
     plt.clf()
 
+    # First, we calculate the shortest path between start and goal
     if goal[0] != 0.0:
         m = goal[1]/goal[0]
 
@@ -378,13 +411,12 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
     for i in range(len(x_list)):
         path.append([x_list[i], y_list[i]])
 
-    no_obstacles_in_path = True
-
+    # Second, we check if the shortest path avoids collision
     if are_obstacles:
         i = 0
 
         while no_obstacles_in_path and i<(len(path)-1):
-            no_obstacles_in_path = rrt_with_pathsmoothing.line_collision_check(path[i], path[i+1], obstacle_list, i*dt_control)
+            no_obstacles_in_path = line_collision_check(path[i], path[i+1], obstacle_list, i*dt_control)
             i = i + 1
     
     goal_angle = 0.0
@@ -394,28 +426,29 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
     
     smooth_path = path
 
+    # If it exists collision, we need to use RRT*
     if not no_obstacles_in_path:
-        rospy.logwarn("Found obstacle in path")
         path = rrt_star.planning(animation=False)
 
         if visualization:
             rrt_star.draw_graph()
 
+        # If we can't find any feasible path, we use the one calculated in the previous iteration
         if path is None:
-            planner = []
-            return planner
+            planner = [0.0, 0.0, 0.0]
+            return planner, goal
 
+        # If there exist a feasible path, we rotate it to avoid interpolation problems (later, we rotate back)
         else:
             x_ant = -1.0
             x_list = []
             y_list = []
             path = path[1:][::-1]
             rotated_path = path
+
             if len(path)>0:
                 goal_angle = math.atan2((path[1][1]-path[0][1]),(path[1][0]-path[0][0]))
                 rotated_path = transformations.rotate(path, goal_angle)
-
-            
 
             for e in rotated_path:
 
@@ -424,6 +457,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
                     y_list.append(e[1])
                     x_ant = e[0]
 
+    # If we found a path with RRT*, we need to apply smoothness with a spline (interpolation)
     if len(x_list)>4 and not no_obstacles_in_path:
         smooth_path_rotated = []
         path_spline = UnivariateSpline(x_list, y_list, k=4)
@@ -436,7 +470,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
     mpc_planner = MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
 
-    # Correct only the angle if it is too high
+    # Correct only the angle if it is too high --> Only yaw rate commands to turn the vehicle
     if abs(goal_angle)> 90*math.pi/180:
         rospy.logwarn("Rotation required")
         added_points = add_correction(mobile_robot, dt_control, 0.0, goal_angle)
@@ -444,23 +478,21 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
     # Draw final path
     if visualization:
+        plt.axis([0, 4, -2, 2])
         plt.plot(0.0, 0.0, "xr")
         plt.plot(goal[0], goal[1], "xr")
-        plt.axis([0, 10, -5, 5])
+        plt.axis([0, 4, -2, 2])
 
         if are_obstacles:
 
             for i,e in enumerate(obstacle_list):
-                rrt_star.plot_circle(e[0], e[1], e[2])
-                plt.annotate('%s' % i,(e[0], e[1]))
+                rrt_star.plot_circle(e[0], e[1], e[2], 'b--')
+                rrt_star.plot_circle(e[0], e[1], size_obstacles, 'b-')
 
-        plt.plot([x for (x, y) in path], [y for (x, y) in path], 'r--')
-        plt.plot([x for [x, y] in smooth_path], [y for [x, y] in smooth_path], 'b--')
-        plt.pause(1)
+        plt.plot([x for (x, y) in path], [y for (x, y) in path], 'k-', lineWidth=1)
+        plt.plot([x for [x, y] in smooth_path], [y for [x, y] in smooth_path], 'r--', lineWidth=2)
+        plt.pause(0.0001)
 
+    # Return shortest feasible path
     return mpc_planner, goal
-
-
-if __name__ == '__main__':
-    planner_rrt_star([(3.0,0.2,0.5,0.0),(6.0,-0.5,0.5,5.0)], 1.0, 0.05, True, [5.0,0.0], True)
 

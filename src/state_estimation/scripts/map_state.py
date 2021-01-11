@@ -11,7 +11,7 @@ from tools import classconverter, classes
 class Sender(object):
     def __init__(self):
         self.pub_map_global = rospy.Publisher('/State_Estimation/map_global', PositionArray, queue_size=1)
-        self.pub_map_state = rospy.Publisher('/State_Estimation/map_state', PositionArray, queue_size=1)
+        self.pub_map_state = rospy.Publisher('/State_Estimation/map_state', State, queue_size=1)
 
     def send(self, map_global, map_state=[]):
 
@@ -43,9 +43,6 @@ def main():
     if mapping_activated:
         sender = Sender()
         sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
-
-    # Initialize socket connections
-    if mapping_activated:
         ip_address = rospy.get_param("/ip_address")
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
@@ -61,7 +58,7 @@ def main():
 
     rospy.loginfo("Mapping Node Ready")
 
-    rospy.sleep(3.)
+    rospy.sleep(1.5)
 
     while not rospy.is_shutdown() and mapping_activated:
         start = time.time()

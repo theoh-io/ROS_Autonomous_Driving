@@ -191,3 +191,8 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.predicted_states = states
 
     return [control_command, mpc.predicted_states]
+
+
+if __name__ == '__main__':
+
+    mpc_control_loomo(MPC(MobileRobot(0.5, 2), ))

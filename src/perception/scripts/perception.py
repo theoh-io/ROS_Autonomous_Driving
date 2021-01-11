@@ -23,14 +23,14 @@ def main():
     # Set downscale as the relation between Loomo image/detector expected image
 
     if PERCEPTION_FUNCTION == "Default":
-        detection_image = classes.DetectorConfiguration(width = 80, height = 60, channels = 3, downscale = 1,
+        detection_image = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = 1,
                                                 global_path = '/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/Perception_Functions/saved_model.pth',
-                                                detector = detector.Detector(), load = True, type_input="opencv")
+                                                detector = detector.Detector(), load = True, type_input = "opencv")
     
     elif PERCEPTION_FUNCTION =="Openpifpaf":
-        detection_image = classes.DetectorConfiguration(width = 161, height = 107, channels = 3, downscale = 3.58880,
+        detection_image = classes.DetectorConfig(width = 161, height = 107, channels = 3, downscale = 3.58880,
                                                 global_path = '',
-                                                detector = pifpaf_detector.Detector_pifpaf(), load=False, type_input="pil")
+                                                detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil")
 
 
     # Initialize socket connections

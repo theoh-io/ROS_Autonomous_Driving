@@ -17,50 +17,36 @@ class SlamConfiguration:
         self.saved_map = []
         self.map_state = []
 
-
+    # Add detected object to map or check if its currently inside it
     def mapping(self, state, position_objects_local):
-        position_objects_global = transformations.Local_to_Global(state, position_objects_local, True)
 
         for i in range(len(position_objects_local)):
             distance = utilities.calculate_distance(position_objects_local[i])
 
+            # Check only if inside sensors range 
             if distance <= self.range_sensor:
-                self.check_if_position_in_map(position_objects_global[i], 0, True)
+                position_objects_global = transformations.Local_to_Global(state, position_objects_local, True)
+                self.check_if_position_in_map(position_objects_global[i])
 
         return self.saved_map, self.map_state
 
 
-    def check_if_position_in_map(self, object_global, i=0, first_check=True):
-        idx = i
+    # Check if detection was observed before
+    def check_if_position_in_map(self, object_global):
 
-        for object_map in self.saved_map[idx:]:
-            if idx >= len(self.saved_map):
-                break
+        for idx,object_map in enumerate(self.saved_map):
 
             if len(object_map) > 0:
                 distance = utilities.calculate_distance(object_global, object_map)
 
-            else:
-                return
-
-            if distance <= self.error_sensor:
-                #rospy.loginfo("data associated")
-                #rospy.loginfo(object_global)
-
-                if first_check:
+                # Data Assotiation if two detections in same range
+                if distance <= self.error_sensor:
                     self.saved_map[idx] = [object_global[0], object_global[1], idx+1]
-                    #check_if_position_in_map(self, object_global, idx+1, first_check=False)
 
-                else:
-                    rospy.loginfo("object " + str(idx) + " being removed")
-                    _ = self.saved_map.pop(idx)
+                    return
 
-                return
-
-            idx = idx + 1
-
-        if first_check:
-            self.n_landmarks = len(self.saved_map) + 1
-            self.saved_map.append([object_global[0], object_global[1], self.n_landmarks])
+        # Add new detection to map if it cannot be assotiated
+        self.n_landmarks = len(self.saved_map) + 1
+        self.saved_map.append([object_global[0], object_global[1], self.n_landmarks])
 
 
