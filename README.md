@@ -8,6 +8,10 @@ Mobile Robot                |  ROS Pipeline
 
 </center>
 
+**Paper:** 
+[Design and Implementation for Fully Autonomous Driving Systems](/Design_and_Implementation_for_Fully_Autonomous_Driving_Systems.pdf) [pdf]
+
+
 ## User Guide
 
 ### Quick Start
