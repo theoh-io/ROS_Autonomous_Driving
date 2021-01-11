@@ -18,9 +18,21 @@ Directly based on IMU data from the state variables. It includes an initial cali
 new_states = IMU_data.state_with_initial_calibration(initial_states, states)
 ```
 
+<center>
+
+<img src="./Images/Robot_State_Simple.gif" alt="drawing" width="400"/>
+
+</center>
+
 * **Kalman Filtering** 
 
 Comparing the model of the vehicle with the sensor's data in order to obtain a more reliable estimation. First, the initial calibration is required. Designed by EPFL Racing Team.
+
+<center>
+
+<img src="./Images/Robot_State_EKF.gif" alt="drawing" width="400"/>
+
+</center>
 
 ``` python 
 states = IMU_data.state_with_initial_calibration(initial_states, states)

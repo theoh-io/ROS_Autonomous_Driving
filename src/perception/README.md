@@ -15,10 +15,22 @@ We offer two different detectors, built by VITA laboratory:
 * **Minion (Default)** 
 
 Minion images detector. Reference: https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py
+
+<center>
+
+<img src="./Images/Perception_minion.gif" alt="drawing" width="400"/>
+
+</center>
   
 * **Openpifpaf** 
 
 Human detector. Reference: https://github.com/vita-epfl/openpifpaf
+
+<center>
+
+<img src="./Images/Perception_Openpifpaf.gif" alt="drawing" width="400"/>
+
+</center>
 
 **Comparison between both detectors:**
 

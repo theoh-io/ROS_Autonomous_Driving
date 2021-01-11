@@ -1,5 +1,11 @@
 # Control
 
+<center>
+
+![alt text](./Images/Control.gif)
+
+</center>
+
 ## control.py
 
 <center>
