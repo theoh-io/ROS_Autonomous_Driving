@@ -1,0 +1,11 @@
+###### Requirements without Version Specifiers ######
+python-math
+numpy
+scipy
+matplotlib
+collections-extended
+
+###### Requirements with Version Specifiers ######`
+openpifpaf == 0.11.9
+Cython == 0.29.21
+torch == 1.7.1
