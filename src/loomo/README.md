@@ -49,7 +49,7 @@
 | Parameter               |  Description                                |
 |:---------:              |:-------------------------:                  |
 | PATH_PLANNING_FUNCTION  | Path Planning algorithm used                |
-| dt_path_planning        | Robot State sampling time [s]               |
+| dt_path_planning        | Path Planning sampling time [s]            |
 
 ## Control
 
@@ -58,7 +58,7 @@
 | CONTROL_FUNCTION        | Control algorithm used        |
 | time_horizon_control    | Last control MPC time [s]     |
 | n_states                | Number of states for control  |
-| dt_map_state            | Map State sampling time [s]   |
+| dt_control              | Control sampling time [s]     |
 
 ## Visualization
 
