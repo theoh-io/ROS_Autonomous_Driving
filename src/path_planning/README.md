@@ -1,10 +1,8 @@
 # Path Planning
 
-<center>
-
+<p align="center">
 <img src="./Images/RRTStar.gif" alt="drawing" width="500"/>
-
-</center>
+</p>
 
 ## path_planning.py
 
