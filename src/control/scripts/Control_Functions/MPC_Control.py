@@ -6,13 +6,7 @@ import scipy.optimize as opt
 import math
 import time
 import rospy
-
-class MobileRobot:
-    def __init__(self, wheel_base, v_max):
-        self.wheel_base = wheel_base
-        self.v_max = v_max
-        self.w_max = v_max / wheel_base
-
+import pickle
 
 class MPC:
     def __init__(self, mobile_robot, dt_control, prediction_horizon):
@@ -28,12 +22,17 @@ class MPC:
         self.x_error = 0.0
         self.y_error = 0.0
         self.heading_error = 0.0
+        self.x_error_list = []
+        self.y_error_list = []
+        self.heading_error_list = []
+        self.dv_list = []
+        self.dw_list = []
 
         ####### Weights:
 
         # w_Q + w_dR = 1
-        w_Q = 0.2
-        w_dR = 0.8
+        w_Q = 0.55
+        w_dR = 0.45
 
         # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
         w_Q_ex = 0.3
@@ -126,14 +125,22 @@ class MPC:
         mse_x = np.sum(np.array(err_x)**2)
         mse_y = np.sum(np.array(err_y)**2)
         mse_heading = np.sum(np.array(np.array([e[2] for e in self.xref]) - np.array([e[2] for e in states]))**2)
+        mse_heading_2 = np.sum(np.array(- np.array([e[2] for e in self.xref]) + np.array([e[2] for e in states]))**2)
+        mse_heading = min(mse_heading, mse_heading_2)
 
-        self.x_error = mse_x * self.Q[0]
-        self.y_error = mse_y * self.Q[1]
-        self.heading_error = mse_heading * self.Q[2]
+        v = np.array(u[self.N:])
+        w = np.array(u[:self.N])
+
+        self.x_error = mse_x
+        self.y_error = mse_y
+        self.heading_error = mse_heading
+        self.dv = abs(np.sum(v[1:] - v[:-1]))
+        self.dw = abs(np.sum(w[1:] - w[:-1]))
 
         mse_pos = mse_x * self.Q[0] + mse_y * self.Q[1]+ mse_heading* self.Q[2]
-        mse_du = np.sum(np.dot((u_tot[1:] - u_tot[:-1]) ** 2, self.dR))
-        mse = mse_pos + mse_du
+        mse_dv = np.sum(np.dot((v[1:] - v[:-1]) ** 2, self.dR[0]))
+        mse_dw = np.sum(np.dot((w[1:] - w[:-1]) ** 2, self.dR[1]))
+        mse = mse_pos + mse_dv + mse_dw
 
         return np.linalg.norm(mse)
 
@@ -143,7 +150,6 @@ class MPC:
         const1 = abs(w[1:]-w[:-1]) - np.ones(self.N-1) * self.dw_max
 
         return -const1
-
 
 
 def mpc_control_loomo(mpc, x0, xref):
@@ -164,17 +170,25 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.debug_activated = False
 
     if mpc.debug_activated:
-        rospy.loginfo("Message Control" + str(res.message))
+        mpc.x_error_list.append(mpc.x_error)
+        mpc.y_error_list.append(mpc.y_error)
+        mpc.heading_error_list.append(mpc.heading_error)
+        mpc.dv_list.append(mpc.dv)
+        mpc.dw_list.append(mpc.dw)
+        #rospy.loginfo("Message Control" + str(res.message))
         #rospy.loginfo("CONTROL TIME: " + str(end_time - start_time))
-        rospy.loginfo("CONTROL Mean Squared Error Total: " + str(mse))
-        rospy.loginfo("CONTROL Mean Squared Error x: " + str(mpc.x_error))
-        rospy.loginfo("CONTROL Mean Squared Error y: " + str(mpc.y_error))
-        rospy.loginfo("CONTROL Mean Squared Error heading: " + str(mpc.heading_error))
+        #rospy.loginfo("CONTROL Mean Squared Error Total: " + str(mse))
+        rospy.loginfo("CONTROL Mean Squared Error x: " + str(mpc.x_error_list))
+        rospy.loginfo("CONTROL Mean Squared Error y: " + str(mpc.y_error_list))      
+        rospy.loginfo("CONTROL Mean Squared Error heading: " + str(mpc.heading_error_list))
+        rospy.loginfo("CONTROL Delta speed: " + str(mpc.dv_list))
+        rospy.loginfo("CONTROL Delta yaw rate: " + str(mpc.dw_list))
         #rospy.loginfo("STATE: " + str(x0))
-        rospy.loginfo("PLANNER: " + str(xref))
-        rospy.loginfo("ACTUAL CONTROL COMMANDS: " + str(control_command))
-        rospy.loginfo("NEXT CONTROL COMMANDS: " + str(mpc.u_total_prev))
-        rospy.loginfo("PREDICTED STATES: " + str(mpc.predicted_states))
+        #rospy.loginfo("PLANNER: " + str(xref))
+        #rospy.loginfo("ACTUAL CONTROL COMMANDS: " + str(control_command))
+        #rospy.loginfo("NEXT CONTROL COMMANDS: " + str(mpc.u_total_prev))
+        #rospy.loginfo("PREDICTED STATES: " + str(mpc.predicted_states))
+        pickle.dump([mpc.x_error, mpc.y_error, mpc.heading_error], open("mse.pkl", 'w'))
 
     state = mpc.x0
     states = []
@@ -191,8 +205,3 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.predicted_states = states
 
     return [control_command, mpc.predicted_states]
-
-
-if __name__ == '__main__':
-
-    mpc_control_loomo(MPC(MobileRobot(0.5, 2), ))

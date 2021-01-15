@@ -21,7 +21,7 @@ try:
 except ImportError:
     raise
 
-visualization = False
+visualization = True
 
 # Class for RRT Star planning
 class RRTStar(RRT):
@@ -430,9 +430,6 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
     if not no_obstacles_in_path:
         path = rrt_star.planning(animation=False)
 
-        if visualization:
-            rrt_star.draw_graph()
-
         # If we can't find any feasible path, we use the one calculated in the previous iteration
         if path is None:
             planner = [0.0, 0.0, 0.0]
@@ -478,10 +475,14 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
     # Draw final path
     if visualization:
-        plt.axis([0, 4, -2, 2])
+        plt.clf()
+
+        if not no_obstacles_in_path:
+            rrt_star.draw_graph()
+
         plt.plot(0.0, 0.0, "xr")
         plt.plot(goal[0], goal[1], "xr")
-        plt.axis([0, 4, -2, 2])
+        plt.axis([0, 3, -0.5, 1.5])
 
         if are_obstacles:
 
@@ -491,7 +492,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
         plt.plot([x for (x, y) in path], [y for (x, y) in path], 'k-', lineWidth=1)
         plt.plot([x for [x, y] in smooth_path], [y for [x, y] in smooth_path], 'r--', lineWidth=2)
-        plt.pause(0.0001)
+        plt.pause(0.1)
 
     # Return shortest feasible path
     return mpc_planner, goal

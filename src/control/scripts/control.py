@@ -153,7 +153,6 @@ def main():
         
         values = (control_cmd[0], control_cmd[1])
         socket0.sender(values)
-        print(values)
         
         # Calculate node computation time
         computation_time = time.time() - start

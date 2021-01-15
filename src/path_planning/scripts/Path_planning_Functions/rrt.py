@@ -123,7 +123,6 @@ class RRT(object):
         return rnd
 
     def draw_graph(self, rnd=None):
-        plt.clf()
         # for stopping simulation with the esc key.
         plt.gcf().canvas.mpl_connect(
             'key_release_event',
@@ -138,9 +137,8 @@ class RRT(object):
                 plt.plot(node.path_x, [i for i in node.path_y], "-g", lineWidth=0.5)
 
         plt.axis("equal")
-        plt.axis([0, 4, -2, 2])
+        plt.axis([0, 3, -0.5, 1.5])
         plt.grid(True)
-        plt.pause(0.001)
 
 
     def check_collision(self, node, obstacleList, prediction_activated, current_time):

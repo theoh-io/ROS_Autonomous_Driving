@@ -65,9 +65,10 @@ def main():
     detections = []
     map_detections = []
     past_detections = []
+    positions = [[0.0,0.0]]
 
     rospy.loginfo("Prediction Node Ready")
-    rospy.sleep(1.7)
+    rospy.sleep(3.)
 
     while not rospy.is_shutdown() and prediction_activated:
         start = time.time()

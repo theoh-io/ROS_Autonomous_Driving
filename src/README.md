@@ -65,7 +65,7 @@ We include simple **Linear Predictor** and **TrajNet++** in the pipeline.
 
 The main goal is to design a path for the mobile robot to avoid object collision, follow a person, etc.
 
-In this project, we use Prediction RRT* to avoid object collision going from a start point to a goal, considering the observations' possible motion.
+In this project, we use **Prediction RRT*** to avoid object collision going from a start point to a goal, considering the observations' possible motion.
 
 ## Control
 

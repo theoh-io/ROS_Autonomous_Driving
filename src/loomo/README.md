@@ -20,8 +20,8 @@
 
 ## Robot State
 
-| Parameter           |  Description                                |
-|:---------:          |:-------------------------:                  |
+| Parameter            |  Description                                |
+|:---------:           |:-------------------------:                  |
 | ROBOT_STATE_FUNCTION | Robot State algorithm used                 |
 | dt_robot_state       | Robot State sampling time [s]              |
 
