@@ -26,6 +26,10 @@ loomo = classes.MobileRobot(wheel_base, v_max)
 
 * **Kinematic Model Predictive Control (Default)**
 
+<p align="center">
+<img src="./Images/MPCControl.gif" alt="drawing" width="500"/>
+</p>
+
 First of all, we need to configure the MPC with all parameters:
 
 ```python
