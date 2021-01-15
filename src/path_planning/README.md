@@ -1,9 +1,5 @@
 # Path Planning
 
-<p align="center">
-<img src="./Images/RRTStar.gif" alt="drawing" width="500"/>
-</p>
-
 ## path_planning.py
 
 <center>
@@ -17,6 +13,10 @@
 The algorithm aims to calculate the desired trajectory for the mobile robot from a start to a goal. We have designed in VITA a function based on a well-known method used for obstacle avoidance, RRT*, including the observations' motion over time (predictions). Other methods can be implemented inside the pipeline by changing parameters.
 
 * **Prediction RRT Star (Default)**
+
+<p align="center">
+<img src="./Images/RRTStar.gif" alt="drawing" width="500"/>
+</p>
 
 As we mentioned before, RRT* is an algorithm for obstacle avoidance. Our main goal is not to crash with other objects or humans, depending on the detector used. We have taken into consideration all predictions in order to generate the path.
 
