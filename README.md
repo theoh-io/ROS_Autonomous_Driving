@@ -10,7 +10,7 @@ Mobile Robot                |  ROS Pipeline
 
 ## Paper
 Before adopting the pipeline for a singular purpose, we strongly recommend to read the article that explains our work in detail:
-[Design and Implementation for Fully Autonomous Driving Systems](/Design_and_Implementation_for_Fully_Autonomous_Driving_Systems.pdf) [pdf]
+[Design and Implementation for Fully Autonomous Driving Systems](/Design_and_Implementation_of_a_Pipeline_for_Fully_Autonomous_Driving_Systems.pdf) [pdf]
 
 
 ## User Guide
