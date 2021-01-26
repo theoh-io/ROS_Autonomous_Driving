@@ -12,7 +12,7 @@ import rospy
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/tools')))
+sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
 from tools import classconverter, classes, transformations, utilities
 
 try:
@@ -21,7 +21,7 @@ try:
 except ImportError:
     raise
 
-visualization = True
+visualization = False
 
 # Class for RRT Star planning
 class RRTStar(RRT):

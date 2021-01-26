@@ -7,7 +7,7 @@ import numpy as np
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/tools')))
+sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
 from tools import classconverter, transformations, utilities
 
 
@@ -74,9 +74,9 @@ def callback_prediction(data):
     predictions_global = transformations.Local_to_Global_prediction(x, predictions_local)
 
 
-def visualization_function(predictions, planning, control, state_list, state, goal, gt, all_gt_global):
+def visualization_function(predictions, planning, control, state_list, state, goal, gt, all_gt_global, d):
     plt.clf()
-    plt.plot(goal[0], goal[1], "rx")
+    #plt.plot(goal[0], goal[1], "rx")
     plt.plot([x for (x,y,heading) in state_list], [y for (x,y,heading) in state_list], "r-")
     plt.plot(state[0], state[1], "ro")
     plt.plot([x for (x,y,heading) in all_gt_global], [y for (x,y,heading) in all_gt_global], "b--")
@@ -86,7 +86,6 @@ def visualization_function(predictions, planning, control, state_list, state, go
 
     plt.arrow(state[0], state[1], 0.1*np.cos(state[2]), 0.1*np.sin(state[2]), width=0.02)
 
-    
     if len(predictions) > 0:
 
         for e in predictions:
@@ -106,10 +105,10 @@ def visualization_function(predictions, planning, control, state_list, state, go
 
     if debug_activated:
         rospy.logwarn("-----------------NEW VISUALIZATION-------------------")
-        rospy.loginfo("PLANNER: " + str(planning[:len(control)]))
-        rospy.loginfo("PREDICTED STATES: " + str(control))
-        rospy.loginfo("STATE: " +str(state))
-        rospy.loginfo("OBJECTS: " + str(predictions))
+        #rospy.loginfo("PLANNER: " + str(planning[:len(control)]))
+        #rospy.loginfo("PREDICTED STATES: " + str(control))
+        #rospy.loginfo("STATE: " +str(state))
+        #rospy.loginfo("OBJECTS: " + str(predictions))
 
     plt.axis([0, 3, -0.5, 1.5])
     plt.xlabel("x [m]")
@@ -118,6 +117,14 @@ def visualization_function(predictions, planning, control, state_list, state, go
     plt.plot([x for (x, y, heading) in control], [y for (x, y, heading) in control], 'g-.', linewidth=2)
     plt.pause(0.001)
 
+    new_d = utilities.calculate_distance([state_list[len(state_list)-1][0], state_list[len(state_list)-1][1]],[state_list[len(state_list)-2][0], state_list[len(state_list)-2][1]])
+    
+    if new_d > 0.03:
+        d += new_d
+
+    rospy.loginfo("distance = " + str(d))
+
+    return d
 
 def main():
     # Initialize ROS visualization node
@@ -153,6 +160,7 @@ def main():
     x0 = [0.0, 0.0 , 0.0]
     gt =[0.0, 0.0, 0.0]
     all_gt_global = []
+    d = 0.0
 
     visualization = True
     local = False
@@ -167,7 +175,7 @@ def main():
         if visualization and start_node and not local:
             all_states_global.append(state_global)
             all_gt_global.append(gt)
-            visualization_function(predictions_global, planning_global, control_global, all_states_global, state_global, goal_global, gt, all_gt_global)
+            d = visualization_function(predictions_global, planning_global, control_global, all_states_global, state_global, goal_global, gt, all_gt_global, d)
 
         rate.sleep()
 

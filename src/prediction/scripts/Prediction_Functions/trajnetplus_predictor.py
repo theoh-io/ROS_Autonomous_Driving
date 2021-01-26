@@ -4,6 +4,7 @@ import os
 from collections import OrderedDict, defaultdict
 import argparse
 import pickle
+import time
 
 import numpy as np
 import scipy
@@ -21,21 +22,14 @@ from trajnetplusplustools.data import SceneRow, TrackRow
 
 class TrajNetPredictor():
 
-    def __init__(self, dt=1.0, pred_horizon=10.0, obs_length=5, model_name="LSTM", model="/home/cconejob/trajnet++/trajnetplusplusbaselines/trajnetbaselines/lstm/lstm_directional_one_12_6_rerun.pkl", tag=2):
+    def __init__(self, dt=0.35, pred_horizon=2.0, obs_length=3, model_name="LSTM", model="/home/cconejob/trajnet++/trajnetplusplusbaselines/trajnetbaselines/lstm/lstm_directional_one_12_6_rerun.pkl", tag=2):
         self.unimodal = True
         self.modes = 3
         self.model_name = model_name
-        self.device = torch.device('cpu')
-        self.frame_number = 1
-        self.scene_number = 1
         self.obs_length = obs_length
+        self.pred_length = int(pred_horizon/dt)
         self.dt = dt
-        self.pred_length = int(pred_horizon/self.dt)
-        self.fps = 1./dt
-        self.tag = tag
-        self.tracks_by_frame = defaultdict(list)
-        self.scenes_by_id = dict()
-        
+               
         if 'SGAN' in self.model_name:
             self.predictor = trajnetbaselines.sgan.SGANPredictor.load(model)
             self.goal_flag = self.predictor.model.generator.goal_flag
@@ -44,49 +38,65 @@ class TrajNetPredictor():
             self.predictor = trajnetbaselines.lstm.LSTMPredictor.load(model)
             self.goal_flag = self.predictor.model.goal_flag
 
-        self.predictor.model.to(self.device)
+        device = torch.device('cpu')
+        self.predictor.model.to(device)
         
+    # position_present_past: present and past detections --> [[[x11,y11,1],[x12,y12,1],[x13,y13,1]],[[x21,y21,2],[x22,y22,2],[x23,y23,2]]] (if n_past=3)
     def prediction_function(self, position_present_past):
-        scene = {}
-        track = {}
-        self.frame_number += 1
+        start = time.time()
 
-        for idx,detection in enumerate(position_present_past):
-            scene = {"id": self.frame_number, "p": detection[0][2], "s": self.frame_number, "e": self.frame_number+self.obs_length, "fps": self.fps, "tag": self.tag}
-            
-            row = SceneRow(scene['id'], scene['p'], scene['s'], scene['e'], scene['fps'], scene['tag'])
-            self.scenes_by_id[row.scene] = row
-            
-            for i in range(len(detection)):
-                track = {"f": self.frame_number + i, "p": detection[i][2], "x": detection[i][0], "y": detection[i][1], "pred_number": min(3, len(position_present_past)), "scene_id": self.frame_number}
-        
-                row = TrackRow(track['f'], track['p'], track['x'], track['y'], track['pred_number'], track['scene_id'])
-                self.tracks_by_frame[row.frame].append(row)
+        if len(position_present_past)>0:
 
-        pred_list = self.get_predictions(self.scenes_by_id, self.tracks_by_frame)
+            for i in range(len(position_present_past)):
 
-        return pred_list
+                for j in range(len(position_present_past[i])):
+                    position_present_past[i][j] = position_present_past[i][j][0:2]
 
-    def get_predictions(self, scene, track):
+            position_present_past = np.array(position_present_past)
+            position_present_past = np.transpose(position_present_past, (1, 0, 2))
+            pred_list = self.get_predictions(position_present_past)
+
+            return pred_list
+
+        return []
+
+    def get_predictions(self, xy):
         pred_list = []
-        
-        scene_goals = [np.zeros((len(track), 2))]
-        
-        if len(scene)>0:
-            # Get all predictions in parallel. Faster!
-            pred_list = self.process_scene(self.predictor, self.model_name, track, scene_goals)
+        scene_goal = np.zeros((np.shape(xy)[1], np.shape(xy)[2]))
+        pred_list = self.process_scene(self.predictor, self.model_name, xy, scene_goal)
 
         return pred_list
     
-    def process_scene(self, predictor, model_name, paths, scene_goal):
+    def process_scene(self, predictor, model_name, xy, scene_goal):
         # For each scene, get predictions
-        predictions = self.predictor(paths, scene_goal, n_predict=self.pred_length, obs_length=self.obs_length, modes=self.modes)
+        pred_list = []
+        new_args = Argument()
+        predictions = self.predictor(xy, scene_goal, n_predict=self.pred_length, obs_length=self.obs_length, modes=self.modes, args=new_args)
         
-        return predictions
+        for pred in predictions[0]:
+            if len(pred[0])>0:
+                pred_list.append(pred.tolist())
+
+        for idx, element in enumerate(pred_list):
+
+            for i in range(len(element)):
+
+                if idx == 0:
+                    element[i].append((i+1)*self.dt)
+
+                else:
+                    element[i][0].append((i+1)*self.dt)
+                    element[i] = element[i][0]
+
+        return pred_list
+
+
+class Argument:
+    def __init__(self):
+        self.normalize_scene = False
 
 
 if __name__ == '__main__':
     predictor = TrajNetPredictor()
-    pred_list = predictor.prediction_function([[[0.1, 1.2, 1], [0.2, 1.3, 1]], [[1.2, 1.0, 2], [1.1, 0.9, 2]]])
+    pred_list = predictor.prediction_function([[[0.1, 1.2], [0.2, 1.3],[0.3, 1.4]],[[0.6, 1.9], [0.6, 2.3],[0.7, 2.4]]])
     print(pred_list)
-

@@ -8,7 +8,7 @@ import time
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/tools')))
+sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
 from tools import classconverter, classes, transformations, utilities
 
 
@@ -58,6 +58,7 @@ def main():
     
     elif PREDICTION_FUNCTION == "Trajnet":
         predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
+        
 
     # Initialize prediction variables
     global map_detections

@@ -31,8 +31,8 @@ class MPC:
         ####### Weights:
 
         # w_Q + w_dR = 1
-        w_Q = 0.55
-        w_dR = 0.45
+        w_Q = 0.5
+        w_dR = 0.5
 
         # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
         w_Q_ex = 0.3
@@ -49,12 +49,12 @@ class MPC:
 
         # Maximum admissible error in the states:
         ex_max = 0.2 # m
-        ey_max = 0.2 # m
+        ey_max = 0.1 # m
         eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
 
         # Maximum output rate:
-        self.dv_max = 0.25 * self.dt # m/s
-        self.dw_max = 0.5 * self.dt # rad/s
+        self.dv_max = mobile_robot.v_max * self.dt # m/s
+        self.dw_max = mobile_robot.w_max * self.dt # rad/s
 
 
         ####### Q and dR matrices:
@@ -167,7 +167,6 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.u_total_prev = res.x
 
     mse = mpc.objective_function(mpc.u_total_prev)
-    mpc.debug_activated = False
 
     if mpc.debug_activated:
         mpc.x_error_list.append(mpc.x_error)
@@ -188,7 +187,6 @@ def mpc_control_loomo(mpc, x0, xref):
         #rospy.loginfo("ACTUAL CONTROL COMMANDS: " + str(control_command))
         #rospy.loginfo("NEXT CONTROL COMMANDS: " + str(mpc.u_total_prev))
         #rospy.loginfo("PREDICTED STATES: " + str(mpc.predicted_states))
-        pickle.dump([mpc.x_error, mpc.y_error, mpc.heading_error], open("mse.pkl", 'w'))
 
     state = mpc.x0
     states = []

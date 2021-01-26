@@ -11,12 +11,11 @@ class LinealPredictor():
 
     def prediction_function(self, present_past_detections):
         list_predictions = []
-        t = np.linspace(0.0, self.pred_horizon, 3)
+        t = np.linspace(0.0, self.pred_horizon, int(self.pred_horizon/self.dt))
 
         for detection in present_past_detections:
             list_detection = []
             past_number = len(detection)
-            idx = detection[past_number-1][2]
 
             dx_1 = detection[past_number-1][0]-detection[past_number-2][0]
             dy_1 = detection[past_number-1][1]-detection[past_number-2][1]
@@ -28,7 +27,7 @@ class LinealPredictor():
             y_predicted = detection[past_number-1][1] + v_y*t
 
             for i2 in range(len(x_predicted)):
-                list_detection.append([x_predicted[i2], y_predicted[i2], t[i2], idx])
+                list_detection.append([x_predicted[i2], y_predicted[i2], t[i2]])
 
             list_predictions.append(list_detection)
 

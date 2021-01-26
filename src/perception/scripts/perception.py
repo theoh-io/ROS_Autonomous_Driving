@@ -7,7 +7,7 @@ import time
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/tools')))
+sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
 from tools import classes
 
 
@@ -24,7 +24,7 @@ def main():
 
     if PERCEPTION_FUNCTION == "Default":
         detection_image = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = 1,
-                                                global_path = '/home/cconejob/StudioProjects/socket-loomo/src/perception/scripts/Perception_Functions/saved_model.pth',
+                                                global_path = '/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth',
                                                 detector = detector.Detector(), load = True, type_input = "opencv")
     
     elif PERCEPTION_FUNCTION =="Openpifpaf":
