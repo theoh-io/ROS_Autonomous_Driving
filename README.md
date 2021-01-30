@@ -80,7 +80,7 @@ We have built a bash script and a requirements.txt file with all the modules req
 ```shell
 sudo chmod +x dependencies_ROS_AD_Pipeline.sh
 ./dependencies_ROS_AD_Pipeline.sh
-sudo -H pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 **Ubuntu 16.04**

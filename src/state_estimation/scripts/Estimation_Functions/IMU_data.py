@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # VITA, EPFL
+import rospy
 import numpy as np
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
+abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools.classconverter import *
 from tools.classes import *
 from tools.transformations import *

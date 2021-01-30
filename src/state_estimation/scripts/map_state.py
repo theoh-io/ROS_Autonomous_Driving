@@ -78,7 +78,7 @@ def main():
     
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
-            map_total = [[0.75,0.3,1],[1.3,-0.4,2],[2.2, -0.4,3]]
+            
         # Send state estimation topics via ROS
         if map_state_activated:
             sender.send(map_total, map_state)

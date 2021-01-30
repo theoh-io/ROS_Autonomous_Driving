@@ -8,7 +8,8 @@ import time
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
+abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
 
 
@@ -39,6 +40,7 @@ def main():
     prediction_activated = rospy.get_param("/prediction_activated")
     mapping_activated = rospy.get_param("/mapping_activated")
     PREDICTION_FUNCTION = rospy.get_param("/PREDICTION_FUNCTION")
+    path_model = rospy.get_param("/model_prediction_path")
 
     if prediction_activated and not mapping_activated:
         ip_address = rospy.get_param("/ip_address")
@@ -57,7 +59,7 @@ def main():
         predictor = linear_prediction.LinealPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
     
     elif PREDICTION_FUNCTION == "Trajnet":
-        predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations)
+        predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations, model=path_model)
         
 
     # Initialize prediction variables

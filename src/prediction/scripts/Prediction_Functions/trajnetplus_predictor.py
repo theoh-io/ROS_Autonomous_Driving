@@ -22,7 +22,7 @@ from trajnetplusplustools.data import SceneRow, TrackRow
 
 class TrajNetPredictor():
 
-    def __init__(self, dt=0.35, pred_horizon=2.0, obs_length=3, model_name="LSTM", model="/home/cconejob/trajnet++/trajnetplusplusbaselines/trajnetbaselines/lstm/lstm_directional_one_12_6_rerun.pkl", tag=2):
+    def __init__(self, dt=0.35, pred_horizon=2.0, obs_length=3, model_name="LSTM", model="", tag=2):
         self.unimodal = True
         self.modes = 3
         self.model_name = model_name

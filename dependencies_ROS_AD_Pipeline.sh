@@ -1,94 +1,14 @@
 #!/bin/bash
 
-# PYTHON 3.7
-sudo apt update
-sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
-cd /tmp
-wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-tar -xf Python-3.7.2.tar.xz
-cd Python-3.7.2
-./configure --enable-optimizations
-make -j 1
-sudo make altinstall
-
 # ROS KINETIC
 
-echo ""
-echo "[Note] Target OS version  >>> Ubuntu 16.04.x (xenial) or Linux Mint 18.x"
-echo "[Note] Target ROS version >>> ROS Kinetic Kame"
-echo "[Note] Catkin workspace   >>> $HOME/catkin_ws"
-echo ""
-echo "PRESS [ENTER] TO CONTINUE THE INSTALLATION"
-echo "IF YOU WANT TO CANCEL, PRESS [CTRL] + [C]"
-read
-
-name_os_version=${name_os_version:="xenial"}
-name_ros_version=${name_ros_version:="kinetic"}
-name_catkin_workspace=${name_catkin_workspace:="catkin_ws"}
-
-sudo apt-get update -y
-sudo apt-get upgrade -y
-
-sudo apt-get install -y chrony ntpdate build-essential
-sudo ntpdate ntp.ubuntu.com
-
-if [ ! -e /etc/apt/sources.list.d/ros-latest.list ]; then
-  sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${name_os_version} main\" > /etc/apt/sources.list.d/ros-latest.list"
-fi
-
-roskey=`apt-key list | grep "Open Robotics"`
-if [ -z "$roskey" ]; then
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-fi
-
-roskey=`apt-key list | grep "Open Robotics"`
-if [ -n "$roskey" ]; then
-  echo "[ROS key exists in the list]"
-else
-  echo "[Failed to receive the ROS key, aborts the installation]"
-  exit 0
-fi
-
-sudo apt-get update -y
-sudo apt-get upgrade -y
-
-sudo apt-get install -y ros-$name_ros_version-desktop-full ros-$name_ros_version-rqt-*
-
-sudo sh -c "rosdep init"
-rosdep update
-
-source /opt/ros/$name_ros_version/setup.sh
-sudo apt-get install -y python-rosinstall git
-
-mkdir -p $HOME/$name_catkin_workspace/src
-cd $HOME/$name_catkin_workspace/src
-catkin_init_workspace
-cd $HOME/$name_catkin_workspace
-catkin_make
-
-sh -c "echo \"alias eb='nano ~/.bashrc'\" >> ~/.bashrc"
-sh -c "echo \"alias sb='source ~/.bashrc'\" >> ~/.bashrc"
-sh -c "echo \"alias gs='git status'\" >> ~/.bashrc"
-sh -c "echo \"alias gp='git pull'\" >> ~/.bashrc"
-sh -c "echo \"alias cw='cd ~/$name_catkin_workspace'\" >> ~/.bashrc"
-sh -c "echo \"alias cs='cd ~/$name_catkin_workspace/src'\" >> ~/.bashrc"
-sh -c "echo \"alias cm='cd ~/$name_catkin_workspace && catkin_make'\" >> ~/.bashrc"
-
-sh -c "echo \"source /opt/ros/$name_ros_version/setup.bash\" >> ~/.bashrc"
-sh -c "echo \"source ~/$name_catkin_workspace/devel/setup.bash\" >> ~/.bashrc"
-
-sh -c "echo \"export ROS_MASTER_URI=http://localhost:11311\" >> ~/.bashrc"
-sh -c "echo \"export ROS_HOSTNAME=localhost\" >> ~/.bashrc"
-
-source $HOME/.bashrc
-
-
-# OPENCV 3.3
-
-sudo apt-get -y update
-sudo apt-get -y upgrade
-sudo apt-get -y dist-upgrade
-sudo apt-get -y autoremove
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+sudo apt update
+sudo apt install ros-melodic-desktop-full
+echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
 
 # Build tools:
 sudo apt-get install -y build-essential cmake
@@ -144,12 +64,88 @@ source trajnetv/bin/activate
 
 ## Download Requirements
 cd trajnetplusplusbaselines/ 
-sudo -H pip install -e .
+pip install -e .
 
 cd ../trajnetplusplusdataset/ 
-sudo -H pip install -e .
-sudo -H pip install -e '.[test, plot]'
+pip install -e .
+pip install -e '.[test, plot]'
 
 
 # Other common modules
-sudo -H python3 -m pip install Pillow
+python3 -m pip install Pillow
+
+
+# without sudo:
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python3 get-pip.py --force-reinstall
+pip install vcstools
+pip install -U rosdep
+pip install -U wstool
+pip install rosinstallrosdep update
+
+apt-get download libboost-all-dev libgtest-dev libpcl-dev libboost-thread-dev python3-rospkg libboost-filesystem-dev hddtemp python-rospkg python3-paramiko python-mock 
+apt-get download python-pyqt5.qtopengl libyaml-cpp-dev uuid-dev python3-empy libconsole-bridge-dev liburdfdom-dev liburdfdom-headers-dev libtinyxml-dev libtinyxml2-dev
+apt-get download python3-mock libgpgme-dev python-opengl libcppunit-dev python-wxtools pyqt5-dev python3-pyqt5 python3-pyqt5.qtsvg python3-sip-dev libboost-date-time-dev 
+apt-get download python3-pycryptodome python3-gnupg python3-rospkg-modules python3-catkin-pkg-modules python3-rosdep-modules python3-coverage python3-pydot python3-pygraphviz
+apt-get download gazebo9 libgazebo9-dev python3-defusedxml sbcl libpoco-dev libgtk2.0-dev libfltk1.3-dev libtool-bin python-pyqt5.qtwebkit python3-netifaces python-sip-dev libapr1-dev
+apt-get download libaprutil1-dev libboost-regex-dev libboost-system-dev liblog4cxx-dev libassimp-dev libogre-1.9-dev python3-catkin-pkg google-mock python3-nose python-catkin-pkg
+
+dpkg -x gazebo9_9.0.0+dfsg5-3ubuntu1+ppa2_amd64.deb dir
+dpkg -x python-mock_2.0.0-3_all.deb dir
+dpkg -x google-mock_1.8.0-6_amd64.deb dir
+dpkg -x python-opengl_3.1.0+dfsg-1_all.deb dir
+dpkg -x hddtemp_0.3-beta15-53_amd64.deb dir                    
+dpkg -x python-pyqt5.qtopengl_5.10.1+dfsg-1ubuntu2_amd64.deb dir
+dpkg -x libapr1-dev_1.6.3-2_amd64.deb dir                      
+dpkg -x python-pyqt5.qtwebkit_5.10.1+dfsg-1ubuntu2_amd64.deb dir
+dpkg -x libaprutil1-dev_1.6.1-2_amd64.deb dir                  
+dpkg -x python-rospkg_1.2.9-100_all.deb dir
+dpkg -x libassimp-dev_4.1.0~dfsg-3_amd64.deb dir               
+dpkg -x python-sip-dev_4.19.7+dfsg-1ubuntu0.1_amd64.deb dir
+dpkg -x libboost-all-dev_1.65.1.0ubuntu1_amd64.deb dir         
+dpkg -x python-wxtools_3.0.2.0+dfsg-7_all.deb dir
+dpkg -x libboost-date-time-dev_1.65.1.0ubuntu1_amd64.deb dir   
+dpkg -x python3-catkin-pkg-modules_0.4.23-1_all.deb dir
+dpkg -x libboost-filesystem-dev_1.65.1.0ubuntu1_amd64.deb dir  
+dpkg -x python3-catkin-pkg_0.4.23-100_all.deb dir
+dpkg -x libboost-regex-dev_1.65.1.0ubuntu1_amd64.deb dir       
+dpkg -x python3-coverage_4.5+dfsg.1-3_amd64.deb dir
+dpkg -x libboost-system-dev_1.65.1.0ubuntu1_amd64.deb dir      
+dpkg -x python3-defusedxml_0.5.0-1ubuntu1_all.deb dir
+dpkg -x libboost-thread-dev_1.65.1.0ubuntu1_amd64.deb dir      
+dpkg -x python3-empy_3.3.2-1build1_all.deb dir
+dpkg -x libconsole-bridge-dev_0.4.0+dfsg-2_amd64.deb dir       
+dpkg -x python3-gnupg_0.4.1-1ubuntu1.18.04.1_all.deb dir
+dpkg -x libcppunit-dev_1.14.0-3_amd64.deb dir                  
+dpkg -x python3-mock_2.0.0-3_all.deb dir
+dpkg -x libfltk1.3-dev_1.3.4-6_amd64.deb dir                   
+dpkg -x python3-netifaces_0.10.4-0.1build4_amd64.deb dir
+dpkg -x libgazebo9-dev_9.0.0+dfsg5-3ubuntu1+ppa2_amd64.deb dir 
+dpkg -x python3-nose_1.3.7-3_all.deb dir
+dpkg -x libgpgme-dev_1.10.0-1ubuntu2_amd64.deb dir             
+dpkg -x python3-paramiko_2.0.0-1ubuntu1.2_all.deb dir
+dpkg -x libgtest-dev_1.8.0-6_amd64.deb dir                     
+dpkg -x python3-pycryptodome_3.4.7-1ubuntu1_amd64.deb dir
+dpkg -x libgtk2.0-dev_2.24.32-1ubuntu1_amd64.deb dir           
+dpkg -x python3-pydot_1.2.3-1_all.deb dir
+dpkg -x liblog4cxx-dev_0.10.0-13ubuntu2_amd64.deb dir          
+dpkg -x python3-pygraphviz_1.4~rc1-1build2.1_amd64.deb dir
+dpkg -x libogre-1.9-dev_1.9.0+dfsg1-10_amd64.deb dir           
+dpkg -x python3-pyqt5.qtsvg_5.10.1+dfsg-1ubuntu2_amd64.deb dir
+dpkg -x libpcl-dev_1.8.1+dfsg1-2ubuntu2.18.04.1_amd64.deb dir  
+dpkg -x python3-pyqt5_5.10.1+dfsg-1ubuntu2_amd64.deb dir
+dpkg -x libpoco-dev_1.8.0.1-1ubuntu4_amd64.deb dir             
+dpkg -x python3-rosdep-modules_0.20.0-1_all.deb dir
+dpkg -x libtinyxml-dev_2.6.2-4_amd64.deb dir                   
+dpkg -x python3-rospkg-modules_1.2.9-1_all.deb dir
+dpkg -x libtinyxml2-dev_6.0.0+dfsg-1_amd64.deb dir             
+dpkg -x python3-rospkg_1.2.9-100_all.deb dir
+dpkg -x libtool-bin_2.4.6-2_amd64.deb dir                      
+dpkg -x python3-sip-dev_4.19.7+dfsg-1ubuntu0.1_amd64.deb dir
+dpkg -x liburdfdom-dev_1.0.0-2ubuntu0.1_amd64.deb dir          
+dpkg -x sbcl_2%3a1.4.5-1_amd64.deb dir
+dpkg -x liburdfdom-headers-dev_1.0.0-1ubuntu0.1_amd64.deb dir
+dpkg -x libyaml-cpp-dev_0.5.2-4ubuntu1_amd64.deb dir           
+dpkg -x uuid-dev_2.31.1-0.4ubuntu3.7_amd64.deb dir
+dpkg -x python-catkin-pkg_0.4.23-100_all.deb dir

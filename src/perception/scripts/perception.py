@@ -7,7 +7,8 @@ import time
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath('/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools')))
+abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classes
 
 
@@ -17,14 +18,14 @@ def main():
     dt_perception = rospy.get_param("/dt_perception")
     rate = rospy.Rate(int(1/dt_perception))
     PERCEPTION_FUNCTION = rospy.get_param("/PERCEPTION_FUNCTION")
-
+    path_model = rospy.get_param("/model_perception_path")
     # Initialize Detector Configuration
     # Set width, height and channel values for the received image --> Loomo image dimensions: 80x60x3
     # Set downscale as the relation between Loomo image/detector expected image
 
     if PERCEPTION_FUNCTION == "Default":
         detection_image = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = 1,
-                                                global_path = '/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth',
+                                                global_path = path_model,
                                                 detector = detector.Detector(), load = True, type_input = "opencv")
     
     elif PERCEPTION_FUNCTION =="Openpifpaf":
