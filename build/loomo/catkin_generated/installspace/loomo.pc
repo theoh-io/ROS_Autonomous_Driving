@@ -1,8 +1,0 @@
-prefix=/home/vita-w11/Autonomous_driving_pipeline/install
-
-Name: loomo
-Description: Description of loomo
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

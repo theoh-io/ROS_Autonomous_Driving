@@ -1,8 +1,0 @@
-prefix=/home/vita-w11/Autonomous_driving_pipeline/devel
-
-Name: prediction
-Description: Description of prediction
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

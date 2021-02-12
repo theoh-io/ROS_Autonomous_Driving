@@ -1,2 +1,0 @@
-set(msg_types_MESSAGE_FILES "/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/ControlCmd.msg;/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/State.msg;/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/StateArray.msg;/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/Position.msg;/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/PositionArray.msg;/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/msg/TrajectoryArray.msg")
-set(msg_types_SERVICE_FILES "")
