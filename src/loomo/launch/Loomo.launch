@@ -1,18 +1,22 @@
 <launch>
 
     <!-- global parameters -->
-    <param name="ip_address" value="192.168.43.84" />
+    <param name="ip_address" value="128.179.159.10" />
     <param name="abs_path_to_tools" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="0.5" />
     <param name="wheel_base" value="0.5" />
-    <param name="speed" value="0.5" />
+    <param name="speed" value="0.25" />
     <param name="goal_x" value="3.0" />
     <param name="goal_y" value="1.0" />
+    <param name="workarea_x_min" value="-2.0" />
+    <param name="workarea_x_max" value="5.0" />
+    <param name="workarea_y_min" value="-1.0" />
+    <param name="workarea_y_max" value="1.0" />
 
     <!-- Percpetion: Default, Openpifpaf -->
     <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
     <param name="model_perception_path" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
-    <param name="dt_perception" value="0.15" />
+    <param name="dt_perception" value="0.25" />
 
     <!-- Robot_State: Default, EPFL_Driverless -->
     <param name="ROBOT_STATE_FUNCTION" value="Default" />
@@ -32,7 +36,7 @@
     <param name="past_observations" value="3" />
     <param name="dt_prediction" value="0.15" />
 
-    <!-- Path_Planning: Default -->
+    <!-- Path_Planning: Default, CHUV -->
     <param name="PATH_PLANNING_FUNCTION" value="Default" />
     <param name="dt_path_planning" value="0.9" />
     <param name="time_horizon_path_planning" value="2.0" />

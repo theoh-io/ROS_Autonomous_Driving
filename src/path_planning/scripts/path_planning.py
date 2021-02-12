@@ -2,9 +2,9 @@
 # VITA, EPFL
 import rospy
 from msg_types.msg import Position, PositionArray, TrajectoryArray, State, StateArray
-from Path_planning_Functions import RRT_star
+from Path_planning_Functions import RRT_star, CHUV_Planner
 import time
-from tools import classconverter, classes, transformations
+from tools import classconverter, classes, transformations, utilities
 
 
 class Sender(object):
@@ -56,6 +56,7 @@ def main():
     sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     prediction_activated = rospy.get_param("/prediction_activated")
     mapping_activated = rospy.get_param("/mapping_activated")
+    PATH_PLANNING_FUNCTION = rospy.get_param("/PATH_PLANNING_FUNCTION")
 
     if prediction_activated:
         sub_prediction = rospy.Subscriber('/Prediction/predicted_trajectories_global', TrajectoryArray, callback_prediction, queue_size = 1)
@@ -76,9 +77,13 @@ def main():
     v_max = rospy.get_param("/v_max") # m/s
     goal_x = rospy.get_param("/goal_x")
     goal_y = rospy.get_param("/goal_y")
+    work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
     time_horizon_control = rospy.get_param("/time_horizon_control")
     N = int(time_horizon_control/dt_control)
     loomo = classes.MobileRobot(wheel_base, v_max)
+
+    if PATH_PLANNING_FUNCTION == "CHUV":
+        planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, dt_control)
 
     # Initialize path planning variables
     global array_predictions, array_mapping, state
@@ -111,13 +116,18 @@ def main():
         x0 = state
         goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
         array_total = array_predictions + array_mapping
-
+        
         # Actual detection movement prediction
         if len(array_total) > 0:
             objects_now = transformations.Global_to_Local_prediction(x0, array_total)
 
+        # CHUV Planner
+        if PATH_PLANNING_FUNCTION == "CHUV":
+            path = planner_class.path_planning(objects_now)
+
         # Obstacle avoidance path calculation
-        path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, prediction_activated=prediction_activated)
+        else:
+            path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
         if len(path)>N:
             # Send commands to the ROS Structure

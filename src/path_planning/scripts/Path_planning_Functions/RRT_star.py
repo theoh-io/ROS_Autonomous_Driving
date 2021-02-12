@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # VITA, EPFL
-"""
-Path planning Sample Code with RRT*
-author: Atsushi Sakai(@Atsushi_twi)
-"""
+
 from scipy.interpolate import UnivariateSpline
 import math
 import matplotlib.pyplot as plt
@@ -17,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
 
 try:
-    from rrt import RRT
+    from .rrt import RRT
 
 except ImportError:
     raise
@@ -244,6 +241,7 @@ class RRTStar(RRT):
                 node.cost = self.calc_new_cost(parent_node, node)
                 self.propagate_cost_to_leaves(node)
 
+
 def line_collision_check(first, second, obstacleList, current_time):
     # Line Equation
     x1 = first[0]
@@ -289,54 +287,12 @@ def line_collision_check(first, second, obstacleList, current_time):
 
     return True  # OK
 
-# Calculate distance between 2 points
-def distance_AB(A, B):
-
-    return math.sqrt((A[0]-B[0])**2 + (A[1]-B[1])**2)
 
 # Calculate the area of a triangle
 def triangleArea(a,b,c):
 
     return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
 
-# Apply Kinematic Restrictions to the planner, and adapt it for MPC.
-def MPC_Planner_restrictions(mobile_robot, points, v, t):
-    e = v*t
-    plan = [[0.0, 0.0, 0.0, 0.0]]
-    dist = 0.0
-    it = 2
-    x_ant = 0.0
-    y_ant = 0.0
-    heading_ant = 0.0
-
-    for i in range(1,80):
-        
-        while dist < e and it < len(points):
-            distAB = distance_AB(points[it-2], points[it-1])
-            dist = dist + distAB
-            it = it + 1
-
-        if dist >= e:
-            it = it - 1
-            d = dist - e
-            prop = d/distAB
-            x = points[it-1][0] - prop*(points[it-1][0] - points[it-2][0])
-            y = points[it-1][1] - prop*(points[it-1][1] - points[it-2][1])
-            heading = math.atan2((y - y_ant),(x - x_ant))
-
-            if abs(heading-heading_ant) > mobile_robot.w_max * t:
-                heading = heading_ant + np.sign(heading-heading_ant) * mobile_robot.w_max * t
-                x = x_ant + e * np.cos(heading)
-                y = y_ant + e * np.sin(heading)
-
-            plan.append([x, y, heading, v])
-            dist = d
-            x_ant = x
-            y_ant = y
-            heading_ant = heading
-            it = it + 1
-
-    return plan
 
 # If we need to rotate the mobile robot before going forward
 def add_correction(mobile_robot, dt, start, goal):
@@ -361,7 +317,8 @@ def add_correction(mobile_robot, dt, start, goal):
 
     return added_points
 
-def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0.0, 0.0], N=1, prediction_activated=False):
+
+def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0.0, 0.0], N=1, work_area=[], prediction_activated=False):
 
     obstacle_list = []
     are_obstacles = True
@@ -394,7 +351,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
     # If we found obstacles in this iteration
     if are_obstacles:
         # Set Initial parameters for RRT Star
-        rrt_star = RRTStar(mobile_robot, start=[0, 0], goal=[goal[0], goal[1]], obstacle_list=obstacle_list, rand_area=[0, goal[0], -1, 1], prediction_activated=prediction_activated, speed=speed)
+        rrt_star = RRTStar(mobile_robot, start=[0, 0], goal=[goal[0], goal[1]], obstacle_list=obstacle_list, rand_area=work_area, prediction_activated=prediction_activated, speed=speed)
 
     path = []
     plt.clf()
@@ -466,7 +423,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
         smooth_path = transformations.rotate(smooth_path_rotated, -goal_angle)
 
-    mpc_planner = MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
+    mpc_planner = utilities.MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
 
     # Correct only the angle if it is too high --> Only yaw rate commands to turn the vehicle
     if abs(goal_angle)> 90*math.pi/180:

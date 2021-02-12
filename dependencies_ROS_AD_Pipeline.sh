@@ -58,10 +58,6 @@ cd trajnet++
 git clone https://github.com/vita-epfl/trajnetplusplusdataset.git
 git clone https://github.com/vita-epfl/trajnetplusplusbaselines.git
 
-## Make virtual environment
-virtualenv -p /usr/bin/python3.6 trajnetv
-source trajnetv/bin/activate
-
 ## Download Requirements
 cd trajnetplusplusbaselines/ 
 pip install -e .
@@ -73,7 +69,12 @@ pip install -e '.[test, plot]'
 
 # Other common modules
 python3 -m pip install Pillow
-
+python3 -m pip install pyyaml
+pip install trajnetplusplustools
+pip install rospkg
+pip install opencv-python
+pip install netifaces
+pip install tqdm
 
 # without sudo:
 
@@ -83,6 +84,7 @@ pip install vcstools
 pip install -U rosdep
 pip install -U wstool
 pip install rosinstallrosdep update
+pip install pyyaml
 
 apt-get download libboost-all-dev libgtest-dev libpcl-dev libboost-thread-dev python3-rospkg libboost-filesystem-dev hddtemp python-rospkg python3-paramiko python-mock 
 apt-get download python-pyqt5.qtopengl libyaml-cpp-dev uuid-dev python3-empy libconsole-bridge-dev liburdfdom-dev liburdfdom-headers-dev libtinyxml-dev libtinyxml2-dev

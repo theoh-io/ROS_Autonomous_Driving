@@ -76,6 +76,7 @@ def main():
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
     
+            list_positions = [[1.1,2.0,1],[2.1,0.5,2],[3.0,2.1,3]]
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
             

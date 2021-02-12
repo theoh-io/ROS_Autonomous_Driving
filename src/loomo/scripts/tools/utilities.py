@@ -80,3 +80,43 @@ def add_detections_to_past(pos_detections, past_pos_detections, past_number): # 
             past_for_predictions.append(list(past_pos_detections[idx]))
 
     return past_pos_detections, past_for_predictions
+
+
+# Apply Kinematic Restrictions to the planner, and adapt it for MPC.
+def MPC_Planner_restrictions(mobile_robot, points, v, t):
+    e = v*t
+    plan = [[0.0, 0.0, 0.0, 0.0]]
+    dist = 0.0
+    it = 2
+    x_ant = 0.0
+    y_ant = 0.0
+    heading_ant = 0.0
+
+    for i in range(1,80):
+        
+        while dist < e and it < len(points):
+            distAB = calculate_distance(points[it-2], points[it-1])
+            dist = dist + distAB
+            it = it + 1
+
+        if dist >= e:
+            it = it - 1
+            d = dist - e
+            prop = d/distAB
+            x = points[it-1][0] - prop*(points[it-1][0] - points[it-2][0])
+            y = points[it-1][1] - prop*(points[it-1][1] - points[it-2][1])
+            heading = math.atan2((y - y_ant),(x - x_ant))
+
+            if abs(heading-heading_ant) > mobile_robot.w_max * t:
+                heading = heading_ant + np.sign(heading-heading_ant) * mobile_robot.w_max * t
+                x = x_ant + e * np.cos(heading)
+                y = y_ant + e * np.sin(heading)
+
+            plan.append([x, y, heading, v])
+            dist = d
+            x_ant = x
+            y_ant = y
+            heading_ant = heading
+            it = it + 1
+
+    return plan
