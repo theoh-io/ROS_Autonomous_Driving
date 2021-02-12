@@ -20,7 +20,7 @@
   (:init
    (&key
     ((:stamp __stamp) (instance ros::time :init))
-    ((:desired_path __desired_path) (let (r) (dotimes (i 0) (push (instance msg_types::State :init) r)) r))
+    ((:desired_path __desired_path) ())
     ((:sync_predictions __sync_predictions) (instance msg_types::TrajectoryArray :init))
     ((:initial_state __initial_state) (instance msg_types::State :init))
     )

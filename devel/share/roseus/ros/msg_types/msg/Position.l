@@ -50,8 +50,8 @@
    (&optional __id)
    (if __id (setq _id __id)) _id)
   (:actual
-   (&optional __actual)
-   (if __actual (setq _actual __actual)) _actual)
+   (&optional (__actual :null))
+   (if (not (eq __actual :null)) (setq _actual __actual)) _actual)
   (:serialization-length
    ()
    (+

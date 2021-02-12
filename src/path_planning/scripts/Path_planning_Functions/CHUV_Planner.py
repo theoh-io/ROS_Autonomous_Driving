@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # VITA, EPFL
 
 from scipy.interpolate import UnivariateSpline

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # VITA, EPFL
 from msg_types.msg import PositionArray, Position, TrajectoryArray, State, StateArray, ControlCmd
 from copy import deepcopy

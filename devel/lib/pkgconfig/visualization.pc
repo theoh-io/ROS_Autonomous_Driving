@@ -1,4 +1,4 @@
-prefix=/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel
+prefix=/home/vita-w11/Autonomous_driving_pipeline/devel
 
 Name: visualization
 Description: Description of visualization

@@ -1,4 +1,4 @@
-prefix=/home/cconejob/StudioProjects/Autonomous_driving_pipeline/install
+prefix=/home/vita-w11/Autonomous_driving_pipeline/install
 
 Name: path_planning
 Description: Description of path_planning

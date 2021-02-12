@@ -67,14 +67,14 @@ set(control_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(control_SOURCE_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/control)
-  set(control_DEVEL_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel)
+  set(control_SOURCE_PREFIX /home/vita-w11/Autonomous_driving_pipeline/src/control)
+  set(control_DEVEL_PREFIX /home/vita-w11/Autonomous_driving_pipeline/devel)
   set(control_INSTALL_PREFIX "")
   set(control_PREFIX ${control_DEVEL_PREFIX})
 else()
   set(control_SOURCE_PREFIX "")
   set(control_DEVEL_PREFIX "")
-  set(control_INSTALL_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/install)
+  set(control_INSTALL_PREFIX /home/vita-w11/Autonomous_driving_pipeline/install)
   set(control_PREFIX ${control_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/cconejob/StudioProjects/Autonomous_driving_pipeline/install/lib;/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/vita-w11/Autonomous_driving_pipeline/install/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

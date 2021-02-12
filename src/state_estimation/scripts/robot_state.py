@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # VITA, EPFL
 import rospy
 from Estimation_Functions import IMU_data, motion_estimation_robot

@@ -79,6 +79,23 @@ ros::message_operations::Printer< ::msg_types::StateArray_<ContainerAllocator> >
 return s;
 }
 
+
+template<typename ContainerAllocator1, typename ContainerAllocator2>
+bool operator==(const ::msg_types::StateArray_<ContainerAllocator1> & lhs, const ::msg_types::StateArray_<ContainerAllocator2> & rhs)
+{
+  return lhs.stamp == rhs.stamp &&
+    lhs.desired_path == rhs.desired_path &&
+    lhs.sync_predictions == rhs.sync_predictions &&
+    lhs.initial_state == rhs.initial_state;
+}
+
+template<typename ContainerAllocator1, typename ContainerAllocator2>
+bool operator!=(const ::msg_types::StateArray_<ContainerAllocator1> & lhs, const ::msg_types::StateArray_<ContainerAllocator2> & rhs)
+{
+  return !(lhs == rhs);
+}
+
+
 } // namespace msg_types
 
 namespace ros
@@ -88,23 +105,7 @@ namespace message_traits
 
 
 
-// BOOLTRAITS {'IsFixedSize': False, 'IsMessage': True, 'HasHeader': False}
-// {'msg_types': ['/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types/msg', '/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types/msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg']}
 
-// !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
-
-
-
-
-template <class ContainerAllocator>
-struct IsFixedSize< ::msg_types::StateArray_<ContainerAllocator> >
-  : FalseType
-  { };
-
-template <class ContainerAllocator>
-struct IsFixedSize< ::msg_types::StateArray_<ContainerAllocator> const>
-  : FalseType
-  { };
 
 template <class ContainerAllocator>
 struct IsMessage< ::msg_types::StateArray_<ContainerAllocator> >
@@ -114,6 +115,16 @@ struct IsMessage< ::msg_types::StateArray_<ContainerAllocator> >
 template <class ContainerAllocator>
 struct IsMessage< ::msg_types::StateArray_<ContainerAllocator> const>
   : TrueType
+  { };
+
+template <class ContainerAllocator>
+struct IsFixedSize< ::msg_types::StateArray_<ContainerAllocator> >
+  : FalseType
+  { };
+
+template <class ContainerAllocator>
+struct IsFixedSize< ::msg_types::StateArray_<ContainerAllocator> const>
+  : FalseType
   { };
 
 template <class ContainerAllocator>
@@ -156,43 +167,43 @@ struct Definition< ::msg_types::StateArray_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "time stamp\n\
-msg_types/State[] desired_path\n\
-msg_types/TrajectoryArray sync_predictions\n\
-msg_types/State initial_state\n\
-\n\
-\n\
-================================================================================\n\
-MSG: msg_types/State\n\
-time stamp\n\
-float32 x\n\
-float32 y\n\
-float32 heading\n\
-float32 v\n\
-float32 w\n\
-\n\
-\n\
-================================================================================\n\
-MSG: msg_types/TrajectoryArray\n\
-time stamp\n\
-msg_types/PositionArray[] trajectories\n\
-\n\
-\n\
-================================================================================\n\
-MSG: msg_types/PositionArray\n\
-time stamp\n\
-msg_types/Position[] objects\n\
-\n\
-\n\
-================================================================================\n\
-MSG: msg_types/Position\n\
-time stamp\n\
-float32 x\n\
-float32 y\n\
-float32 t\n\
-uint32 id\n\
-bool actual\n\
-";
+    return "time stamp\n"
+"msg_types/State[] desired_path\n"
+"msg_types/TrajectoryArray sync_predictions\n"
+"msg_types/State initial_state\n"
+"\n"
+"\n"
+"================================================================================\n"
+"MSG: msg_types/State\n"
+"time stamp\n"
+"float32 x\n"
+"float32 y\n"
+"float32 heading\n"
+"float32 v\n"
+"float32 w\n"
+"\n"
+"\n"
+"================================================================================\n"
+"MSG: msg_types/TrajectoryArray\n"
+"time stamp\n"
+"msg_types/PositionArray[] trajectories\n"
+"\n"
+"\n"
+"================================================================================\n"
+"MSG: msg_types/PositionArray\n"
+"time stamp\n"
+"msg_types/Position[] objects\n"
+"\n"
+"\n"
+"================================================================================\n"
+"MSG: msg_types/Position\n"
+"time stamp\n"
+"float32 x\n"
+"float32 y\n"
+"float32 t\n"
+"uint32 id\n"
+"bool actual\n"
+;
   }
 
   static const char* value(const ::msg_types::StateArray_<ContainerAllocator>&) { return value(); }

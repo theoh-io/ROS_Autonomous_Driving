@@ -1,8 +1,8 @@
-# Install script for directory: /home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception
+# Install script for directory: /home/vita-w11/Autonomous_driving_pipeline/src/perception
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/install")
+  set(CMAKE_INSTALL_PREFIX "/home/vita-w11/Autonomous_driving_pipeline/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,23 +37,18 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set default install directory permissions.
-if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
-endif()
-
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perception.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/vita-w11/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perception.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/perception/cmake" TYPE FILE FILES
-    "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perceptionConfig.cmake"
-    "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perceptionConfig-version.cmake"
+    "/home/vita-w11/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perceptionConfig.cmake"
+    "/home/vita-w11/Autonomous_driving_pipeline/build/perception/catkin_generated/installspace/perceptionConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/perception" TYPE FILE FILES "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/perception" TYPE FILE FILES "/home/vita-w11/Autonomous_driving_pipeline/src/perception/package.xml")
 endif()
 

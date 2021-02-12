@@ -7,7 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export LD_LIBRARY_PATH='/opt/ros/kinetic/lib:/opt/ros/kinetic/lib/x86_64-linux-gnu:/usr/local/cuda-8.0/lib64'
-export PKG_CONFIG_PATH='/opt/ros/kinetic/lib/pkgconfig:/opt/ros/kinetic/lib/x86_64-linux-gnu/pkgconfig'
-export PWD='/home/cconejob/StudioProjects/Autonomous_driving_pipeline/build'
-export PYTHONPATH='/opt/ros/kinetic/lib/python2.7/dist-packages'
+export CMAKE_PREFIX_PATH="/home/vita-w11/Autonomous_driving_pipeline/devel:$CMAKE_PREFIX_PATH"
+export PWD='/home/vita-w11/Autonomous_driving_pipeline/build'
+export ROSLISP_PACKAGE_DIRECTORIES='/home/vita-w11/Autonomous_driving_pipeline/devel/share/common-lisp'
+export ROS_PACKAGE_PATH="/home/vita-w11/Autonomous_driving_pipeline/src:$ROS_PACKAGE_PATH"

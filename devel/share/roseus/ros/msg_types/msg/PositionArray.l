@@ -20,7 +20,7 @@
   (:init
    (&key
     ((:stamp __stamp) (instance ros::time :init))
-    ((:objects __objects) (let (r) (dotimes (i 0) (push (instance msg_types::Position :init) r)) r))
+    ((:objects __objects) ())
     )
    (send-super :init)
    (setq _stamp __stamp)

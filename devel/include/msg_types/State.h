@@ -86,6 +86,25 @@ ros::message_operations::Printer< ::msg_types::State_<ContainerAllocator> >::str
 return s;
 }
 
+
+template<typename ContainerAllocator1, typename ContainerAllocator2>
+bool operator==(const ::msg_types::State_<ContainerAllocator1> & lhs, const ::msg_types::State_<ContainerAllocator2> & rhs)
+{
+  return lhs.stamp == rhs.stamp &&
+    lhs.x == rhs.x &&
+    lhs.y == rhs.y &&
+    lhs.heading == rhs.heading &&
+    lhs.v == rhs.v &&
+    lhs.w == rhs.w;
+}
+
+template<typename ContainerAllocator1, typename ContainerAllocator2>
+bool operator!=(const ::msg_types::State_<ContainerAllocator1> & lhs, const ::msg_types::State_<ContainerAllocator2> & rhs)
+{
+  return !(lhs == rhs);
+}
+
+
 } // namespace msg_types
 
 namespace ros
@@ -95,23 +114,7 @@ namespace message_traits
 
 
 
-// BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
-// {'msg_types': ['/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types/msg', '/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types/msg'], 'geometry_msgs': ['/opt/ros/kinetic/share/geometry_msgs/cmake/../msg'], 'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg']}
 
-// !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
-
-
-
-
-template <class ContainerAllocator>
-struct IsFixedSize< ::msg_types::State_<ContainerAllocator> >
-  : TrueType
-  { };
-
-template <class ContainerAllocator>
-struct IsFixedSize< ::msg_types::State_<ContainerAllocator> const>
-  : TrueType
-  { };
 
 template <class ContainerAllocator>
 struct IsMessage< ::msg_types::State_<ContainerAllocator> >
@@ -120,6 +123,16 @@ struct IsMessage< ::msg_types::State_<ContainerAllocator> >
 
 template <class ContainerAllocator>
 struct IsMessage< ::msg_types::State_<ContainerAllocator> const>
+  : TrueType
+  { };
+
+template <class ContainerAllocator>
+struct IsFixedSize< ::msg_types::State_<ContainerAllocator> >
+  : TrueType
+  { };
+
+template <class ContainerAllocator>
+struct IsFixedSize< ::msg_types::State_<ContainerAllocator> const>
   : TrueType
   { };
 
@@ -163,14 +176,14 @@ struct Definition< ::msg_types::State_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "time stamp\n\
-float32 x\n\
-float32 y\n\
-float32 heading\n\
-float32 v\n\
-float32 w\n\
-\n\
-";
+    return "time stamp\n"
+"float32 x\n"
+"float32 y\n"
+"float32 heading\n"
+"float32 v\n"
+"float32 w\n"
+"\n"
+;
   }
 
   static const char* value(const ::msg_types::State_<ContainerAllocator>&) { return value(); }

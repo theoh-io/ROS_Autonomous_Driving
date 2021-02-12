@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # VITA, EPFL
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
-sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import socket
 import numpy as np
 import struct

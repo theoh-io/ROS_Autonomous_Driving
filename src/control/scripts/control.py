@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # VITA, EPFL
 import rospy
 from msg_types.msg import Position, PositionArray, TrajectoryArray, State, StateArray, ControlCmd

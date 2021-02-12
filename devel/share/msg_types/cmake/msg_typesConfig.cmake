@@ -67,14 +67,14 @@ set(msg_types_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(msg_types_SOURCE_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types)
-  set(msg_types_DEVEL_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel)
+  set(msg_types_SOURCE_PREFIX /home/vita-w11/Autonomous_driving_pipeline/src/msg_types)
+  set(msg_types_DEVEL_PREFIX /home/vita-w11/Autonomous_driving_pipeline/devel)
   set(msg_types_INSTALL_PREFIX "")
   set(msg_types_PREFIX ${msg_types_DEVEL_PREFIX})
 else()
   set(msg_types_SOURCE_PREFIX "")
   set(msg_types_DEVEL_PREFIX "")
-  set(msg_types_INSTALL_PREFIX /home/cconejob/StudioProjects/Autonomous_driving_pipeline/install)
+  set(msg_types_INSTALL_PREFIX /home/vita-w11/Autonomous_driving_pipeline/install)
   set(msg_types_PREFIX ${msg_types_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(msg_types_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/include " STREQUAL " ")
+if(NOT "/home/vita-w11/Autonomous_driving_pipeline/devel/include " STREQUAL " ")
   set(msg_types_INCLUDE_DIRS "")
-  set(_include_dirs "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/include")
+  set(_include_dirs "/home/vita-w11/Autonomous_driving_pipeline/devel/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/include 
         message(FATAL_ERROR "Project 'msg_types' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'msg_types' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/msg_types/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'msg_types' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/vita-w11/Autonomous_driving_pipeline/src/msg_types/${idir}'.  ${_report}")
     endif()
     _list_append_unique(msg_types_INCLUDE_DIRS ${include})
   endforeach()
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/lib;/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/vita-w11/Autonomous_driving_pipeline/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -177,7 +177,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(msg_types_EXPORTED_TARGETS "msg_types_generate_messages_cpp;msg_types_generate_messages_eus;msg_types_generate_messages_java;msg_types_generate_messages_lisp;msg_types_generate_messages_nodejs;msg_types_generate_messages_py")
+set(msg_types_EXPORTED_TARGETS "msg_types_generate_messages_cpp;msg_types_generate_messages_eus;msg_types_generate_messages_lisp;msg_types_generate_messages_nodejs;msg_types_generate_messages_py")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${msg_types_EXPORTED_TARGETS})
   if(NOT TARGET ${t})

@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    from rrt import RRT
+    from .rrt import RRT
 except ImportError:
     raise
 

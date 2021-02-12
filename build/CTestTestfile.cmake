@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: /home/cconejob/StudioProjects/Autonomous_driving_pipeline/src
-# Build directory: /home/cconejob/StudioProjects/Autonomous_driving_pipeline/build
+# Source directory: /home/vita-w11/Autonomous_driving_pipeline/src
+# Build directory: /home/vita-w11/Autonomous_driving_pipeline/build
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

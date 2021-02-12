@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "".split(';') if "" != "" else []
 PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "control"
-PROJECT_SPACE_DIR = "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/install"
+PROJECT_SPACE_DIR = "/home/vita-w11/Autonomous_driving_pipeline/install"
 PROJECT_VERSION = "0.0.0"
