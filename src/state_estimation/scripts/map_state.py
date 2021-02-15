@@ -47,7 +47,7 @@ def main():
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=5.0, error_sensor=1.0)
+    slam = SLAM.SlamConfiguration(range_sensor=5.0, error_sensor=2.0)
 
     # Variable Initialization
     global state, map_state_activated
@@ -76,7 +76,6 @@ def main():
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
     
-            list_positions = [[1.1,2.0,1],[2.1,0.5,2],[3.0,2.1,3]]
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
             

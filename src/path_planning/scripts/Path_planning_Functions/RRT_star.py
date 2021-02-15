@@ -390,7 +390,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
         # If we can't find any feasible path, we use the one calculated in the previous iteration
         if path is None:
-            planner = [0.0, 0.0, 0.0]
+            planner = [[0.0, 0.0, 0.0]]
             return planner, goal
 
         # If there exist a feasible path, we rotate it to avoid interpolation problems (later, we rotate back)

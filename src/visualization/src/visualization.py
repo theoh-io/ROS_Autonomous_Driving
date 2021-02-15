@@ -111,7 +111,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
         #rospy.loginfo("STATE: " +str(state))
         #rospy.loginfo("OBJECTS: " + str(predictions))
 
-    plt.axis([0, 3, -0.5, 1.5])
+    plt.axis([-3, 3, -3, 3])
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.plot([x for (x, y, heading) in planning], [y for (x, y, heading) in planning], 'r--')

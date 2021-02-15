@@ -70,7 +70,7 @@ class MPC:
         self.dR = w_dR*np.array([dR_v,dR_w])
 
         ####### Boundaries:
-        self.bnds_v = ((0.0, mobile_robot.v_max), ) * self.N
+        self.bnds_v = ((-mobile_robot.v_max, mobile_robot.v_max), ) * self.N
         self.bnds_w = ((-mobile_robot.w_max, mobile_robot.w_max), ) * self.N
         self.bnds = self.bnds_v + self.bnds_w
 

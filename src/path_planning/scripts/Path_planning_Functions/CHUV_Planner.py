@@ -16,29 +16,52 @@ from tools import classconverter, classes, transformations, utilities
 # Class for RRT Star planning
 class CHUV_Planner:
 
-    def __init__(self, mobile_robot, speed, dt_control):
+    def __init__(self, mobile_robot, speed, N, dt_control):
         
         self.mobile_robot = mobile_robot
         self.prediction_list = []
         self.speed = speed
         self.dt_control = dt_control
+        self.N = N
+        self.x_limit = 1.0
 
-    def path_planning(self, prediction_list):
+    def path_planning(self, person_prediction):
         path = []
+        t_max = 0.5
+        person_array = np.array(person_prediction[0])
+        x = person_array[0] - self.x_limit
+        
+        if x<0.0:
+            x -= 0.5
+        
+        y = 0.0
 
-        for detection in prediction_list:
-            detection_array = np.array(detection)
-            x = detection_array[:,0] - 1.0
-            y = detection_array[:,1] - 1.0
+        goal = [x, y]
+        path = [[0.0, 0.0], goal]
+        print("goal = " + str(goal))
 
-            p = [[0.0, 0.0]] + [[a,b] for a, b in zip(x,y)]
+        T_total = abs(x/self.speed)
 
-            path.append(p)
+        N = int(T_total/self.dt_control)
 
-        if len(path)<1:
-            path.append([[0.0,0.0]*20])
+        if T_total > t_max:
+            m = 0.0
+            x_list = np.linspace(0.0, goal[0], num=N)
+            y_list = m * x_list
+            path = []
+            for i in range(len(x_list)):
+                path.append([x_list[i], y_list[i]])
 
-        mpc_path = utilities.MPC_Planner_restrictions(self.mobile_robot, path[0], self.speed, self.dt_control)
+            print("path1: " + str(path))
+
+
+        mpc_path = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control)[:N+2]
+
+        print("path2: " + str(mpc_path))
+
+        if len(mpc_path)<self.N:
+
+            return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N
 
         return mpc_path
 

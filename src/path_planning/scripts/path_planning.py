@@ -80,10 +80,11 @@ def main():
     work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
     time_horizon_control = rospy.get_param("/time_horizon_control")
     N = int(time_horizon_control/dt_control)
+    num_person = int(rospy.get_param("/num_person"))-1
     loomo = classes.MobileRobot(wheel_base, v_max)
 
     if PATH_PLANNING_FUNCTION == "CHUV":
-        planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, dt_control)
+        planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, N, dt_control)
 
     # Initialize path planning variables
     global array_predictions, array_mapping, state
@@ -93,6 +94,7 @@ def main():
     goal_global = [goal_x, goal_y]
     state = [0.0, 0.0, 0.0]
     objects_now = []
+    path = []
 
     rospy.loginfo("Path Planning Node Ready")
     rospy.sleep(2.)
@@ -122,11 +124,12 @@ def main():
             objects_now = transformations.Global_to_Local_prediction(x0, array_total)
 
         # CHUV Planner
-        if PATH_PLANNING_FUNCTION == "CHUV":
-            path = planner_class.path_planning(objects_now)
+        if PATH_PLANNING_FUNCTION == "CHUV" and len(objects_now)>0:
+            print("CHUV")
+            path = planner_class.path_planning(objects_now[num_person])
 
         # Obstacle avoidance path calculation
-        else:
+        elif PATH_PLANNING_FUNCTION == "Default":
             path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
         if len(path)>N:
