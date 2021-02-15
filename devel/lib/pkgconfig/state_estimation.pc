@@ -1,8 +1,0 @@
-prefix=/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel
-
-Name: state_estimation
-Description: Description of state_estimation
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
