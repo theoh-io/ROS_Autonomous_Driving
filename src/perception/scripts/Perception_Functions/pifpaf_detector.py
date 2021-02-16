@@ -43,18 +43,27 @@ class Detector_pifpaf():
         for images_batch, _, __ in loader:
             predictions = self.processor.batch(self.net, images_batch, device=self.device)[0]
 
+
         bbox = []
         label = []
+        key = ['left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle']
+        bboxes_legs = []
 
         for pred in predictions:
             x_list = []
             y_list = []
+            x_leg_list = [2.0]*len(key)
+            y_leg_list = [2.0]*len(key)
 
-            for e in pred.data:
+            for idx, e in enumerate(pred.data):
                 if e[0]!=0.0:
                     x_list.append(e[0])
                     y_list.append(e[1])
             
+                if pred.keypoints[idx] in key:
+                    x_leg_list[key.index(pred.keypoints[idx])] = e[0]
+                    y_leg_list[key.index(pred.keypoints[idx])] = e[1]
+
             x_min = int(min(x_list)/np.sqrt(downscale))
             y_min = int(min(y_list)/np.sqrt(downscale))
             x_max = int(max(x_list)/np.sqrt(downscale))
@@ -63,8 +72,13 @@ class Detector_pifpaf():
             bbox.append([x_min, y_min, x_max-x_min, y_max-y_min])
             label.append([1])
 
+            for i in range(len(x_leg_list)):
+                bboxes_legs.append([int(round(x_leg_list[i]))-2, int(round(y_leg_list[i]))-2, 4, 4])
+
         if len(bbox) == 0:
             bbox = [[0.0, 0.0, 0.0, 0.0]]
             label = [[0]]
+            bboxes_legs = [[0.0, 0.0, 0.0, 0.0]]*6
 
-        return bbox, label
+        print(bboxes_legs)
+        return bbox, label, bboxes_legs

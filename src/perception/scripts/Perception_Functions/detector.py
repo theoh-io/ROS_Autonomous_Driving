@@ -107,5 +107,5 @@ class Detector(object):
             pred_bboxes = pred_y_box * self.img_size
             # pred_bboxes = pred_bboxes.reshape(len(pred_bboxes), num_objects, -1)
 
-        return pred_bboxes, pred_y_label
+        return pred_bboxes, pred_y_label, [[0.0, 0.0, 0.0, 0.0]]
 

@@ -1,7 +1,7 @@
 <launch>
 
     <!-- global parameters -->
-    <param name="ip_address" value="192.168.43.84" />
+    <param name="ip_address" value="192.168.43.231" />
     <param name="abs_path_to_tools" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="0.5" />
     <param name="wheel_base" value="0.5" />

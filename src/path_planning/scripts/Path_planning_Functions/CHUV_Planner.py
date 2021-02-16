@@ -17,22 +17,21 @@ from tools import classconverter, classes, transformations, utilities
 class CHUV_Planner:
 
     def __init__(self, mobile_robot, speed, N, dt_control):
-        
         self.mobile_robot = mobile_robot
         self.prediction_list = []
         self.speed = speed
         self.dt_control = dt_control
         self.N = N
-        self.x_limit = 1.0
+        self.x_limit = -0.25
 
     def path_planning(self, person_prediction):
         path = []
-        t_max = 0.5
+        t_max = 0.25
         person_array = np.array(person_prediction[0])
         x = person_array[0] - self.x_limit
         
         if x<0.0:
-            x -= 0.5
+            x -= 0.0
         
         y = 0.0
 

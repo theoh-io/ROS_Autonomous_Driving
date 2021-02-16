@@ -115,9 +115,9 @@ class DetectorConfig:
         elif self.type_input == "pil":
             image = pil_image
 
-        bbox_list, bbox_label = self.detector.forward(image, self.downscale)
+        bbox_list, bbox_label, bbox_legs = self.detector.forward(image, self.downscale)
 
-        return bbox_list, bbox_label
+        return bbox_list, bbox_label, bbox_legs
 
 
 class MobileRobot:

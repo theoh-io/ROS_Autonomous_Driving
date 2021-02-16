@@ -36,8 +36,9 @@ def main():
 
     # Initialize socket connections
     ip_address = rospy.get_param("/ip_address")
-    socket1 = classes.SocketLoomo(8081, dt_perception/4, ip_address, detection_image.data_size)
-    socket5 = classes.SocketLoomo(8085, dt_perception/4, ip_address, packer=25*'f ')
+    socket1 = classes.SocketLoomo(8081, dt_perception/5, ip_address, detection_image.data_size)
+    socket5 = classes.SocketLoomo(8085, dt_perception/5, ip_address, packer=25*'f ')
+    socket6 = classes.SocketLoomo(8086, dt_perception/5, ip_address, packer=30*'f ')
     # Perception visualization tools activated?
     visualization = False
 
@@ -58,13 +59,14 @@ def main():
         # If detector and received image size are the same
         if net_received_length == socket1.data_size:
             # Detect object/human inside the image
-            bbox_list, label_list = detection_image.detect(received_image)
+            bbox_list, label_list, bboxes_legs = detection_image.detect(received_image)
 
             if visualization:
                 plt.clf()
                 plt.plot(0.0, 0.0, ">k")
 
             bbox = tuple()
+            bbox_legs = tuple()
 
             for i in range(len(bbox_list)):
                 # Send bbox positions via socket to represent them in the Loomo
@@ -72,6 +74,13 @@ def main():
                 
             bbox = bbox + (0.0,)*(25-len(bbox))
             socket5.sender(bbox)
+
+            for i in range(len(bboxes_legs)):
+                # Send bbox positions via socket to represent them in the Loomo
+                bbox_legs = bbox_legs + (bboxes_legs[i][0], bboxes_legs[i][1], bboxes_legs[i][2], bboxes_legs[i][3], 1.0)
+                print(bbox_legs)
+
+            socket6.sender(bbox_legs)
 
             # Reset perception variables
             net_received_length = 0
