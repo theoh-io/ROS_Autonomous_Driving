@@ -125,8 +125,8 @@ def main():
 
         # CHUV Planner
         if PATH_PLANNING_FUNCTION == "CHUV" and len(objects_now)>0:
-            print("CHUV")
-            path = planner_class.path_planning(objects_now[num_person])
+            # path = planner_class.path_planning(objects_now[num_person])
+            path = planner_class.path_planning_global(array_total[num_person], x0)
 
         # Obstacle avoidance path calculation
         elif PATH_PLANNING_FUNCTION == "Default":

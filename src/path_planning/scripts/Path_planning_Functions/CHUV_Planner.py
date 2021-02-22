@@ -22,11 +22,13 @@ class CHUV_Planner:
         self.speed = speed
         self.dt_control = dt_control
         self.N = N
-        self.x_limit = -0.25
+        self.x_limit = -0.0
+        self.y_limit = -0.0
+
 
     def path_planning(self, person_prediction):
         path = []
-        t_max = 0.25
+        t_max = 0.05
         person_array = np.array(person_prediction[0])
         x = person_array[0] - self.x_limit
         
@@ -37,30 +39,61 @@ class CHUV_Planner:
 
         goal = [x, y]
         path = [[0.0, 0.0], goal]
-        print("goal = " + str(goal))
 
         T_total = abs(x/self.speed)
 
         N = int(T_total/self.dt_control)
 
         if T_total > t_max:
-            m = 0.0
+            m = goal[1]/goal[0]
             x_list = np.linspace(0.0, goal[0], num=N)
             y_list = m * x_list
             path = []
             for i in range(len(x_list)):
                 path.append([x_list[i], y_list[i]])
 
-            print("path1: " + str(path))
-
-
         mpc_path = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control)[:N+2]
-
-        print("path2: " + str(mpc_path))
 
         if len(mpc_path)<self.N:
 
             return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N
+
+        return mpc_path
+
+
+    def path_planning_global(self, person_prediction_global, x0):
+        path = []
+        t_max = 0.1
+        person_array = np.array(person_prediction_global[0])
+        x = person_array[0] - self.x_limit
+        
+        if x<0.0:
+            x -= 0.0
+        
+        y = 0.0
+
+        goal = [x, y]
+        path = [[x0[0],x0[1]], goal]
+
+        T_total = abs(x/self.speed)
+
+        N = int(T_total/self.dt_control)
+
+        if T_total > t_max:
+            m = goal[1]/goal[0]
+            x_list = np.linspace(x0[0], goal[0], num=N)
+            y_list = m * x_list
+            path = []
+            for i in range(len(x_list)):
+                path.append([x_list[i], y_list[i]])
+
+        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+2]
+
+        if len(mpc_path_global)<self.N:
+
+            return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N
+
+        mpc_path = transformations.Global_to_Local(x0, mpc_path_global)
 
         return mpc_path
 

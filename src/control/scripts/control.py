@@ -144,14 +144,13 @@ def main():
                 control_cmd = [0.0, 0.0]
                 rospy.logwarn("OBJECT REACHED FINAL POSITION")
 
-        else:
-            rospy.logerr("Not enough planner length. Stopping vehicle...")
+        #else:
+            #rospy.logerr("Not enough planner length. Stopping vehicle...")
 
         # Send control commands + visualization topics via ROS
         sender.send(control_cmd, predicted_states_local, actual_state, state_planner, actual_path_local, local_predictions)
 
         # Send control commands via socket
-        
         values = (control_cmd[0], control_cmd[1])
         socket0.sender(values)
         

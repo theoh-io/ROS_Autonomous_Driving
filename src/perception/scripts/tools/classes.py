@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # VITA, EPFL
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
 import socket
 import numpy as np
@@ -13,7 +12,7 @@ import rospy
 
 class SocketLoomo:
     # Initialize socket connection
-    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f '):
+    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f ', sockettype = "Stream"):
         self.data_size = data_size
         self.max_waiting_time = dt/10
         self.received_data = []
@@ -21,7 +20,11 @@ class SocketLoomo:
         self.received_data_unpacked = []
 
         try:
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if sockettype == "Stream":
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            
+            else:
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         except socket.error:
             rospy.logerr('Failed to create socket')
@@ -75,7 +78,7 @@ class SocketLoomo:
 
 class DetectorConfig:
     # Initialize detector and its main properties
-    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv"):
+    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv", save_video=False, filename_video=""):
         # Detector expected input image dimensions
         self.width = int(width)
         self.height = int(height)
@@ -96,6 +99,11 @@ class DetectorConfig:
         if load:
             self.detector.load(global_path)
 
+        if save_video:
+            self.save_video = save_video
+            self.result = cv2.VideoWriter(filename_video, cv2.VideoWriter_fourcc(*'MJPG'), 10, (self.width, self.height))
+    
+
     def detect(self, received_image):
         # Adapt image to detector requirements
         pil_image = Image.frombytes('RGB', (80,60), received_image)
@@ -106,8 +114,11 @@ class DetectorConfig:
 
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-        cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(1)
+        #cv2.imshow('Test window',opencvImage)
+        #cv2.waitKey(1)
+
+        if self.save_video:
+            self.result.write(opencvImage)
 
         if self.type_input == "opencv":
             image = opencvImage

@@ -55,7 +55,6 @@ def list2PositionArray(data):
 
 def list2TrajectoryArray(data):
     predicted_trajectories_cmd = TrajectoryArray()
-    print(list)
     for idx, detection in enumerate(data):
         prediction_object_i = PositionArray()
 

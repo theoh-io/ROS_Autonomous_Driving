@@ -31,13 +31,13 @@ class MPC:
         ####### Weights:
 
         # w_Q + w_dR = 1
-        w_Q = 0.5
-        w_dR = 0.5
+        w_Q = 0.8
+        w_dR = 0.2
 
         # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
-        w_Q_ex = 0.3
-        w_Q_ey = 0.3
-        w_Q_eheading = 0.4
+        w_Q_ex = 0.7
+        w_Q_ey = 0.2
+        w_Q_eheading = 0.1
 
 
         # w_dR_steer + w_dR_torque = 1
@@ -48,7 +48,7 @@ class MPC:
         ####### Maximum admissible values:
 
         # Maximum admissible error in the states:
-        ex_max = 0.2 # m
+        ex_max = 0.05 # m
         ey_max = 0.1 # m
         eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
 

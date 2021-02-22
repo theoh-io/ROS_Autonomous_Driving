@@ -111,7 +111,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
         #rospy.loginfo("STATE: " +str(state))
         #rospy.loginfo("OBJECTS: " + str(predictions))
 
-    plt.axis([-3, 3, -3, 3])
+    plt.axis([-10, 10, -10, 10])
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.plot([x for (x, y, heading) in planning], [y for (x, y, heading) in planning], 'r--')
@@ -123,7 +123,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
     if new_d > 0.03:
         d += new_d
 
-    rospy.loginfo("distance = " + str(d))
+    #rospy.loginfo("distance = " + str(d))
 
     return d
 

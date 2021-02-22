@@ -14,7 +14,7 @@ import time
 class Detector_pifpaf():
     def __init__(self):
 
-        self.device = torch.device('cpu')
+        self.device = torch.device('cuda')
 
         net_cpu, _ = openpifpaf.network.factory(checkpoint='shufflenetv2k16w', download_progress=False)
         self.net = net_cpu.to(self.device)
@@ -48,6 +48,7 @@ class Detector_pifpaf():
         label = []
         key = ['left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle']
         bboxes_legs = []
+        bboxes_legs_pixels = []
 
         for pred in predictions:
             x_list = []
@@ -74,11 +75,13 @@ class Detector_pifpaf():
 
             for i in range(len(x_leg_list)):
                 bboxes_legs.append([int(round(x_leg_list[i]))-2, int(round(y_leg_list[i]))-2, 4, 4])
+                bboxes_legs_pixels.append([x_leg_list[i], y_leg_list[i]])
 
         if len(bbox) == 0:
             bbox = [[0.0, 0.0, 0.0, 0.0]]
             label = [[0]]
             bboxes_legs = [[0.0, 0.0, 0.0, 0.0]]*6
+            bboxes_legs_pixels = [[0.0, 0.0, 0.0, 0.0]]*6
 
-        print(bboxes_legs)
-        return bbox, label, bboxes_legs
+
+        return bbox, label, bboxes_legs_pixels

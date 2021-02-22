@@ -47,7 +47,7 @@ def main():
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=5.0, error_sensor=2.0)
+    slam = SLAM.SlamConfiguration(range_sensor=5.0, error_sensor=5.0)
 
     # Variable Initialization
     global state, map_state_activated
@@ -78,6 +78,8 @@ def main():
     
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
+
+
             
         # Send state estimation topics via ROS
         if map_state_activated:

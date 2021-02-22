@@ -123,9 +123,9 @@ def MPC_Planner_restrictions(mobile_robot, points, v, t):
 
 
 # Apply Kinematic Restrictions to the planner, and adapt it for MPC.
-def MPC_Planner_restrictions_CHUV(mobile_robot, points, v, t):
+def MPC_Planner_restrictions_CHUV(mobile_robot, points, v, t, x0=[0.0, 0.0, 0.0, 0.0]):
     e = v*t
-    plan = [[0.0, 0.0, 0.0, 0.0]]
+    plan = [x0]
     dist = 0.0
     it = 2
     x_ant = 0.0

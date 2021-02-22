@@ -10,7 +10,11 @@ import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classes
+import csv
 
+filename_data = "Leg_data3.csv"
+filename_video = "Stream3.avi"
+save_results = True
 
 def main():
     # Initialize ROS perception node
@@ -31,16 +35,20 @@ def main():
     elif PERCEPTION_FUNCTION =="Openpifpaf":
         detection_image = classes.DetectorConfig(width = 161, height = 107, channels = 3, downscale = 3.58880,
                                                 global_path = '',
-                                                detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil")
+                                                detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil",
+                                                save_video=save_results, filename_video=filename_video)
 
 
     # Initialize socket connections
     ip_address = rospy.get_param("/ip_address")
-    socket1 = classes.SocketLoomo(8081, dt_perception/5, ip_address, detection_image.data_size)
-    socket5 = classes.SocketLoomo(8085, dt_perception/5, ip_address, packer=25*'f ')
-    socket6 = classes.SocketLoomo(8086, dt_perception/5, ip_address, packer=30*'f ')
+    ip_address_nicolo = rospy.get_param("/ip_address_nicolo")
+    socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, detection_image.data_size)
+    socket5 = classes.SocketLoomo(8085, dt_perception/2, ip_address, packer=25*'f ')
+    socket6 = classes.SocketLoomo(8086, dt_perception, ip_address_nicolo, packer=13*'f ', sockettype="datagram")
+
     # Perception visualization tools activated?
     visualization = False
+    init = time.time()
 
     # Initialize perception variables
     net_received_length = 0
@@ -48,55 +56,71 @@ def main():
 
     rospy.loginfo("Perception Node Ready")
 
-    while not rospy.is_shutdown():
-        start = time.time()
+    with open(filename_data, 'w') as f:
+        writer = csv.DictWriter(f, dialect='excel', fieldnames=['time', 'lhx', 'lhy', 'rhx', 'rhy', 'lkx', 'lky', 'rkx', 'rky', 'lax', 'lay', 'rax', 'ray'])
+        writer.writeheader()
 
-        # Receive Image from the Loomo
-        socket1.receiver(True)
-        received_image += socket1.received_data
-        net_received_length += len(socket1.received_data)
+        while not rospy.is_shutdown():
+            start = time.time()
 
-        # If detector and received image size are the same
-        if net_received_length == socket1.data_size:
-            # Detect object/human inside the image
-            bbox_list, label_list, bboxes_legs = detection_image.detect(received_image)
+            # Receive Image from the Loomo
+            socket1.receiver(True)
+            received_image += socket1.received_data
+            net_received_length += len(socket1.received_data)
 
-            if visualization:
-                plt.clf()
-                plt.plot(0.0, 0.0, ">k")
+            # If detector and received image size are the same
+            if net_received_length == socket1.data_size:
+                # Detect object/human inside the image
+                bbox_list, label_list, bboxes_legs = detection_image.detect(received_image)
 
-            bbox = tuple()
-            bbox_legs = tuple()
+                if visualization:
+                    plt.clf()
+                    plt.plot(0.0, 0.0, ">k")
 
-            for i in range(len(bbox_list)):
-                # Send bbox positions via socket to represent them in the Loomo
-                bbox = bbox + (bbox_list[i][0], bbox_list[i][1], bbox_list[i][2], bbox_list[i][3], float(label_list[i][0]))
+                bbox = tuple()
                 
-            bbox = bbox + (0.0,)*(25-len(bbox))
-            socket5.sender(bbox)
+                for i in range(len(bbox_list)):
+                    # Send bbox positions via socket to represent them in the Loomo
+                    bbox = bbox + (bbox_list[i][0], bbox_list[i][1], bbox_list[i][2], bbox_list[i][3], float(label_list[i][0]))
+                    
+                bbox = bbox + (0.0,)*(25-len(bbox))
+                socket5.sender(bbox)
 
-            for i in range(len(bboxes_legs)):
-                # Send bbox positions via socket to represent them in the Loomo
-                bbox_legs = bbox_legs + (bboxes_legs[i][0], bboxes_legs[i][1], bboxes_legs[i][2], bboxes_legs[i][3], 1.0)
-                print(bbox_legs)
+                pixel_legs = tuple()
 
-            socket6.sender(bbox_legs)
+                for i in range(len(bboxes_legs)):
+                    # Send bbox positions via socket to represent them in the Loomo
+                    pixel_legs = pixel_legs + (bboxes_legs[i][0], bboxes_legs[i][1])
 
-            # Reset perception variables
-            net_received_length = 0
-            received_image = b''
+                pixel_legs = tuple([time.time()-init]) + pixel_legs
 
-        elif net_received_length > socket1.data_size:
-            net_received_length = 0
-            received_image = b''
+                pl = pixel_legs[:13]
 
-        # Calculate node computation time
-        computation_time = time.time() - start
+                print(pl)
 
-        if computation_time > dt_perception:
-            rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
+                socket6.sender(pl)
 
-        rate.sleep()
+                if save_results:
+                    dict_legs = {'time': pl[0], 'lhx': pl[1], 'lhy': pl[2], 'rhx': pl[3], 'rhy': pl[4], 'lkx': pl[5], 'lky': pl[6], 'rkx': pl[7], 'rky': pl[8], 'lax': pl[9], 'lay': pl[10], 'rax': pl[11], 'ray': pl[12]}
+                    writer.writerow(dict_legs)
+
+                # Reset perception variables
+                net_received_length = 0
+                received_image = b''
+
+            elif net_received_length > socket1.data_size:
+                net_received_length = 0
+                received_image = b''
+
+            # Calculate node computation time
+            computation_time = time.time() - start
+
+            if computation_time > dt_perception:
+                rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
+
+            rate.sleep()
+
+    f.close()
 
 
 if __name__ == "__main__":
