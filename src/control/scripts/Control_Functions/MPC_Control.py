@@ -158,7 +158,7 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.xref = xref
 
     # Optimizer
-    res = opt.minimize(mpc.objective_function, mpc.u_total_prev, bounds = mpc.bnds, method = 'SLSQP', constraints = mpc.con1 )
+    res = opt.minimize(mpc.objective_function, mpc.u_total_prev, bounds = mpc.bnds, method = 'SLSQP', constraints = mpc.con1)
 
     # Save the interesting values of the solver
     v_cmd = res.x[0]

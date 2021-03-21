@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # VITA, EPFL
 import sys
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
+sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import socket
 import numpy as np
 import struct
@@ -67,6 +69,7 @@ class SocketLoomo:
 
             else:
                 self.received_data = self.s.recv(self.data_size)
+                #print(self.received_data)
 
     # Send data to the Loomo
     def sender(self, values):
@@ -106,7 +109,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (80,60), received_image)
+        pil_image = Image.frombytes('RGB', (128,96), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)
@@ -114,8 +117,8 @@ class DetectorConfig:
 
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-        #cv2.imshow('Test window',opencvImage)
-        #cv2.waitKey(1)
+        cv2.imshow('Test window',opencvImage)
+        cv2.waitKey(1)
 
         if self.save_video:
             self.result.write(opencvImage)

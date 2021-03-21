@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Export-Package: msg_types;version="0.0.0";uses:="org.ros.internal.mess
+ age,org.ros.message,std_msgs"
+Bundle-SymbolicName: org.ros.rosjava_messages.msg_types
+Bundle-Version: 0.0.0
+Bundle-Name: msg_types
+Bundle-ManifestVersion: 2
+Bnd-LastModified: 1613987024000
+Import-Package: org.ros.internal.message,org.ros.message,std_msgs;vers
+ ion="[0.5,1)"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.7))"
+Created-By: 1.8.0_275 (Private Build)
+Tool: Bnd-3.4.0.201707252008
+

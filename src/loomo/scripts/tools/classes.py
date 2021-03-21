@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # VITA, EPFL
 import sys
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
+sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import socket
 import numpy as np
 import struct
@@ -97,7 +99,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (80,60), received_image)
+        pil_image = Image.frombytes('RGB', (128,96), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)

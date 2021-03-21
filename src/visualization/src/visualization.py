@@ -131,6 +131,10 @@ def main():
     # Initialize ROS visualization node
     rospy.init_node("visualization")
     visualization_activated = rospy.get_param("/visualization_activated")
+    mode = rospy.get_param("/mode")
+
+    global planning_local, planning_global, predictions_local, predictions_global, control_local, control_global, state_local, state_global, goal_local, goal_global, start_node, x0, gt
+
     if visualization_activated:
         sub_planning = rospy.Subscriber('/Visualization/desired_states_local', StateArray, callback_planning_local, queue_size = 1)
         sub_control = rospy.Subscriber('/Visualization/predicted_states_local', StateArray, callback_control_local, queue_size = 1)
@@ -140,12 +144,16 @@ def main():
         sub_gt = rospy.Subscriber('/State_Estimation/ground_truth', State, callback_gt, queue_size = 1)
         sub_goal = rospy.Subscriber('/Visualization/goal_local', Position, callback_goal, queue_size = 1)
         
-    goal_x = rospy.get_param("/goal_x")
-    goal_y = rospy.get_param("/goal_y")
-    dt_visualization = rospy.get_param("/dt_control")
-    rate = rospy.Rate(int(1/dt_visualization))
+    if mode != "CHUV":
+        goal_x = rospy.get_param("/goal_x")
+        goal_y = rospy.get_param("/goal_y")
+        goal_global = [goal_x, goal_y]
 
-    global planning_local, planning_global, predictions_local, predictions_global, control_local, control_global, state_local, state_global, goal_local, goal_global, start_node, x0, gt
+    else:
+        goal_global = [0.0, 0.0]
+    
+    dt_visualization = rospy.get_param("/dt_visualization")
+    rate = rospy.Rate(int(1/dt_visualization))
 
     state_local = [0.0, 0.0, 0.0]
     state_global = [0.0, 0.0, 0.0]
@@ -156,7 +164,6 @@ def main():
     planning_global = []
     control_local = []
     control_global = []
-    goal_global = [goal_x, goal_y]
     state_local = [0.0, 0.0, 0.0]
     x0 = [0.0, 0.0 , 0.0]
     gt =[0.0, 0.0, 0.0]

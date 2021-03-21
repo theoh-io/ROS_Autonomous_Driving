@@ -72,7 +72,7 @@ def main():
     sender = Sender()
 
     # Initialize socket connection
-    ip_address = rospy.get_param("/ip_address")
+    ip_address = rospy.get_param("/ip_address_robot")
     socket0 = classes.SocketLoomo(8080, dt_control/4, ip_address, packer="f f")
     #socket6 = SocketLoomo(8086, dt_control/4, ip_address, unpacker="f f")
 
@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     except rospy.ROSInterruptException:
         dt_control = rospy.get_param("/dt_control")
-        ip_address = rospy.get_param("/ip_address")
+        ip_address = rospy.get_param("/ip_address_robot")
         socket0 = classes.SocketLoomo(8080, dt_control/4, ip_address, packer="f f")
         values = (0.0, 0.0)
         socket0.sender(values)

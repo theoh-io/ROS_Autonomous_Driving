@@ -1,0 +1,29 @@
+(cl:defpackage msg_types-msg
+  (:use )
+  (:export
+   "<CONTROLCMD>"
+   "CONTROLCMD"
+   "<CONTROLCMD>"
+   "CONTROLCMD"
+   "<POSITION>"
+   "POSITION"
+   "<POSITION>"
+   "POSITION"
+   "<POSITIONARRAY>"
+   "POSITIONARRAY"
+   "<POSITIONARRAY>"
+   "POSITIONARRAY"
+   "<STATE>"
+   "STATE"
+   "<STATE>"
+   "STATE"
+   "<STATEARRAY>"
+   "STATEARRAY"
+   "<STATEARRAY>"
+   "STATEARRAY"
+   "<TRAJECTORYARRAY>"
+   "TRAJECTORYARRAY"
+   "<TRAJECTORYARRAY>"
+   "TRAJECTORYARRAY"
+  ))
+

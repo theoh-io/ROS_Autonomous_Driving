@@ -1,0 +1,2 @@
+control:loomo:msg_types:path_planning:perception:prediction:state_estimation:visualization
+-DCATKIN_DEVEL_PREFIX=/home/cconejob/StudioProjects/Autonomous_driving_pipeline/devel -DCMAKE_INSTALL_PREFIX=/home/cconejob/StudioProjects/Autonomous_driving_pipeline/install -G Unix Makefiles

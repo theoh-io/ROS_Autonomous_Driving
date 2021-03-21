@@ -1,59 +1,18 @@
 <launch>
 
-    <!-- global parameters -->
-    <param name="ip_address" value="192.168.0.118" />
-    <param name="ip_address_nicolo" value="192.168.0.152" />
-    <param name="abs_path_to_tools" value="/home/vita-w11/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
+    <!-- Function: CHUV, Human_avoidance, Obstacle_avoidance -->
+    <arg name="mode" default="CHUV" />
+
+    <!-- Global parameters -->
+    <param name="ip_address_robot" value="192.168.1.105" />
+    
+    <param name="model_perception_path" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
+    <param name="model_prediction_path" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/prediction/scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl" />
+    <param name="abs_path_to_tools" value="/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
+
+    <!-- System constraints -->
     <param name="v_max" value="0.5" />
     <param name="wheel_base" value="0.5" />
-    <param name="speed" value="0.5" />
-    <param name="goal_x" value="3.0" />
-    <param name="goal_y" value="1.0" />
-    <param name="workarea_x_min" value="-2.0" />
-    <param name="workarea_x_max" value="5.0" />
-    <param name="workarea_y_min" value="-1.0" />
-    <param name="workarea_y_max" value="1.0" />
-    <param name="num_person" value="1" />
-
-
-    <!-- Percpetion: Default, Openpifpaf -->
-    <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
-    <param name="model_perception_path" value="/home/vita-w11/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
-    <param name="dt_perception" value="0.03" />
-
-    <!-- Robot_State: Default, EPFL_Driverless -->
-    <param name="ROBOT_STATE_FUNCTION" value="Default" />
-    <param name="dt_robot_state" value="0.03" />
-
-    <!-- Map_State: Default -->
-    <param name="MAP_STATE_FUNCTION" value="Default" />
-    <param name="mapping_activated" value="True" />
-    <param name="map_state_activated" value="False" />
-    <param name="dt_map_state" value="0.03" />
-
-    <!-- Prediction: Default, Trajnet -->
-    <param name="PREDICTION_FUNCTION" value="Trajnet" />
-    <param name="prediction_activated" value="False" />
-    <param name="model_prediction_path" value="/home/vita-w11/Autonomous_driving_pipeline/src/prediction/scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl" />
-    <param name="time_horizon_prediction" value="0.03" />
-    <param name="past_observations" value="3" />
-    <param name="dt_prediction" value="0.03" />
-
-    <!-- Path_Planning: Default, CHUV -->
-    <param name="PATH_PLANNING_FUNCTION" value="CHUV" />
-    <param name="dt_path_planning" value="0.125" />
-    <param name="time_horizon_path_planning" value="0.5" />
-    
-    <!-- Control: Default, EPFL_Driverless -->
-    <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.125" />
-    <param name="time_horizon_control" value="0.5" />
-    <param name="n_states" value="3" />
-
-    <!-- Visualization: Default -->
-    <param name="visualization_activated" value="True" />
-    <param name="dt_visualization" value="0.1" />
-
 
     <!-- PERCEPTION -->
     <node pkg="perception" type="perception.py" name="perception" output="screen">
@@ -62,6 +21,7 @@
     <!-- STATE_ESTIMATION -->
     <node pkg="state_estimation" type="robot_state.py" name="robot_state" output="screen">
     </node>
+
     <node pkg="state_estimation" type="map_state.py" name="map_state" output="screen">
     </node>
 
@@ -80,5 +40,120 @@
     <!-- VISUALIZATION -->
     <node pkg="visualization" type="visualization.py" name="visualization" output="screen">
     </node>
+    
+    <param name="mode" value="$(arg mode)" />
+    
+
+
+    <group if="$(eval arg('mode') == 'CHUV')">
+        <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
+        <param name="dt_perception" value="0.15" />
+        <param name="ip_address_nicolo" value="192.168.0.152" />
+
+        <param name="ROBOT_STATE_FUNCTION" value="Default" />
+        <param name="dt_robot_state" value="0.15" />
+
+        <param name="MAP_STATE_FUNCTION" value="Default" />
+        <param name="mapping_activated" value="True" />
+        <param name="map_state_activated" value="False" />
+        <param name="dt_map_state" value="0.15" />
+
+        <param name="PREDICTION_FUNCTION" value="Trajnet" />
+        <param name="prediction_activated" value="False" />
+        <param name="time_horizon_prediction" value="0.5" />
+        <param name="past_observations" value="3" />
+        <param name="dt_prediction" value="0.15" />
+
+        <param name="PATH_PLANNING_FUNCTION" value="CHUV" />
+        <param name="dt_path_planning" value="0.05" />
+        <param name="time_horizon_path_planning" value="0.5" />
+        <param name="speed" value="0.1" />
+        <param name="num_person" value="1" />
+        
+        <param name="CONTROL_FUNCTION" value="Default" />
+        <param name="dt_control" value="0.05" />
+        <param name="time_horizon_control" value="0.1" />
+        <param name="n_states" value="3" />
+
+        <param name="visualization_activated" value="True" />
+        <param name="dt_visualization" value="0.25" />
+
+    </group>
+
+
+    <group if="$(eval arg('mode') == 'Human_avoidance')">
+        <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
+        <param name="dt_perception" value="0.4" />
+
+        <param name="ROBOT_STATE_FUNCTION" value="Default" />
+        <param name="dt_robot_state" value="0.4" />
+
+        <param name="MAP_STATE_FUNCTION" value="Default" />
+        <param name="mapping_activated" value="True" />
+        <param name="map_state_activated" value="False" />
+        <param name="dt_map_state" value="0.4" />
+
+        <param name="PREDICTION_FUNCTION" value="Trajnet" />
+        <param name="prediction_activated" value="True" />
+        <param name="time_horizon_prediction" value="0.3" />
+        <param name="past_observations" value="5" />
+        <param name="dt_prediction" value="0.4" />
+
+        <param name="PATH_PLANNING_FUNCTION" value="Default" />
+        <param name="dt_path_planning" value="0.6" />
+        <param name="time_horizon_path_planning" value="3.0" />
+        <param name="workarea_x_min" value="-2.0" />
+        <param name="workarea_x_max" value="5.0" />
+        <param name="workarea_y_min" value="-1.0" />
+        <param name="workarea_y_max" value="1.0" />
+        <param name="speed" value="0.25" />
+        
+        <param name="CONTROL_FUNCTION" value="Default" />
+        <param name="dt_control" value="0.6" />
+        <param name="time_horizon_control" value="3.0" />
+        <param name="n_states" value="3" />
+
+        <param name="visualization_activated" value="True" />
+        <param name="dt_visualization" value="0.4" />
+
+    </group>
+
+
+    <group if="$(eval arg('mode') == 'Obstacle_avoidance')">
+        <param name="PERCEPTION_FUNCTION" value="Default" />
+        <param name="dt_perception" value="0.05" />
+
+        <param name="ROBOT_STATE_FUNCTION" value="Default" />
+        <param name="dt_robot_state" value="0.05" />
+
+        <param name="MAP_STATE_FUNCTION" value="Default" />
+        <param name="mapping_activated" value="True" />
+        <param name="map_state_activated" value="False" />
+        <param name="dt_map_state" value="0.05" />
+
+        <param name="PREDICTION_FUNCTION" value="Trajnet" />
+        <param name="prediction_activated" value="False" />
+        <param name="time_horizon_prediction" value="0.3" />
+        <param name="past_observations" value="5" />
+        <param name="dt_prediction" value="0.05" />
+
+        <param name="PATH_PLANNING_FUNCTION" value="Default" />
+        <param name="dt_path_planning" value="0.125" />
+        <param name="time_horizon_path_planning" value="0.5" />
+        <param name="workarea_x_min" value="-2.0" />
+        <param name="workarea_x_max" value="5.0" />
+        <param name="workarea_y_min" value="-1.0" />
+        <param name="workarea_y_max" value="1.0" />
+        <param name="speed" value="0.5" />
+        
+        <param name="CONTROL_FUNCTION" value="Default" />
+        <param name="dt_control" value="0.125" />
+        <param name="time_horizon_control" value="0.5" />
+        <param name="n_states" value="3" />
+
+        <param name="visualization_activated" value="True" />
+        <param name="dt_visualization" value="0.1" />
+
+    </group>
 
 </launch>

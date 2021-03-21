@@ -26,7 +26,7 @@ class CHUV_Planner:
         self.y_limit = -0.0
 
 
-    def path_planning(self, person_prediction):
+    def path_planning_local(self, person_prediction):
         path = []
         t_max = 0.05
         person_array = np.array(person_prediction[0])

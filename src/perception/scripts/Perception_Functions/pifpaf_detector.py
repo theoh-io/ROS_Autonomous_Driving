@@ -9,12 +9,15 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import time
+import math
 
 
 class Detector_pifpaf():
     def __init__(self):
 
-        self.device = torch.device('cuda')
+        self.bboxes_hip_prev = [[0.0, 0.0], [0.0, 0.0]]
+
+        self.device = torch.device('cpu')
 
         net_cpu, _ = openpifpaf.network.factory(checkpoint='shufflenetv2k16w', download_progress=False)
         self.net = net_cpu.to(self.device)
@@ -30,7 +33,27 @@ class Detector_pifpaf():
         openpifpaf.transforms.EVAL_TRANSFORM,
         ])
 
+    def bboxes_closest(self, bboxes_legs):
+
+        bboxes_hip = []
+        d_list = []
+
+        for i, e in enumerate(bboxes_legs):
+            bboxes_hip.append([e[0], e[1]])
+            d_list.append(self.calculate_distance(bboxes_hip[i]))
+
+        idx = d_list.index(min(d_list))
+
+        return bboxes_hip[idx], idx 
     
+
+    def calculate_distance(self, bboxes_hip):
+
+        d = math.sqrt((bboxes_hip[0][0]-self.bboxes_hip_prev[0][0])**2 + (bboxes_hip[0][1]-self.bboxes_hip_prev[0][1])**2) + math.sqrt((bboxes_hip[1][0]-self.bboxes_hip_prev[1][0])**2 + (bboxes_hip[1][1]-self.bboxes_hip_prev[1][1])**2)
+
+        return d
+
+
     def forward(self, image, downscale):
 
         start = time.time()
@@ -43,18 +66,18 @@ class Detector_pifpaf():
         for images_batch, _, __ in loader:
             predictions = self.processor.batch(self.net, images_batch, device=self.device)[0]
 
-
+        print(predictions)
         bbox = []
         label = []
         key = ['left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle']
         bboxes_legs = []
-        bboxes_legs_pixels = []
 
         for pred in predictions:
             x_list = []
             y_list = []
             x_leg_list = [2.0]*len(key)
             y_leg_list = [2.0]*len(key)
+            bboxes_legs_pixels = []
 
             for idx, e in enumerate(pred.data):
                 if e[0]!=0.0:
@@ -74,8 +97,9 @@ class Detector_pifpaf():
             label.append([1])
 
             for i in range(len(x_leg_list)):
-                bboxes_legs.append([int(round(x_leg_list[i]))-2, int(round(y_leg_list[i]))-2, 4, 4])
                 bboxes_legs_pixels.append([x_leg_list[i], y_leg_list[i]])
+
+            bboxes_legs.append(bboxes_legs_pixels)
 
         if len(bbox) == 0:
             bbox = [[0.0, 0.0, 0.0, 0.0]]
@@ -83,5 +107,13 @@ class Detector_pifpaf():
             bboxes_legs = [[0.0, 0.0, 0.0, 0.0]]*6
             bboxes_legs_pixels = [[0.0, 0.0, 0.0, 0.0]]*6
 
+        else:
+            bboxes_hip_act, idx = self.bboxes_closest(bboxes_legs)
+            self.bboxes_hip_prev = bboxes_hip_act
+            bboxes_legs = bboxes_legs[idx]
+            bbox = [bbox[idx]]
 
-        return bbox, label, bboxes_legs_pixels
+            print("bounding box: " + str(bboxes_legs))
+
+
+        return bbox, label, bboxes_legs

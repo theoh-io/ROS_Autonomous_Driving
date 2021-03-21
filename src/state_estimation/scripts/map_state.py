@@ -43,7 +43,7 @@ def main():
     if mapping_activated:
         sender = Sender()
         sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
-        ip_address = rospy.get_param("/ip_address")
+        ip_address = rospy.get_param("/ip_address_robot")
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization

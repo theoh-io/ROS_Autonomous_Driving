@@ -65,7 +65,7 @@ def main():
         sub_mapping = rospy.Subscriber('/State_Estimation/map_global', PositionArray, callback_mapping, queue_size = 1)
 
     if not prediction_activated and not mapping_activated:
-        ip_address = rospy.get_param("/ip_address")
+        ip_address = rospy.get_param("/ip_address_robot")
         socket3 = classes.SocketLoomo(8083, dt_path_planning/4, ip_address)
 
     sender = Sender()
@@ -75,9 +75,6 @@ def main():
     speed = rospy.get_param("/speed")
     wheel_base = rospy.get_param("/wheel_base") # m
     v_max = rospy.get_param("/v_max") # m/s
-    goal_x = rospy.get_param("/goal_x")
-    goal_y = rospy.get_param("/goal_y")
-    work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
     time_horizon_control = rospy.get_param("/time_horizon_control")
     N = int(time_horizon_control/dt_control)
     num_person = int(rospy.get_param("/num_person"))-1
@@ -85,13 +82,19 @@ def main():
 
     if PATH_PLANNING_FUNCTION == "CHUV":
         planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, N, dt_control)
+        goal_local = [0.0, 0.0]
+
+    elif PATH_PLANNING_FUNCTION == "Default":
+        goal_x = rospy.get_param("/goal_x")
+        goal_y = rospy.get_param("/goal_y")
+        goal_global = [goal_x, goal_y]
+        work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
 
     # Initialize path planning variables
     global array_predictions, array_mapping, state
 
     array_predictions = []
     array_mapping = []
-    goal_global = [goal_x, goal_y]
     state = [0.0, 0.0, 0.0]
     objects_now = []
     path = []
@@ -116,7 +119,6 @@ def main():
 
         start = time.time()
         x0 = state
-        goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
         array_total = array_predictions + array_mapping
         
         # Actual detection movement prediction
@@ -125,11 +127,12 @@ def main():
 
         # CHUV Planner
         if PATH_PLANNING_FUNCTION == "CHUV" and len(objects_now)>0:
-            # path = planner_class.path_planning(objects_now[num_person])
+            # path = planner_class.path_planning_local(objects_now[num_person])
             path = planner_class.path_planning_global(array_total[num_person], x0)
 
         # Obstacle avoidance path calculation
         elif PATH_PLANNING_FUNCTION == "Default":
+            goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
             path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
         if len(path)>N:

@@ -33,7 +33,7 @@ def main():
     sender = Sender()
 
     # Initialize socket connections
-    ip_address = rospy.get_param("/ip_address")
+    ip_address = rospy.get_param("/ip_address_robot")
     socket2 = classes.SocketLoomo(8082, dt_robot_state/4, ip_address, unpacker=5*'f ')
 
     # Parameter Initialization
