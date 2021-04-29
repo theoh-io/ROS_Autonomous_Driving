@@ -1,13 +1,12 @@
 # Parameters
 
+In this file, the user can change the most important parameters of the pipeline depending on the requirements of the test, on the server where is being launched, ...
+
 ## Global
 
 | Parameter   |  Description                                 |
 |:---------:  |:-------------------------:                   |
-| ip_address  | IP Address server-client                     |
-| speed       | Constant speed of the robot [m/s]            |
-| goal_x      | Goal's x coordenate (from initial point) [m] |
-| goal_x      | Goal's y coordenate (from initial point) [m] |
+| ip_address_robot  | IP Address Autonomous System (client)  |
 | v_max       | Robot's maximum speed [m/s]                  |
 | wheel_base  | Robot's length between wheels [m]            |
 
@@ -17,6 +16,8 @@
 |:---------:          |:-------------------------:                |
 | PERCEPTION_FUNCTION | Detection algorithm used                  |
 | dt_perception       | Perception sampling time [s]              |
+| ip_address_nicolo    | Second Client IP Address (keypoint information) |
+
 
 ## Robot State
 
@@ -49,7 +50,11 @@
 | Parameter               |  Description                                |
 |:---------:              |:-------------------------:                  |
 | PATH_PLANNING_FUNCTION  | Path Planning algorithm used                |
-| dt_path_planning        | Path Planning sampling time [s]            |
+| dt_path_planning        | Path Planning sampling time [s]             |
+| time_horizon_path_planning  | Last planned time for path calculation [s] |
+| speed                   | Constant speed of the robot [m/s]           |
+| planner_type            | Straight/Curvilinear path planning          |
+| robot_position          | Right/Left relative to the patient          |
 
 ## Control
 
