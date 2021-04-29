@@ -1,6 +1,6 @@
 # Parameters
 
-Inside [Loomo.launch](/launch/Loomo.launch) [pdf], users can change the most important parameters of the pipeline depending on the requirements of the test, on the server where is being launched, ...
+Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most important parameters of the pipeline depending on the requirements of the test, on the server where is being launched, ...
 
 ## Global
 
