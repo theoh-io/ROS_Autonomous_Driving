@@ -9,8 +9,11 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | Parameter   |  Description                                 |
 |:---------:  |:-------------------------:                   |
 | ip_address_robot  | IP Address Autonomous System (client)  |
+| ip_address_nicolo    | Second Client IP Address (keypoint information) |
+| abs_path_to_tools    | Global path to pipeline tools |
 | v_max       | Robot's maximum speed [m/s]                  |
 | wheel_base  | Robot's length between wheels [m]            |
+| speed                   | Constant speed of the robot [m/s]           |
 
 </p>
 
@@ -22,7 +25,8 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 |:---------:          |:-------------------------:                |
 | PERCEPTION_FUNCTION | Detection algorithm used                  |
 | dt_perception       | Perception sampling time [s]              |
-| ip_address_nicolo    | Second Client IP Address (keypoint information) |
+| downscale           | Downscale for robot images (check follow.cfg) |
+
 
 </p>
 
@@ -73,9 +77,10 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | PATH_PLANNING_FUNCTION  | Path Planning algorithm used                |
 | dt_path_planning        | Path Planning sampling time [s]             |
 | time_horizon_path_planning  | Last planned time for path calculation [s] |
-| speed                   | Constant speed of the robot [m/s]           |
 | planner_type            | Straight/Curvilinear path planning          |
 | robot_position          | Right/Left relative to the patient          |
+| goal                    | Goal (detection collision avoidance)        |
+| workarea                | Boundaries (detection collision avoidance)  |
 
 </p>
 
