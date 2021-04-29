@@ -14,9 +14,9 @@ class Sender(object):
         self.pub_goal_local = rospy.Publisher('/Visualization/goal_local', Position, queue_size=1)
 
 
-    def send(self, desired_path, objects_now, x0, goal_local):
+    def send(self, desired_path, objects_now_local, x0, goal_local):
         array_path_local = classconverter.list2StateArray(desired_path)
-        array_objects = classconverter.list2TrajectoryArray(objects_now)
+        array_objects = classconverter.list2TrajectoryArray(objects_now_local)
         state_planner = classconverter.list2State(x0)
         goal_local = classconverter.list2Position(goal_local)
         array_path_local.sync_predictions = array_objects
@@ -81,7 +81,9 @@ def main():
     loomo = classes.MobileRobot(wheel_base, v_max)
 
     if PATH_PLANNING_FUNCTION == "CHUV":
-        planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, N, dt_control)
+        robot_position = rospy.get_param("/robot_position")
+        planner_type = rospy.get_param("/planner_type")
+        planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, N, dt_control, robot_position)
         goal_local = [0.0, 0.0]
 
     elif PATH_PLANNING_FUNCTION == "Default":
@@ -96,8 +98,9 @@ def main():
     array_predictions = []
     array_mapping = []
     state = [0.0, 0.0, 0.0]
-    objects_now = []
+    objects_now_local = []
     path = []
+    iterations = 0
 
     rospy.loginfo("Path Planning Node Ready")
     rospy.sleep(2.)
@@ -119,25 +122,30 @@ def main():
 
         start = time.time()
         x0 = state
-        array_total = array_predictions + array_mapping
+        array_total_global = array_predictions + array_mapping
         
         # Actual detection movement prediction
-        if len(array_total) > 0:
-            objects_now = transformations.Global_to_Local_prediction(x0, array_total)
+        if len(array_total_global) > 0:
+            objects_now_local = transformations.Global_to_Local_prediction(x0, array_total_global)
 
         # CHUV Planner
-        if PATH_PLANNING_FUNCTION == "CHUV" and len(objects_now)>0:
-            # path = planner_class.path_planning_local(objects_now[num_person])
-            path = planner_class.path_planning_global(array_total[num_person], x0)
+        if PATH_PLANNING_FUNCTION == "CHUV" and len(objects_now_local)>0:
+
+            if planner_type == "straight":
+                path = planner_class.path_planning_straight(array_total_global[num_person], x0)
+            
+            else:
+                path, goal_local = planner_class.path_planning_curvilinear(array_total_global[num_person], x0)
 
         # Obstacle avoidance path calculation
         elif PATH_PLANNING_FUNCTION == "Default":
             goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
-            path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
+            path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now_local, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
-        if len(path)>N:
+        if len(path)>N and iterations > 0:
             # Send commands to the ROS Structure
-            sender.send(path, objects_now, x0, goal_local)
+            iterations = 0
+            sender.send(path, objects_now_local, x0, goal_local)
 
         # Calculate node computation time
         computation_time = time.time() - start
@@ -145,7 +153,8 @@ def main():
         if computation_time > dt_path_planning:
             rospy.logwarn("Path planning computation time higher than node period by " + str(computation_time-dt_path_planning) + " seconds")
 
-        objects_now = []
+        objects_now_local = []
+        iterations += 1
 
         rate.sleep()
 

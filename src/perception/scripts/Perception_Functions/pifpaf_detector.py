@@ -3,6 +3,7 @@
 import io
 import numpy as np
 import openpifpaf
+
 import PIL
 import requests
 import torch
@@ -19,7 +20,8 @@ class Detector_pifpaf():
 
         self.device = torch.device('cpu')
 
-        net_cpu, _ = openpifpaf.network.factory(checkpoint='shufflenetv2k16w', download_progress=False)
+        F = openpifpaf.network.factory.Factory(checkpoint='shufflenetv2k16w', download_progress=False)
+        net_cpu, _ = F.factory()
         self.net = net_cpu.to(self.device)
 
         openpifpaf.decoder.CifSeeds.threshold = 0.5
@@ -66,7 +68,6 @@ class Detector_pifpaf():
         for images_batch, _, __ in loader:
             predictions = self.processor.batch(self.net, images_batch, device=self.device)[0]
 
-        print(predictions)
         bbox = []
         label = []
         key = ['left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle']
@@ -112,8 +113,6 @@ class Detector_pifpaf():
             self.bboxes_hip_prev = bboxes_hip_act
             bboxes_legs = bboxes_legs[idx]
             bbox = [bbox[idx]]
-
-            print("bounding box: " + str(bboxes_legs))
 
 
         return bbox, label, bboxes_legs

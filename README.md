@@ -2,15 +2,15 @@
 
 <center>
 
-Mobile Robot                |  ROS Pipeline
+Closed-Loop Tests               |  Keypoint Extraction
 :-------------------------: |:-------------------------:
-<img src="./src/control/Images/3_Obstacles_2.gif" alt="drawing" width="250"/> | <img src="./src/control/Images/3_Obstacles_1.gif" alt="drawing" width="500"/>
+<img src="./src/control/Images/MR_EPFL.gif" alt="drawing" width="500"/> | <img src="./src/control/Images/MR_EPFL_skeleton.gif" alt="drawing" width="500"/>
 
 </center>
 
 ## Paper
 Before adopting the pipeline for a singular purpose, we strongly recommend to read the article that explains our work in detail:
-[Design and Implementation for Fully Autonomous Driving Systems](/Design_and_Implementation_of_a_Pipeline_for_Fully_Autonomous_Driving_Systems.pdf) [pdf]
+[Design and Implementation for Fully Autonomous Driving Systems. Paraplegic Patients Assistance](/paper.pdf) [pdf]
 
 
 ## User Guide
@@ -20,12 +20,10 @@ Before adopting the pipeline for a singular purpose, we strongly recommend to re
 First of all, we need to clone all the ```./src``` folder inside a new ROS folder:
 
 ```shell
-mkdir ROS_AD_pipeline
-cd ROS_AD_pipeline
 git clone https://github.com/cconejob/Autonomous_driving_pipeline.git
 ```
 
-Once we have installed all **dependencies** (see subsection below), we need to build the ```devel``` and ```build``` folders by typing inside the ```ROS_AD_pipeline``` folder:
+Once we have installed all **dependencies** (see section below), we need to build the ```devel``` and ```build``` folders by typing inside the ```Autonomous_driving_Pipeline``` folder:
 
 ```shell
 catkin_make
@@ -75,22 +73,24 @@ Autonomous Pipeline
 
 ### Dependencies
 
-We have built a bash script and a requirements.txt file with all the modules required for our ROS pipeline. You can run them in your command line by typing:
-
-```shell
-sudo chmod +x dependencies_ROS_AD_Pipeline.sh
-./dependencies_ROS_AD_Pipeline.sh
-pip install -r requirements.txt
-```
-
-**Ubuntu 16.04**
-
-https://releases.ubuntu.com/16.04/
-
 **Python 3.7**
 
-**ROS Kinetic**
+If you do not have this Python version, we recommend you to download it by typing the following command in the Ubuntu terminal:
 
+```shell
+sudo chmod +x python_Autonomous_driving_pipeline.sh
+./python_Autonomous_driving_pipeline.sh
+```
+
+**ROS Kinetic/Melodic/Noetic**
+
+Depending on the Ubuntu version, there are three compatible ROS distributions.
+
+* Ubuntu 16.04: ROS Kinetic. http://wiki.ros.org/kinetic/Installation/Ubuntu
+
+* Ubuntu 18.04: ROS Melodic. http://wiki.ros.org/melodic/Installation/Ubuntu
+
+* Ubuntu 20.04: ROS Noetic. http://wiki.ros.org/noetic/Installation/Ubuntu
 
 **Python Libraries**
 
@@ -115,5 +115,17 @@ https://releases.ubuntu.com/16.04/
 * cython 0.29.21 
 
 * OpenCV 3.3
+
+We have built a bash script and a requirements.txt file with all the python modules required for our ROS pipeline. You can run them in your command line by typing:
+
+```shell
+sudo chmod +x dependencies_Autonomous_driving_pipeline.sh
+./dependencies_Autonomous_driving_pipeline.sh
+pip install -r requirements.txt
+```
+
+
+
+
 
 

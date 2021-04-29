@@ -123,7 +123,7 @@ def MPC_Planner_restrictions(mobile_robot, points, v, t):
 
 
 # Apply Kinematic Restrictions to the planner, and adapt it for MPC.
-def MPC_Planner_restrictions_CHUV(mobile_robot, points, v, t, x0=[0.0, 0.0, 0.0, 0.0]):
+def MPC_Planner_restrictions_CHUV_straight(mobile_robot, points, v, t, x0=[0.0, 0.0, 0.0, 0.0]):
     e = v*t
     plan = [x0]
     dist = 0.0
@@ -162,3 +162,76 @@ def MPC_Planner_restrictions_CHUV(mobile_robot, points, v, t, x0=[0.0, 0.0, 0.0,
             it = it + 1
 
     return plan
+
+def MPC_Planner_restrictions_CHUV_curvilinear(mobile_robot, points, speed, t, x0=[0.0, 0.0, 0.0, 0.0]):
+    e = speed*t
+    x0.append(0.0)
+    plan = [x0]
+    dist = 0.0
+    it = 2
+    x_ant = x0[0]
+    y_ant = x0[1]
+    heading_ant = x0[2]
+
+    for i in range(1,80):
+        
+        while dist < e and it < len(points):
+            distAB = calculate_distance(points[it-2], points[it-1])
+            dist = dist + distAB
+            it = it + 1
+
+        if dist >= e:
+            it = it - 1
+            d = dist - e
+            prop = d/distAB
+            x = points[it-1][0] - prop*(points[it-1][0] - points[it-2][0])
+            y = points[it-1][1] - prop*(points[it-1][1] - points[it-2][1])
+            heading = math.atan2((y - y_ant),(x - x_ant))
+            heading_act = heading
+            v = speed
+            
+            #if abs(heading-x0[2]) <= math.pi/2:
+            x = x_ant + e * np.cos(heading)
+            y = y_ant + e * np.sin(heading)
+
+            if abs(heading_act-heading_ant) > mobile_robot.w_max * t:
+                heading = heading_ant + np.sign(heading-heading_ant) * mobile_robot.w_max * t
+                v = 0.0
+                x = x_ant
+                y = y_ant
+
+            #elif abs(heading-x0[2]) > math.pi/2:
+                #v = -v
+                #x = x_ant - e * np.cos(heading)
+                #y = y_ant - e * np.sin(heading)
+                #heading = heading - np.sign(heading) * math.pi
+
+                #if abs(heading_act-heading_ant) > mobile_robot.w_max * t:
+                    #heading = heading_ant + np.sign(heading-heading_ant) * mobile_robot.w_max * t
+
+            plan.append([x, y, heading, v])
+            dist = d
+            x_ant = x
+            y_ant = y
+            heading_ant = heading
+            it = it + 1
+
+    return plan
+
+
+def new_heading_required(past_person, person):
+    return (calculate_distance(past_person, person)>0.3)
+
+
+def GetClockAngle(v1, v2):
+    # Product of 2 vector modules
+    TheNorm = np.linalg.norm(v1)*np.linalg.norm(v2)
+    # Cross product
+    rho =  np.arcsin(np.cross(v1, v2)/TheNorm)
+    # Dot multiplication
+    theta = np.arccos(np.dot(v1,v2)/TheNorm)
+    
+    if rho < 0:
+        return - theta
+    else:
+        return theta

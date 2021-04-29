@@ -6,72 +6,133 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import rospy
+import collections
 
 import os
 import sys
 abs_path_to_tools = "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classconverter, classes, transformations, utilities
+from tools import classes, transformations, utilities
 
 # Class for RRT Star planning
 class CHUV_Planner:
 
-    def __init__(self, mobile_robot, speed, N, dt_control):
+    def __init__(self, mobile_robot, speed, N, dt_control, robot_position):
         self.mobile_robot = mobile_robot
         self.prediction_list = []
         self.speed = speed
         self.dt_control = dt_control
         self.N = N
-        self.x_limit = -0.0
-        self.y_limit = -0.0
+        self.x_limit = 0.0
+        self.y_limit = 1.0
+        self.robot_position = robot_position
+        self.past_person_array_global = collections.deque(maxlen=5)
+        self.past_heading = 0.0
 
 
-    def path_planning_local(self, person_prediction):
+    def path_planning_curvilinear(self, person_prediction_global, x0, path_type="safe"):
         path = []
-        t_max = 0.05
-        person_array = np.array(person_prediction[0])
-        x = person_array[0] - self.x_limit
+        t_max = 0.1
+        person_array_global = np.array(person_prediction_global[0])
+        heading = self.past_heading
+
+        if len(self.past_person_array_global) > 1:
+
+            if  utilities.new_heading_required(self.past_person_array_global[0], person_array_global):
+                heading = math.atan2((person_array_global[1] - self.past_person_array_global[0][1]),(person_array_global[0] - self.past_person_array_global[0][0]))
+
+            else:
+                print("patient not moving")
+
+        person_array_global[2] = heading
+        self.past_person_array_global.append(person_array_global)
+        self.past_heading = heading
+
+        #print("object = " + str(person_array_global))
+
+        if self.robot_position == "right":
+            
+            if abs(heading) <= math.pi/2:
+                goal_global = transformations.Local_to_Global(person_array_global, [[self.x_limit, -self.y_limit, 0.0]])[0]
+
+            else:
+                goal_global = transformations.Local_to_Global(person_array_global, [[self.x_limit, -self.y_limit, 0.0]])[0]
         
-        if x<0.0:
-            x -= 0.0
-        
-        y = 0.0
+        else:
+            if abs(heading) <= math.pi/2:
+                goal_global = transformations.Local_to_Global(person_array_global, [[self.x_limit, self.y_limit, 0.0]])[0]
 
-        goal = [x, y]
-        path = [[0.0, 0.0], goal]
+            else:
+                goal_global = transformations.Local_to_Global(person_array_global, [[self.x_limit, self.y_limit, 0.0]])[0]
 
-        T_total = abs(x/self.speed)
+        x = goal_global[0]
+        y = goal_global[1]
 
-        N = int(T_total/self.dt_control)
+        x_list = np.array([x0[0], x])
+        y_list = np.array([x0[1], y])
 
-        if T_total > t_max:
-            m = goal[1]/goal[0]
-            x_list = np.linspace(0.0, goal[0], num=N)
-            y_list = m * x_list
-            path = []
-            for i in range(len(x_list)):
-                path.append([x_list[i], y_list[i]])
+        heading_line = math.atan2((y-x0[1]),(x-x0[0]))
+        #print("heading line = " + str(heading_line))
 
-        mpc_path = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control)[:N+2]
+        path = []
 
-        if len(mpc_path)<self.N:
+        if path_type == "linear":
+            T_total = abs(utilities.calculate_distance(x0, goal_global)/self.speed)
+            N = int(T_total/self.dt_control)
+            m = (x0[1]-goal_global[1])/(x0[0]-goal_global[0])
+            n = goal_global[1] - m * goal_global[0]
+            x_list = np.linspace(x0[0], goal_global[0], num=N)
+            y_list = m * x_list + n
 
-            return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N
+        elif path_type == "safe":
+            goal_global_2 = transformations.Local_to_Global(goal_global, [[-0.5,0.0,0.0]])[0]
+            T_total1 = abs(utilities.calculate_distance(x0, goal_global_2)/self.speed)
+            N1 = int(T_total1/self.dt_control)
+            print("intermediate goal = " + str(goal_global_2))
+            m1 = (x0[1] - goal_global_2[1])/(x0[0] - goal_global_2[0])
+            n1 = goal_global_2[1] - m1 * goal_global_2[0]
+            x_list1 = np.linspace(x0[0], goal_global_2[0], num=N1+2)
+            y_list1 = m1 * x_list1 + n1
 
-        return mpc_path
+            T_total2 = abs(utilities.calculate_distance(goal_global_2, goal_global)/self.speed)
+            N2 = int(T_total2/self.dt_control)
+            m2 = (goal_global_2[1] - goal_global[1])/(goal_global_2[0] - goal_global[0])
+            n2 = goal_global[1] - m2 * goal_global[0]
+            x_list2 = np.linspace(goal_global_2[0], goal_global[0], num=N2+2)
+            y_list2 = m2 * x_list2 + n2
+
+            #print(x_list1)
+            #print(x_list2)
+
+            x_list = list(x_list1) + list(x_list2)
+            y_list = list(y_list1) + list(y_list2)
+
+        for i in range(len(x_list)):
+            path.append([x_list[i], y_list[i]])
+
+        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV_curvilinear(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)
+        goal_local = transformations.Global_to_Local(x0, [goal_global])[0]
+        print("goal = " + str(goal_global))
+        #print("goal = " + str(goal_local))
+
+        if len(mpc_path_global)<self.N:
+
+            return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N, goal_local
+
+        mpc_path_local = transformations.Global_to_Local(x0, mpc_path_global)
+
+        print("path global = " + str(mpc_path_global))
+        #print("path local = " + str(mpc_path_local[:N-1]))
+
+        return mpc_path_local, goal_local
 
 
-    def path_planning_global(self, person_prediction_global, x0):
+    def path_planning_straight(self, person_prediction_global, x0):
         path = []
         t_max = 0.1
         person_array = np.array(person_prediction_global[0])
         x = person_array[0] - self.x_limit
-        
-        if x<0.0:
-            x -= 0.0
-        
         y = 0.0
-
         goal = [x, y]
         path = [[x0[0],x0[1]], goal]
 
@@ -87,7 +148,7 @@ class CHUV_Planner:
             for i in range(len(x_list)):
                 path.append([x_list[i], y_list[i]])
 
-        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+2]
+        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV_straight(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+5]
 
         if len(mpc_path_global)<self.N:
 
@@ -98,14 +159,28 @@ class CHUV_Planner:
         return mpc_path
 
 
-
 if __name__ == "__main__":
 
     try:
-        loomo = MobileRobot(0.5, 0.5)
-        chuv = CHUV_Planner(loomo, 0.25, 0.6)
-        path = chuv.path_planning([[[0,2],[1,2],[2,2],[3,2],[4,2]],[[3,2],[4,2],[5,2]]])
-        print(path)
+        path = [[0.0,0.0,0.0],[0.00001,0.00002,0.00005],[0.01,0.01,0.02],[0.01,0.01,0.02],[0.01,0.01,0.02]]
+        x0 = [10.0, -10.0, -1.0]
+        loomo = classes.MobileRobot(0.5, 0.5)
+        chuv = CHUV_Planner(loomo, 0.5, 5, 0.4, "right")
+        object_pos = [-7, -2, 0.0]
+
+        for i in range(1000):
+            print("iteration " + str(i))
+            x0 = transformations.Local_to_Global(x0, [path[1]])[0]
+            object_pos = [object_pos[0]-0.10*np.random.rand(1,1)[0][0], object_pos[1]-0.10*np.random.rand(1,1)[0][0], 0.0]
+            print("state" + str(x0))
+            if not (path[4][0] == 0.0 and path[4][1] == 0.0 and path[4][2] == 0.0):
+                path, goal_local = chuv.path_planning_curvilinear([object_pos], x0, "safe")
+
+            else:
+                print("Robot reached the goal")
+                break
+
+            print("path local" + str(path[:2]))
 
     except rospy.ROSInterruptException:
         pass

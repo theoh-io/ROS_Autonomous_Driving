@@ -24,11 +24,12 @@ def main():
     rate = rospy.Rate(int(1/dt_perception))
     PERCEPTION_FUNCTION = rospy.get_param("/PERCEPTION_FUNCTION")
     path_model = rospy.get_param("/model_perception_path")
-    ip_address = rospy.get_param("/ip_address_robot")
+    ip_address_robot = rospy.get_param("/ip_address_robot")
 
     if mode == "CHUV":
         ip_address_nicolo = rospy.get_param("/ip_address_nicolo")
-        socket6 = classes.SocketLoomo(8086, dt_perception, ip_address_nicolo, packer=13*'f ', sockettype="datagram")
+        socket6 = classes.SocketLoomo(8086, dt_perception, ip_address_nicolo, packer=13*'f ', sockettype="Dgram")
+        #socket7 = classes.SocketLoomo(8087, dt_perception, ip_address_robot, packer=13*'f ')
     
     # Initialize Detector Configuration
     # Set width, height and channel values for the received image --> Loomo image dimensions: 80x60x3
@@ -40,14 +41,14 @@ def main():
                                                 detector = detector.Detector(), load = True, type_input = "opencv")
     
     elif PERCEPTION_FUNCTION =="Openpifpaf":
-        detection_image = classes.DetectorConfig(width = 128, height = 96, channels = 3, downscale = 1,
+        detection_image = classes.DetectorConfig(width = 160, height = 120, channels = 3, downscale = 1,
                                                 global_path = '',
                                                 detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil",
                                                 save_video=save_results, filename_video=filename_video)
 
     # Initialize socket connections
-    socket1 = classes.SocketLoomo(8081, dt_perception*5, ip_address, detection_image.data_size)
-    socket5 = classes.SocketLoomo(8085, dt_perception*5, ip_address, packer=25*'f ')
+    socket1 = classes.SocketLoomo(8081, dt_perception*5, ip_address_robot, detection_image.data_size)
+    socket5 = classes.SocketLoomo(8085, dt_perception*5, ip_address_robot, packer=25*'f ')
 
     # Perception visualization tools activated?
     visualization = False
@@ -70,9 +71,6 @@ def main():
             socket1.receiver(True)
             received_image += socket1.received_data
             net_received_length += len(socket1.received_data)
-
-            print(socket1.data_size)
-            print(net_received_length)
 
             # If detector and received image size are the same
             if net_received_length == socket1.data_size:
@@ -102,6 +100,7 @@ def main():
                     pixel_legs = tuple([time.time()-init]) + pixel_legs
                     pl = pixel_legs[:13]
                     socket6.sender(pl)
+                    #socket7.sender(pl)
 
                     if save_results:
                         dict_legs = {'time': pl[0], 'lhx': pl[1], 'lhy': pl[2], 'rhx': pl[3], 'rhy': pl[4], 'lkx': pl[5], 'lky': pl[6], 'rkx': pl[7], 'rky': pl[8], 'lax': pl[9], 'lay': pl[10], 'rax': pl[11], 'ray': pl[12]}

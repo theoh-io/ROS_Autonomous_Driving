@@ -109,7 +109,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (128,96), received_image)
+        pil_image = Image.frombytes('RGB', (160,120), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)

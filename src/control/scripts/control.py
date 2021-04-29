@@ -98,16 +98,18 @@ def main():
 
     actual_state = [0.0] * n_states
     actual_path_local = []
+    actual_path_global = []
     state = [0.0] * n_states
     state_planner = state
     local_path = []
     global_path = []
     planner_counter = 0
     predicted_states_local = []
+    predicted_states_global = []
     local_predictions = []
 
     rospy.loginfo("Control Node Ready")
-    rospy.sleep(3.)
+    rospy.sleep(1.)
 
     while not rospy.is_shutdown():
         start = time.time()
@@ -149,11 +151,16 @@ def main():
 
         # Send control commands + visualization topics via ROS
         sender.send(control_cmd, predicted_states_local, actual_state, state_planner, actual_path_local, local_predictions)
+        #print("actual state = " + str(state_planner))
+        #print("desired path = " + str(actual_path_local))
+        print("predicted path control = " + str(predicted_states_local))
+        print("control commands = " + str(control_cmd))
+        
 
         # Send control commands via socket
         values = (control_cmd[0], control_cmd[1])
         socket0.sender(values)
-        
+    
         # Calculate node computation time
         computation_time = time.time() - start
         

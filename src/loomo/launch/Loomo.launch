@@ -51,32 +51,39 @@
         <param name="ip_address_nicolo" value="192.168.0.152" />
 
         <param name="ROBOT_STATE_FUNCTION" value="Default" />
-        <param name="dt_robot_state" value="0.15" />
+        <param name="dt_robot_state" value="0.05" />
 
         <param name="MAP_STATE_FUNCTION" value="Default" />
         <param name="mapping_activated" value="True" />
         <param name="map_state_activated" value="False" />
         <param name="dt_map_state" value="0.15" />
 
-        <param name="PREDICTION_FUNCTION" value="Trajnet" />
-        <param name="prediction_activated" value="False" />
-        <param name="time_horizon_prediction" value="0.5" />
-        <param name="past_observations" value="3" />
+        <param name="PREDICTION_FUNCTION" value="Default" />
+        <param name="prediction_activated" value="True" />
+        <param name="time_horizon_prediction" value="2.0" />
+        <param name="past_observations" value="5" />
         <param name="dt_prediction" value="0.15" />
 
         <param name="PATH_PLANNING_FUNCTION" value="CHUV" />
-        <param name="dt_path_planning" value="0.05" />
-        <param name="time_horizon_path_planning" value="0.5" />
-        <param name="speed" value="0.1" />
+        <param name="dt_path_planning" value="0.7" />
+        <param name="time_horizon_path_planning" value="1.5" />
+        <param name="speed" value="0.25" />
         <param name="num_person" value="1" />
         
         <param name="CONTROL_FUNCTION" value="Default" />
-        <param name="dt_control" value="0.05" />
-        <param name="time_horizon_control" value="0.1" />
+        <param name="dt_control" value="0.7" />
+        <param name="time_horizon_control" value="3.0" />
         <param name="n_states" value="3" />
 
         <param name="visualization_activated" value="True" />
-        <param name="dt_visualization" value="0.25" />
+        <param name="dt_visualization" value="0.3" />
+
+        <!-- trajectory type (straight/curvilinear) -->
+        <param name="planner_type" value="curvilinear" />
+
+        <!-- robot's position relative to patient (right/left) -->
+        <param name="robot_position" value="right" />
+        
 
     </group>
 

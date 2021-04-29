@@ -77,7 +77,7 @@ def callback_prediction(data):
 
 def visualization_function(predictions, planning, control, state_list, state, goal, gt, all_gt_global, d):
     plt.clf()
-    #plt.plot(goal[0], goal[1], "rx")
+    plt.plot(goal[0], goal[1], "rx")
     plt.plot([x for (x,y,heading) in state_list], [y for (x,y,heading) in state_list], "r-")
     plt.plot(state[0], state[1], "ro")
     plt.plot([x for (x,y,heading) in all_gt_global], [y for (x,y,heading) in all_gt_global], "b--")
@@ -111,7 +111,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
         #rospy.loginfo("STATE: " +str(state))
         #rospy.loginfo("OBJECTS: " + str(predictions))
 
-    plt.axis([-10, 10, -10, 10])
+    plt.axis([-5, 5, -5, 5])
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.plot([x for (x, y, heading) in planning], [y for (x, y, heading) in planning], 'r--')

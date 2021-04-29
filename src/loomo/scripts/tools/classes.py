@@ -14,7 +14,7 @@ import rospy
 
 class SocketLoomo:
     # Initialize socket connection
-    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f '):
+    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f ', sockettype = "Stream"):
         self.data_size = data_size
         self.max_waiting_time = dt/10
         self.received_data = []
@@ -22,7 +22,11 @@ class SocketLoomo:
         self.received_data_unpacked = []
 
         try:
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if sockettype == "Stream":
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            
+            else:
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         except socket.error:
             rospy.logerr('Failed to create socket')

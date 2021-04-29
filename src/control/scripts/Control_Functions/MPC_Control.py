@@ -31,12 +31,12 @@ class MPC:
         ####### Weights:
 
         # w_Q + w_dR = 1
-        w_Q = 0.8
-        w_dR = 0.2
+        w_Q = 0.6
+        w_dR = 0.4
 
         # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
-        w_Q_ex = 0.7
-        w_Q_ey = 0.2
+        w_Q_ex = 0.6
+        w_Q_ey = 0.3
         w_Q_eheading = 0.1
 
 
