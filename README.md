@@ -33,7 +33,7 @@ In the same folder, type the following command before launching all packages.
 source devel/setup.bash
 ```
 
-If we need to change some parameters of the ROS structure, we can go to [Loomo.launch](/loomo/) [xml] inside the launch folder.
+If we need to change some parameters of the ROS structure, we can go to [Loomo.launch](/src/loomo) [xml] inside the launch folder.
 
 Once everything is set up and adjusted to our specific context, we are ready to launch:
 
