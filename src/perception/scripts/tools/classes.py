@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # VITA, EPFL
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
-sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import socket
 import numpy as np
 import struct
@@ -16,11 +14,11 @@ class SocketLoomo:
     # Initialize socket connection
     def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f ', sockettype = "Stream"):
         self.data_size = data_size
-        self.max_waiting_time = dt/10
+        self.max_waiting_time = dt
         self.received_data = []
         self.received_ok = False
         self.received_data_unpacked = []
-
+        self.port = port
         try:
             if sockettype == "Stream":
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,7 +67,6 @@ class SocketLoomo:
 
             else:
                 self.received_data = self.s.recv(self.data_size)
-                #print(self.received_data)
 
     # Send data to the Loomo
     def sender(self, values):
@@ -109,7 +106,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (160,120), received_image)
+        pil_image = Image.frombytes('RGB', (self.width,self.height), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)
@@ -117,11 +114,9 @@ class DetectorConfig:
 
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-
-        # Uncomment if you want to see the same as the robot from the computer. 
-        
         #cv2.imshow('Test window',opencvImage)
         #cv2.waitKey(1)
+        #print("heyyy")
 
         if self.save_video:
             self.result.write(opencvImage)

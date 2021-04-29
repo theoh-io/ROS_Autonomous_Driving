@@ -72,7 +72,7 @@ def main():
     sender = Sender()
 
     # Initialize socket connection
-    ip_address = rospy.get_param("/ip_address_robot")
+    ip_address = rospy.get_param("/ip_address")
     socket0 = classes.SocketLoomo(8080, dt_control/4, ip_address, packer="f f")
     #socket6 = SocketLoomo(8086, dt_control/4, ip_address, unpacker="f f")
 
@@ -82,9 +82,11 @@ def main():
     v_max = rospy.get_param("/v_max") # m/s
     loomo = classes.MobileRobot(wheel_base, v_max)
     control_prediction_horizon = rospy.get_param("/time_horizon_control") # s
+    path_type = rospy.get_param("/planner_type")
+    straight = (path_type == "straight")
 
     if CONTROL_FUNCTION == "Default":
-        controller = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon)
+        controller = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon, straight)
         N = controller.N
 
     elif CONTROL_FUNCTION == "EPFL_Driverless":
@@ -98,14 +100,12 @@ def main():
 
     actual_state = [0.0] * n_states
     actual_path_local = []
-    actual_path_global = []
     state = [0.0] * n_states
     state_planner = state
     local_path = []
     global_path = []
     planner_counter = 0
     predicted_states_local = []
-    predicted_states_global = []
     local_predictions = []
 
     rospy.loginfo("Control Node Ready")
@@ -119,6 +119,7 @@ def main():
             # Initial planner state and Actual state in global coordinates
             state_planner = x0
             actual_state = state
+            
             # Actual state in relation to first path planning position
             state_local = transformations.Global_to_Local(state_planner, [actual_state])[0]
 
@@ -144,26 +145,16 @@ def main():
 
             else:
                 control_cmd = [0.0, 0.0]
-                rospy.logwarn("OBJECT REACHED FINAL POSITION")
-
-        #else:
-            #rospy.logerr("Not enough planner length. Stopping vehicle...")
 
         # Send control commands + visualization topics via ROS
         sender.send(control_cmd, predicted_states_local, actual_state, state_planner, actual_path_local, local_predictions)
-        #print("actual state = " + str(state_planner))
-        #print("desired path = " + str(actual_path_local))
-        print("predicted path control = " + str(predicted_states_local))
-        print("control commands = " + str(control_cmd))
-        
 
         # Send control commands via socket
         values = (control_cmd[0], control_cmd[1])
         socket0.sender(values)
-    
+
         # Calculate node computation time
         computation_time = time.time() - start
-        
         if computation_time > dt_control:
             rospy.logwarn("Control computation time higher than node period by " + str(computation_time-dt_control) + " seconds")
 
@@ -179,7 +170,7 @@ if __name__ == "__main__":
 
     except rospy.ROSInterruptException:
         dt_control = rospy.get_param("/dt_control")
-        ip_address = rospy.get_param("/ip_address_robot")
+        ip_address = rospy.get_param("/ip_address")
         socket0 = classes.SocketLoomo(8080, dt_control/4, ip_address, packer="f f")
         values = (0.0, 0.0)
         socket0.sender(values)

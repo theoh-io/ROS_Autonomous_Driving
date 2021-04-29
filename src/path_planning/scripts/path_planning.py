@@ -80,12 +80,14 @@ def main():
     num_person = int(rospy.get_param("/num_person"))-1
     loomo = classes.MobileRobot(wheel_base, v_max)
 
+    # Person-Following algorithm initialization
     if PATH_PLANNING_FUNCTION == "CHUV":
         robot_position = rospy.get_param("/robot_position")
         planner_type = rospy.get_param("/planner_type")
         planner_class = CHUV_Planner.CHUV_Planner(loomo, speed, N, dt_control, robot_position)
         goal_local = [0.0, 0.0]
 
+    # Obstacle/Human avoidance algorithm initialization
     elif PATH_PLANNING_FUNCTION == "Default":
         goal_x = rospy.get_param("/goal_x")
         goal_y = rospy.get_param("/goal_y")
@@ -142,7 +144,7 @@ def main():
             goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
             path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now_local, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
-        if len(path)>N and iterations > 0:
+        if len(path)>=N and iterations >= 0:
             # Send commands to the ROS Structure
             iterations = 0
             sender.send(path, objects_now_local, x0, goal_local)
@@ -166,3 +168,4 @@ if __name__ == "__main__":
 
     except rospy.ROSInterruptException:
         pass
+

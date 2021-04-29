@@ -10,71 +10,70 @@ import collections
 
 import os
 import sys
-abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+abs_path_to_tools = "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classes, transformations, utilities
 
-# Class for Patient-Following Path Planning
+# Class for Person-Following path planning
 class CHUV_Planner:
 
     def __init__(self, mobile_robot, speed, N, dt_control, robot_position):
-        # Autonomous System and control specifications
+        # Autonomous System Parameters
         self.mobile_robot = mobile_robot
-        self.prediction_list = []
         self.speed = speed
+
+        # Path Planning Parameters
+        self.prediction_list = []
         self.dt_control = dt_control
         self.N = N
-
-        # Relative Position between Robot and Patient (In the straight scenario: y = 0.0)
-        self.x_limit = 0.0
-        self.y_limit = 1.0
-
-        # Details for Curvilinear Path Planning
         self.robot_position = robot_position
         self.past_person_array_global = collections.deque(maxlen=5)
         self.past_heading = 0.0
 
+        # Relative position of the robot from the patient (when straight, y = 0.0)
+        self.x_limit = 0.0
+        self.y_limit = 0.0
 
-    # Straight Patient-Following Path Planning
+    
     def path_planning_straight(self, person_prediction_global, x0):
+        # Initialization
         t_max = 0.0
         person_array = np.array(person_prediction_global[0])
-        
-        # Goal global position
+
+        # Global coordinates of the goal
         x = person_array[0] - self.x_limit
         y = 0.0
-
         goal = [x, y]
         path = [[x0[0],x0[1]], goal]
 
+        # Iterations we need to reach the goal
         T_total = abs(x/self.speed)
-
         N = int(T_total/self.dt_control)
 
-        # Draw a straight line
+        # Generate a straight path from current robot position to goal (global coordinates)
         if T_total > t_max:
             m = goal[1]/goal[0]
-            x_list = np.linspace(x0[0], goal[0], num=N)
+            x_list = np.linspace(x0[0], goal[0], num=N+2)
             y_list = m * x_list
             path = []
 
             for i in range(len(x_list)):
                 path.append([x_list[i], y_list[i]])
 
-        # Convert the straight line to MPC feasible path
-        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV_straight(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+5]
+        # Make the path feasible for the robot and adapt it to the MPC Control
+        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV_straight(self.mobile_robot, path, self.speed, self.dt_control, self.N, x0=x0)[:N+5]
 
-        if len(mpc_path_global)<self.N:
-
-            return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N
-
-        # Transform from Global to Local coordinates
+        # Transform the path from global to local coordinates
         mpc_path = transformations.Global_to_Local(x0, mpc_path_global)
 
+        # If path is too short, add the last states, N times)
+        if len(mpc_path)<= (1 + self.N):
+
+            return mpc_path + [mpc_path[-1],]*(2+self.N - len(mpc_path))
+        
         return mpc_path
 
-
-    # Curvilinear Patient-Following Path Planning
+    
     def path_planning_curvilinear(self, person_prediction_global, x0, path_type="safe"):
         path = []
         t_max = 0.1
@@ -92,8 +91,6 @@ class CHUV_Planner:
         person_array_global[2] = heading
         self.past_person_array_global.append(person_array_global)
         self.past_heading = heading
-
-        #print("object = " + str(person_array_global))
 
         if self.robot_position == "right":
             
@@ -117,9 +114,6 @@ class CHUV_Planner:
         y_list = np.array([x0[1], y])
 
         heading_line = math.atan2((y-x0[1]),(x-x0[0]))
-        #print("heading line = " + str(heading_line))
-
-        path = []
 
         if path_type == "linear":
             T_total = abs(utilities.calculate_distance(x0, goal_global)/self.speed)
@@ -146,9 +140,6 @@ class CHUV_Planner:
             x_list2 = np.linspace(goal_global_2[0], goal_global[0], num=N2+2)
             y_list2 = m2 * x_list2 + n2
 
-            #print(x_list1)
-            #print(x_list2)
-
             x_list = list(x_list1) + list(x_list2)
             y_list = list(y_list1) + list(y_list2)
 
@@ -157,17 +148,12 @@ class CHUV_Planner:
 
         mpc_path_global = utilities.MPC_Planner_restrictions_CHUV_curvilinear(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)
         goal_local = transformations.Global_to_Local(x0, [goal_global])[0]
-        print("goal = " + str(goal_global))
-        #print("goal = " + str(goal_local))
 
         if len(mpc_path_global)<self.N:
 
             return [[0.0, 0.0, 0.0, 0.0], ] * 2 * self.N, goal_local
 
         mpc_path_local = transformations.Global_to_Local(x0, mpc_path_global)
-
-        print("path global = " + str(mpc_path_global))
-        #print("path local = " + str(mpc_path_local[:N-1]))
 
         return mpc_path_local, goal_local
 

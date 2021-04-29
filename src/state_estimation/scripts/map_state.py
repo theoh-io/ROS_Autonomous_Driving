@@ -43,11 +43,11 @@ def main():
     if mapping_activated:
         sender = Sender()
         sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
-        ip_address = rospy.get_param("/ip_address_robot")
+        ip_address = rospy.get_param("/ip_address")
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=5.0, error_sensor=5.0)
+    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=5.0)
 
     # Variable Initialization
     global state, map_state_activated
@@ -58,7 +58,7 @@ def main():
 
     rospy.loginfo("Mapping Node Ready")
 
-    rospy.sleep(1.5)
+    rospy.sleep(0.2)
 
     while not rospy.is_shutdown() and mapping_activated:
         start = time.time()

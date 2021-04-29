@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # VITA, EPFL
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
-sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import socket
 import numpy as np
 import struct
@@ -14,7 +12,7 @@ import rospy
 
 class SocketLoomo:
     # Initialize socket connection
-    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f ', sockettype = "Stream"):
+    def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f '):
         self.data_size = data_size
         self.max_waiting_time = dt/10
         self.received_data = []
@@ -22,11 +20,7 @@ class SocketLoomo:
         self.received_data_unpacked = []
 
         try:
-            if sockettype == "Stream":
-                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            
-            else:
-                self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         except socket.error:
             rospy.logerr('Failed to create socket')
@@ -103,7 +97,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (128,96), received_image)
+        pil_image = Image.frombytes('RGB', (80,60), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)
@@ -111,8 +105,8 @@ class DetectorConfig:
 
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-        cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(1)
+        #cv2.imshow('Test window',opencvImage)
+        #cv2.waitKey(1)
 
         if self.type_input == "opencv":
             image = opencvImage
@@ -130,5 +124,5 @@ class MobileRobot:
     def __init__(self, wheel_base, v_max):
         self.wheel_base = wheel_base
         self.v_max = v_max
-        self.w_max = v_max / wheel_base
+        self.w_max = 0.25
 

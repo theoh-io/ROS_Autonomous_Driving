@@ -43,7 +43,7 @@ def main():
     path_model = rospy.get_param("/model_prediction_path")
 
     if prediction_activated and not mapping_activated:
-        ip_address = rospy.get_param("/ip_address_robot")
+        ip_address = rospy.get_param("/ip_address")
         socket4 = classes.SocketLoomo(8084, dt_prediction/4, ip_address, unpacker=10*'f ')
 
     elif prediction_activated and mapping_activated:

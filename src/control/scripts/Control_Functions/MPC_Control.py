@@ -9,7 +9,7 @@ import rospy
 import pickle
 
 class MPC:
-    def __init__(self, mobile_robot, dt_control, prediction_horizon):
+    def __init__(self, mobile_robot, dt_control, prediction_horizon, straight=True):
 
         self.dt = dt_control
         self.N = int(prediction_horizon/dt_control)
@@ -29,28 +29,52 @@ class MPC:
         self.dw_list = []
 
         ####### Weights:
+        if straight:
+                # w_Q + w_dR = 1
+                w_Q = 0.6
+                w_dR = 0.4
 
-        # w_Q + w_dR = 1
-        w_Q = 0.6
-        w_dR = 0.4
-
-        # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
-        w_Q_ex = 0.6
-        w_Q_ey = 0.3
-        w_Q_eheading = 0.1
-
-
-        # w_dR_steer + w_dR_torque = 1
-        w_dR_v = 0.5
-        w_dR_w = 0.5
+                # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
+                w_Q_ex = 0.35
+                w_Q_ey = 0.35
+                w_Q_eheading = 0.3
 
 
-        ####### Maximum admissible values:
+    	        # w_dR_steer + w_dR_torque = 1
+                w_dR_v = 0.4
+                w_dR_w = 0.6
 
-        # Maximum admissible error in the states:
-        ex_max = 0.05 # m
-        ey_max = 0.1 # m
-        eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
+
+                ####### Maximum admissible values:
+
+                # Maximum admissible error in the states:
+       	        ex_max = 0.1 # m
+                ey_max = 0.1 # m
+                eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
+
+        if not straight:
+	        # w_Q + w_dR = 1
+                w_Q = 0.7
+                w_dR = 0.3
+
+                # w_Q_ex + w_Q_ey + w_Q_epsi + w_Q_ev = 1
+                w_Q_ex = 0.3
+                w_Q_ey = 0.3
+                w_Q_eheading = 0.4
+
+
+                # w_dR_steer + w_dR_torque = 1
+                w_dR_v = 0.4
+                w_dR_w = 0.6
+
+
+                ####### Maximum admissible values:
+	
+                # Maximum admissible error in the states:
+                ex_max = 0.1 # m
+                ey_max = 0.1 # m
+                eheading_max = 3.0 * (math.pi/180.0) # degrees --> rad
+
 
         # Maximum output rate:
         self.dv_max = mobile_robot.v_max * self.dt # m/s
@@ -158,7 +182,7 @@ def mpc_control_loomo(mpc, x0, xref):
     mpc.xref = xref
 
     # Optimizer
-    res = opt.minimize(mpc.objective_function, mpc.u_total_prev, bounds = mpc.bnds, method = 'SLSQP', constraints = mpc.con1)
+    res = opt.minimize(mpc.objective_function, mpc.u_total_prev, bounds = mpc.bnds, method = 'SLSQP', constraints = mpc.con1 )
 
     # Save the interesting values of the solver
     v_cmd = res.x[0]

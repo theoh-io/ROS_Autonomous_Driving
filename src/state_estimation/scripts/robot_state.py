@@ -33,7 +33,7 @@ def main():
     sender = Sender()
 
     # Initialize socket connections
-    ip_address = rospy.get_param("/ip_address_robot")
+    ip_address = rospy.get_param("/ip_address")
     socket2 = classes.SocketLoomo(8082, dt_robot_state/4, ip_address, unpacker=5*'f ')
 
     # Parameter Initialization
@@ -51,7 +51,7 @@ def main():
 
     rospy.loginfo("Robot_State Node Ready")
 
-    rospy.sleep(1.5)
+    rospy.sleep(0.1)
 
     while not rospy.is_shutdown():
         start = time.time()
