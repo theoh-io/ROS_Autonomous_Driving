@@ -41,3 +41,15 @@ path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now, speed, dt_contr
 ```
 
 If ```prediction_activated``` was false, we only calculate the next states depending on the current objects' position, ```objects_now```.
+
+* **Straight Patient-Following Path Planning**
+
+<p align="center">
+<img src="./Images/Straight.png" alt="drawing" width="300"/>
+</p>
+
+* **Curvilinear Patient-Following Path Planning**
+
+<p align="center">
+<img src="./Images/Curvilinear.png" alt="drawing" width="300"/>
+</p>

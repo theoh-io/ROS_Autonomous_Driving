@@ -92,6 +92,14 @@ Depending on the Ubuntu version, there are three compatible ROS distributions.
 
 **Python Libraries**
 
+We have built a bash script and a requirements.txt file with all the python modules required for our ROS pipeline. You can run them in your command line by typing:
+
+```shell
+sudo chmod +x dependencies_Autonomous_driving_pipeline.sh
+./dependencies_Autonomous_driving_pipeline.sh
+pip install -r requirements.txt
+```
+
 * Openpifpaf 0.11.9
 
 * TrajNet++
@@ -114,13 +122,7 @@ Depending on the Ubuntu version, there are three compatible ROS distributions.
 
 * OpenCV 3.3
 
-We have built a bash script and a requirements.txt file with all the python modules required for our ROS pipeline. You can run them in your command line by typing:
 
-```shell
-sudo chmod +x dependencies_Autonomous_driving_pipeline.sh
-./dependencies_Autonomous_driving_pipeline.sh
-pip install -r requirements.txt
-```
 
 
 
