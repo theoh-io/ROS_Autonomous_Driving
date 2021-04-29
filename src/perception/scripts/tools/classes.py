@@ -117,8 +117,11 @@ class DetectorConfig:
 
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-        cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(1)
+
+        # Uncomment if you want to see the same as the robot from the computer. 
+        
+        #cv2.imshow('Test window',opencvImage)
+        #cv2.waitKey(1)
 
         if self.save_video:
             self.result.write(opencvImage)

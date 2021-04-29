@@ -67,6 +67,8 @@ The main goal is to design a path for the mobile robot to avoid object collision
 
 In this project, we use **Prediction RRT*** to avoid object collision going from a start point to a goal, considering the observations' possible motion.
 
+We also implement a **Human-Tracking** path planning program based on the Openpifpaf information. 
+
 ## Control
 
 In the Control package, we design an algorithm to follow the previously calculated desired path. 

@@ -34,11 +34,6 @@ Minion images detector. Reference: https://github.com/vita-epfl/socket-loomo/blo
 
 **Comparison between both detectors:**
 
-| Detector Name     | (w, h, c)     | dt_perception     | dt_control        | time_horizon_control  | type_input    |
-| :----:            | :------:      | :------:          | :------:          | :------:              | :------:      |
-| Default           | (80, 60, 3)   | 0.1 s             | 0.2 s             | 1 s                   | opencv        |
-| Openpifpaf        | (161, 107, 3) | 0.25 s            | 0.5 s             | 3 s                   | pil           |
-
 All real time detectors can be added inside the pipeline, setting the required parameters.
 
 ``` python 
