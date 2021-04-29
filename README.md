@@ -8,7 +8,6 @@ Before adopting the pipeline for a singular purpose, we strongly recommend to re
 <img src="./src/control/Images/MR_Loomo_closed_loop.gif" alt="drawing" width="700"/>
 </p>
 
-
 ## User Guide
 
 ### Quick Start
@@ -34,6 +33,8 @@ source devel/setup.bash
 ```
 
 If we need to change some parameters of the ROS structure, we can go to [Loomo.launch](/src/loomo) inside the launch folder.
+
+The Autonomous System used in our work is a Loomo Segway Robot. It needs some specific algorithms to enable the connection with the server (ROS pipeline), presented in https://github.com/cconejob/loomo-vita-testing-app.
 
 Once everything is set up and adjusted to our specific context, we are ready to launch:
 
