@@ -4,13 +4,19 @@ In this file, the user can change the most important parameters of the pipeline 
 
 ## Global
 
+<p align="center">
+
 | Parameter   |  Description                                 |
 |:---------:  |:-------------------------:                   |
 | ip_address_robot  | IP Address Autonomous System (client)  |
 | v_max       | Robot's maximum speed [m/s]                  |
 | wheel_base  | Robot's length between wheels [m]            |
 
+</p>
+
 ## Perception
+
+<p align="center">
 
 | Parameter           |  Description                              |
 |:---------:          |:-------------------------:                |
@@ -18,15 +24,22 @@ In this file, the user can change the most important parameters of the pipeline 
 | dt_perception       | Perception sampling time [s]              |
 | ip_address_nicolo    | Second Client IP Address (keypoint information) |
 
+</p>
 
 ## Robot State
+
+<p align="center">
 
 | Parameter            |  Description                                |
 |:---------:           |:-------------------------:                  |
 | ROBOT_STATE_FUNCTION | Robot State algorithm used                 |
 | dt_robot_state       | Robot State sampling time [s]              |
 
+</p>
+
 ## Map State
+
+<p align="center">
 
 | Parameter               |  Description                  |
 |:---------:              |:-------------------------:    |
@@ -35,7 +48,11 @@ In this file, the user can change the most important parameters of the pipeline 
 | map_state_activated     | Estimate the state with map?  |
 | dt_map_state            | Map State sampling time [s]   |
 
+</p>
+
 ## Prediction
+
+<p align="center">
 
 | Parameter               |  Description                                |
 |:---------:              |:-------------------------:                  |
@@ -45,7 +62,11 @@ In this file, the user can change the most important parameters of the pipeline 
 | past_observations       | Number of past observations needed          |
 | dt_prediction           | Prediction sampling time [s]                |
 
+</p>
+
 ## Path Planning
+
+<p align="center">
 
 | Parameter               |  Description                                |
 |:---------:              |:-------------------------:                  |
@@ -56,7 +77,11 @@ In this file, the user can change the most important parameters of the pipeline 
 | planner_type            | Straight/Curvilinear path planning          |
 | robot_position          | Right/Left relative to the patient          |
 
+</p>
+
 ## Control
+
+<p align="center">
 
 | Parameter               |  Description                  |
 |:---------:              |:-------------------------:    |
@@ -65,9 +90,15 @@ In this file, the user can change the most important parameters of the pipeline 
 | n_states                | Number of states for control  |
 | dt_control              | Control sampling time [s]     |
 
+</p>
+
 ## Visualization
+
+<p align="center">
 
 | Parameter              |  Description                                 |
 |:---------:             |:-------------------------:                   |
 | VISUALIZATION_FUNCTION | Visualization algorithm used                 |
 | dt_visualization       | Visualization sampling time [s]              |
+
+</p>
