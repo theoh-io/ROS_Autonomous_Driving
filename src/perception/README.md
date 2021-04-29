@@ -12,20 +12,24 @@
 
 We offer two different detectors, built by VITA laboratory: 
 
+* **Openpifpaf** 
+
+Human detector. Reference: https://github.com/vita-epfl/openpifpaf
+
+<center>
+
+Closed-Loop Tests               |  Openpifpaf Keypoint Extraction
+:-------------------------: |:-------------------------:
+<img src="../control/Images/MR_EPFL.gif" alt="drawing" width="500"/> | <img src="../control/Images/MR_EPFL_skeleton.gif" alt="drawing" width="500"/>
+
+</center>
+
 * **Minion (Default)** 
 
 Minion images detector. Reference: https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py
 
 <p align="center">
 <img src="./Images/Perception_minion.gif" alt="drawing" width="400"/>
-</p>
-  
-* **Openpifpaf** 
-
-Human detector. Reference: https://github.com/vita-epfl/openpifpaf
-
-<p align="center">
-<img src="./Images/Perception_Openpifpaf.gif" alt="drawing" width="400"/>
 </p>
 
 **Comparison between both detectors:**
