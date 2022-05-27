@@ -7,11 +7,11 @@ sudo apt-get install -y build-essential cmake
 sudo apt-get install -y qt5-default libvtk6-dev
 
 # Media I/O:
-sudo apt-get install -y zlib1g-dev libjpeg-dev libwebp-dev libpng-dev libtiff5-dev libjasper-dev libopenexr-dev libgdal-dev
+sudo apt-get install -y zlib1g-dev libjpeg-dev libwebp-dev libpng-dev libtiff5-dev libopenexr-dev libgdal-dev
 #resolving problem of installation for libjasper-dev
-#sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
-#sudo apt update
-#sudo apt install libjasper1 libjasper-dev
+sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+sudo apt update
+sudo apt install libjasper1 libjasper-dev
 
 
 # Video I/O:
@@ -29,37 +29,37 @@ sudo apt-get install -y ant default-jdk
 # Documentation:
 sudo apt-get install -y doxygen
 
-sudo apt-get install -y unzip wget
-wget https://github.com/opencv/opencv/archive/3.3.1.zip
-unzip 3.3.1.zip
-rm 3.3.1.zip
-mv opencv-3.3.1 OpenCV
-cd OpenCV
-mkdir build
-cd build
-cmake -DWITH_QT=ON -DWITH_OPENGL=ON -DFORCE_VTK=ON -DWITH_TBB=ON -DWITH_GDAL=ON -DWITH_XINE=ON -DBUILD_EXAMPLES=ON -DENABLE_PRECOMPILED_HEADERS=OFF ..
-make -j4
-sudo make install
-sudo ldconfig
+# sudo apt-get install -y unzip wget
+# wget https://github.com/opencv/opencv/archive/3.3.1.zip
+# unzip 3.3.1.zip
+# rm 3.3.1.zip
+# mv opencv-3.3.1 OpenCV
+# cd OpenCV
+# mkdir build
+# cd build
+# cmake -DWITH_QT=ON -DWITH_OPENGL=ON -DFORCE_VTK=ON -DWITH_TBB=ON -DWITH_GDAL=ON -DWITH_XINE=ON -DBUILD_EXAMPLES=ON -DENABLE_PRECOMPILED_HEADERS=OFF ..
+# make -j4
+# sudo make install
+# sudo ldconfig
 
 
-# TRAJNET++
+# # TRAJNET++
 
-## Create directory to setup Trajnet++
-mkdir trajnet++
-cd trajnet++ 
+# ## Create directory to setup Trajnet++
+# mkdir trajnet++
+# cd trajnet++ 
 
-## Clone Repositories
-git clone https://github.com/vita-epfl/trajnetplusplusdataset.git
-git clone https://github.com/vita-epfl/trajnetplusplusbaselines.git
+# ## Clone Repositories
+# git clone https://github.com/vita-epfl/trajnetplusplusdataset.git
+# git clone https://github.com/vita-epfl/trajnetplusplusbaselines.git
 
-## Download Requirements
-cd trajnetplusplusbaselines/ 
-pip install -e .
+# ## Download Requirements
+# cd trajnetplusplusbaselines/ 
+# pip install -e .
 
-cd ../trajnetplusplusdataset/ 
-pip install -e .
-pip install -e '.[test, plot]'
+# cd ../trajnetplusplusdataset/ 
+# pip install -e .
+# pip install -e '.[test, plot]'
 
 
 # Other common modules
