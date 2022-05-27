@@ -1,0 +1,17 @@
+*.deb
+Python-3.7.4.tgz
+Python-3.7.4
+venv
+trajnet++
+opencv
+dir
+devel
+build
+.vscode
+
+src/control/scripts/tools/
+src/path_planning/scripts/tools/
+src/prediction/scripts/tools/
+src/state_estimation/scripts/tools/
+src/visualization/src/tools/
+
