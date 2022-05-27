@@ -15,3 +15,4 @@ src/prediction/scripts/tools/
 src/state_estimation/scripts/tools/
 src/visualization/src/tools/
 
+*.pyc

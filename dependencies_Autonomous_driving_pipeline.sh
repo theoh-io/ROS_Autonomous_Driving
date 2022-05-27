@@ -8,6 +8,11 @@ sudo apt-get install -y qt5-default libvtk6-dev
 
 # Media I/O:
 sudo apt-get install -y zlib1g-dev libjpeg-dev libwebp-dev libpng-dev libtiff5-dev libjasper-dev libopenexr-dev libgdal-dev
+#resolving problem of installation for libjasper-dev
+#sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+#sudo apt update
+#sudo apt install libjasper1 libjasper-dev
+
 
 # Video I/O:
 sudo apt-get install -y libdc1394-22-dev libavcodec-dev libavformat-dev libswscale-dev libtheora-dev libvorbis-dev libxvidcore-dev libx264-dev yasm libopencore-amrnb-dev libopencore-amrwb-dev libv4l-dev libxine2-dev
@@ -73,7 +78,7 @@ python3 get-pip.py --force-reinstall
 pip install vcstools
 pip install -U rosdep
 pip install -U wstool
-pip install rosinstallrosdep update
+pip install rosinstall rosdep update
 pip install pyyaml
 
 apt-get download libboost-all-dev libgtest-dev libpcl-dev libboost-thread-dev python3-rospkg libboost-filesystem-dev hddtemp python-rospkg python3-paramiko python-mock 

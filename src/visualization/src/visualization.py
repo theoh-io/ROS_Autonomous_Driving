@@ -131,7 +131,8 @@ def main():
     # Initialize ROS visualization node
     rospy.init_node("visualization")
     visualization_activated = rospy.get_param("/visualization_activated")
-    mode = rospy.get_param("/mode")
+    #mode = rospy.get_param("/mode")
+    mode="Default"
 
     global planning_local, planning_global, predictions_local, predictions_global, control_local, control_global, state_local, state_global, goal_local, goal_global, start_node, x0, gt
 
