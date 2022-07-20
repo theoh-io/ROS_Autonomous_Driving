@@ -65,7 +65,7 @@ def main():
         sub_mapping = rospy.Subscriber('/State_Estimation/map_global', PositionArray, callback_mapping, queue_size = 1)
 
     if not prediction_activated and not mapping_activated:
-        ip_address = rospy.get_param("/ip_address_robot")
+        ip_address = rospy.get_param("/ip_address")
         socket3 = classes.SocketLoomo(8083, dt_path_planning/4, ip_address)
 
     sender = Sender()
