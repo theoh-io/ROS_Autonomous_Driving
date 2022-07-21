@@ -2,7 +2,7 @@
     <!-- Explanation in the README.md file -->
 
     <!-- GLOBAL PARAMETERS -->
-    <param name="ip_address" value="128.179.180.79" />
+    <param name="ip_address" value="128.179.185.157" />
     <param name="ip_address_nicolo" value="192.168.0.152" />
     <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="1.0" />
