@@ -54,7 +54,10 @@ def main():
 
     state = [0.0, 0.0, 0.0, 0.0, 0.0]
     map_state_activated = rospy.get_param("/map_state_activated")
-    map_total = []
+    map_total = [] #contains positions of the obstacles
+
+    map_state=[]
+    list_positions=[]
 
     rospy.loginfo("Mapping Node Ready")
 
@@ -62,6 +65,7 @@ def main():
 
     while not rospy.is_shutdown() and mapping_activated:
         start = time.time()
+        #print("on est la")
 
         # Receive detection positions (x, y) in relation to the Loomo
         socket3.receiver()
@@ -69,15 +73,28 @@ def main():
         # Add detections into a list
         if socket3.received_ok:
             positions = [socket3.received_data_unpacked]
-            list_positions = []
-
+            print(f"in map_state bbox (positions)={positions}")
+        
+            #Quel est le format de positions ??
+            #Qu'est ce qui finis à l'interieur de list positions ?
+            #format obstacle dans map_total ? use openpifpaf perception and watch the topic map_global
+            ##Comprendre la fonction slam.mapping et map_total, map_state diff
             for idx in range(int(len(positions[0])/2)-1):
                 
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
-    
+            #print(f"list_positions: {list_positions}")
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
+            print(f"map total: {map_total}")
+            #map_total=[[0.5, 0.5, 1]] #forcing map to create fake obstacles
+            #print(f"new map total: {map_total}") 
+
+        #Tentative handcoding Obstacles
+        # else:
+        #     #map_total=[[0.5, 0.1, 1], [1.0, -0.2, 2]] #forcing map to create fake obstacles
+        #     #print("Hand coded obstacles !!!!!!")
+        #     map_total=[[1.8, 0.1, 1]]
 
 
             

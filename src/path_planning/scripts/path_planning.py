@@ -55,7 +55,9 @@ def main():
     rate = rospy.Rate(int(1/dt_path_planning))
     sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     prediction_activated = rospy.get_param("/prediction_activated")
+    print(f"pathplanning: prediction ={prediction_activated}")
     mapping_activated = rospy.get_param("/mapping_activated")
+    print(f"pathplanning: mapping ={mapping_activated}")
     PATH_PLANNING_FUNCTION = rospy.get_param("/PATH_PLANNING_FUNCTION")
 
     if prediction_activated:
@@ -115,6 +117,7 @@ def main():
 
             if socket3.received_ok:
                 positions = [socket3.received_data_unpacked]
+                #print(f"in path plan: positions array: {positions}")
                 array_predictions = []
 
                 for idx,position in enumerate(positions):

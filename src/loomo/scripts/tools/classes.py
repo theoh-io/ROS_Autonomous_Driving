@@ -76,8 +76,8 @@ class DetectorConfig:
     # Initialize detector and its main properties
     def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv"):
         # Detector expected input image dimensions
-        self.width = int(width)
-        self.height = int(height)
+        self.width = int(width/downscale)
+        self.height = int(height/downscale)
         self.downscale = downscale
 
         if self.downscale == 1:
@@ -97,7 +97,7 @@ class DetectorConfig:
 
     def detect(self, received_image):
         # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (80,60), received_image)
+        pil_image = Image.frombytes('RGB', (self.width,self.height), received_image)
 
         if self.scale_necessary:
             maxsize = (self.width, self.height)

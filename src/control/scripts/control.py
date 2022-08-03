@@ -114,6 +114,7 @@ def main():
     while not rospy.is_shutdown():
         start = time.time()
         control_cmd = [0.0, 0.0]
+        #print("starting control loop")
 
         if len(local_path) > int(N) and len(global_path) > int(N):
             # Initial planner state and Actual state in global coordinates
@@ -122,21 +123,20 @@ def main():
             
             # Actual state in relation to first path planning position
             state_local = transformations.Global_to_Local(state_planner, [actual_state])[0]
-
             # Desired states we need for the control algorithm
             planner_counter_l = utilities.minimum_distance(state_local, local_path)
+            #print(f"planner counter is {planner_counter_l}")
             planner_counter_g = utilities.minimum_distance(actual_state, global_path)
             actual_path_local = local_path[planner_counter_l:]
             actual_path_global = global_path[planner_counter_g:]
             desired_path_local = actual_path_local[:N+1]
             desired_path_global = actual_path_global[:N+1]
             local_predictions = local_predictions
-
             # Calculate the actual control command and the control path it predicts to follow.
             if len(desired_path_global)>int(N):
-
                 if CONTROL_FUNCTION == "Default":
                     control_cmd, predicted_states_local = MPC_Control.mpc_control_loomo(controller, state_local, desired_path_local)
+                    print(predicted_states_local)
 
                 elif CONTROL_FUNCTION == "EPFL_Driverless":
                     controller.acquire_path(desired_path_global)
@@ -155,6 +155,7 @@ def main():
 
         # Calculate node computation time
         computation_time = time.time() - start
+        #print(f"in Control: computation time is : {computation_time}")
         if computation_time > dt_control:
             rospy.logwarn("Control computation time higher than node period by " + str(computation_time-dt_control) + " seconds")
 

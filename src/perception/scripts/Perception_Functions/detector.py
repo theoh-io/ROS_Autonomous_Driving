@@ -104,7 +104,10 @@ class Detector(object):
 
             pred_y_box, pred_y_logit = pred_y_box.numpy(), pred_y_logit.numpy()
             pred_y_label = pred_y_logit > 0.5
+            #force to output no detection
+            #pred_y_label=0
             pred_bboxes = pred_y_box * self.img_size
+            #pred_bboxes= [0.0, 0.0, 0.0, 0.0]
             # pred_bboxes = pred_bboxes.reshape(len(pred_bboxes), num_objects, -1)
 
         return pred_bboxes, pred_y_label, [[0.0, 0.0, 0.0, 0.0]]
