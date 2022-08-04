@@ -15,6 +15,9 @@
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.001" />
     <param name="downscale" value="4" />
+    <param name="detector_size" value="medium" />
+    <param name="visualization_activated" value="True" />
+
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->
     <param name="ROBOT_STATE_FUNCTION" value="Default" />

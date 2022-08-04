@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # VITA, EPFL
-
-
-##################
-#IMPORTS
-##################
 import rospy
 import matplotlib.pyplot as plt
 from Perception_Functions import detector, pifpaf_detector, yolo_detector
@@ -27,35 +22,22 @@ filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 save_results = False
 
-
-
 def main():
-    ###################################
-    # Config from Launch File Arguments
-    ####################################
-
     # Initialize ROS perception node
     rospy.init_node("perception")
     dt_perception = rospy.get_param("/dt_perception")
     rate = rospy.Rate(int(1/dt_perception))    
     PERCEPTION_FUNCTION = rospy.get_param("/PERCEPTION_FUNCTION")
+    path_model = rospy.get_param("/model_perception_path")
     downscale = rospy.get_param("/downscale")
-    detector_size=rospy.get_param("/detector_size")
-    perception_vis=rospy.get_param("/visualization_activated")
-
-
-    ###################################
-    # Initialize Full detector
-    ###################################
-
     # Initialize Detector Configuration
     # Set width, height and channel values for the received image --> Loomo image dimensions: 80x60x3
     # Set downscale as the relation between Loomo image/detector expected image
 
-    # if PERCEPTION_FUNCTION == "Default":
-    #     detection_image = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = downscale,
-    #                                             global_path = path_model,
-    #                                             detector = detector.Detector(), load = True, type_input = "opencv")
+    if PERCEPTION_FUNCTION == "Default":
+        detection_image = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = downscale,
+                                                global_path = path_model,
+                                                detector = detector.Detector(), load = True, type_input = "opencv")
     
     elif PERCEPTION_FUNCTION =="Openpifpaf":
         detection_image = classes.NewDetectorConfig(width = 640/downscale, height = 480/downscale, channels = 3, downscale = downscale,
@@ -68,17 +50,9 @@ def main():
                                                 global_path = '',
                                                 detector = yolo_detector.YoloDetector(), load = False, type_input = "opencv",
                                                 save_video=save_results, filename_video=filename_video)
-    
-    elif PERCEPTION_FUNCTION =="STARK":
-        perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
-                                                global_path = '',
-                                                detector = yolo_detector.YoloDetector(), load = False, type_input = "opencv",
-                                                save_video=save_results, filename_video=filename_video)
 
-    #################################
+
     # Initialize socket connections
-    #################################
-
     ip_address = rospy.get_param("/ip_address")
     ip_address_nicolo = rospy.get_param("/ip_address_nicolo")
     #try:
@@ -92,12 +66,7 @@ def main():
     visualization = False
     init = time.time()
 
-
-    ##############################
-    # Main Loop
-    ###############################
-
-    # Initialize perception transmission variables
+    # Initialize perception variables
     net_received_length = 0
     received_image = b''
 
@@ -111,34 +80,22 @@ def main():
             #rospy.loginfo("Perception loop")
             start = time.time()
 
-            ################################
             # Receive Image from the Loomo
-            ################################
-
             socket1.receiver(True)
             received_image += socket1.received_data
             net_received_length += len(socket1.received_data)
             #print(f"perceptions size 1: {net_received_length}, size 2: {socket1.data_size}")
             # If detector and received image size are the same
             if net_received_length == socket1.data_size:
+                print("!!!! Image received")
                 # Detect object/human
                 #  inside the image
-
-                #############################
-                # Inference on Received Image
-                #############################
-
                 bbox_list, label_list, bboxes_legs, image = detection_image.detect(received_image)
 
                 
-
                 if visualization:
                     plt.clf()
                     plt.plot(0.0, 0.0, ">k")
-
-                ############################
-                # Bounding Boxes Processing and Formatting
-                #############################
 
                 bbox = tuple()
                 #print(bbox_list)
@@ -153,26 +110,15 @@ def main():
                     h= bbox_list[i][3]
                     bbox= bbox+ (x_tl, y_tl, w, h, float(label_list[i][0]))
 
-                ####################################
-                #  BBox Visualization
-                ####################################
-
                 if bbox_visu is not None:
                     tl=(int(bbox_visu[0]-bbox_visu[2]/2), int(bbox_visu[1]+bbox_visu[3]/2)) #top-left corner
                     br= (int(bbox_visu[0]+bbox_visu[2]/2), int(bbox_visu[1]-bbox_visu[3]/2)) #bottom right corner
                     cv2.rectangle(image, tl, br, (255,0,0), 2)
                 cv2.imshow('Camera Loomo',image)
                 cv2.waitKey(1)
-                
-
-                ###################################
-                # Transmission to Loomo
-                ###################################
-
                 # Send bbox to the robot -> Camera tracking and motion controller algorithm
                 #bbox= (0.0, 0.0, 0.0, 0.0, 1.0) #trying to hand code 0 bbox to see if it's transmitted
                 #bbox=(tl[0], tl[1], br[0], br[1])
-
                 bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
                 print(f"in perception bbox: {bbox}")
                 socket5.sender(bbox)
