@@ -1,12 +1,14 @@
 import torch
 import numpy as np
 from mmtrack.apis import inference_sot, init_model
+import os
+import rospkg
 
 #from perceptionloomo.utils.utils import Utils
 
 
 class SotaTracker():
-    def __init__(self, tracker_name, tracking_conf, device='gpu', verbose="False"):
+    def __init__(self, tracker_name="Stark", tracking_conf="0.5", device='gpu', verbose="False"):
         '''
         init_model parameters: 
         tracker_name (Stark/Siamese) 
@@ -14,11 +16,18 @@ class SotaTracker():
         '''
         #FIX: download weights and set the path to chckpt and cfg
         desired_device = device
+
+        #use rospackage to be able to find path for ROS packages
+        #print(rospack.list())
+        rospack=rospkg.RosPack()
+        abs_path_to_perception=rospack.get_path('perception')
+
         if tracker_name=="Stark" or tracker_name=="stark":
-            path_config=
-            path_model=
-        elif tracker_name=="Siamese" or tracker_name=="siamese" 
-            or tracker_name=="siam" or tracker_name=="Siam":
+            
+            path_config=os.path.abspath(os.path.join(abs_path_to_perception,"../../mmtracking/configs/sot/stark/stark_st2_r50_50e_lasot.py"))#"configs/stark_st2_r50_50e_lasot.py"
+            path_model=os.path.abspath(os.path.join(abs_path_to_perception,"scripts/trackers/weights/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth"))#"weights/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth"
+        elif tracker_name=="Siamese" or tracker_name=="siamese" or tracker_name=="siam" or tracker_name=="Siam":
+            print("Siamese is still not implemented")
 
 
         cpu = 'cpu' == desired_device

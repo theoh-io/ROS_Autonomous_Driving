@@ -11,11 +11,12 @@
     
 
     <!-- PERCEPTION PARAMETERS: Default, Openpifpaf -->
-    <param name="PERCEPTION_FUNCTION" value="Yolo" />
+    <param name="PERCEPTION_FUNCTION" value="Stark" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.001" />
     <param name="downscale" value="4" />
     <param name="detector_size" value="medium" />
+    <param name="tracking_confidence" value="0.1" />
     <param name="visualization_activated" value="True" />
 
 

@@ -83,11 +83,11 @@ class NewDetectorConfig:
         self.height = int(height/downscale)
         self.downscale = downscale
 
-        if self.downscale == 1:
-            self.scale_necessary = False
+        # if self.downscale == 1:
+        #     self.scale_necessary = False
 
-        else:
-            self.scale_necessary = True
+        # else:
+        #     self.scale_necessary = True
 
         # Image received size data.
         self.data_size = int(self.width * self.height * channels)

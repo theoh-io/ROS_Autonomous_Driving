@@ -11,9 +11,8 @@ import numpy as np
 #      amp = False  # Automatic Mixed Precision (AMP) inference
 #results = model(imgs, size=320)  # custom inference size
 
-from perceptionloomo.detectors.base_detector import BaseDetector
 
-class Yolov5Detector(base_detector.BaseDetector):
+class Yolov5Detector():
     def __init__(self, model_size='default', verbose = False):       
         if model_size=='default':
             self.yolo_version = "yolov5s"

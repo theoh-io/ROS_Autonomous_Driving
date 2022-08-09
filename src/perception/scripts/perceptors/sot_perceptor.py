@@ -1,7 +1,7 @@
-# import numpy as np
-# import os 
+import numpy as np
+import os 
 # import logging
-# import time
+import time
 # from typing import List
 # # from perceptionloomo.detectors.pose_detectors import PoseDetector
 # from perceptionloomo.detectors.pose_yolo_detector import PoseYoloDetector
@@ -9,8 +9,13 @@
 # from perceptionloomo.utils.utils import Utils
 # from perceptionloomo.deep_sort.utils.parser import YamlParser
 
+from utilities.utils import Utils
+from perceptors.base_perceptor import BasePerceptor
 
-class SotPerceptor(base_perceptor.BasePerceptor):
+
+
+
+class SotPerceptor(BasePerceptor):
 
     def forward(self, image):
 

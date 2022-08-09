@@ -6,7 +6,7 @@ import numpy as np
 #bbox cropping
 
 class Utils():
-    @staticmethod:
+    @staticmethod
     #FIX: use BBOX format to crop, output format tensor image ?
     def crop_img_bbox(bbox_list: list, img: np.ndarray):
         img_list=[]
