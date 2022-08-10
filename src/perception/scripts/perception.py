@@ -82,9 +82,9 @@ def main():
     
     elif PERCEPTION_FUNCTION =="Stark":
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
-                                                detector = yolov5_detector.Yolov5Detector(), detector_size="default", 
-                                                tracker=mmtracking_sot.SotaTracker(), tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv")
+                                                detector = yolov5_detector.Yolov5Detector, detector_size="default", 
+                                                tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
+                                                type_input = "opencv", verbose=True)
 
 
     #################################
@@ -94,7 +94,7 @@ def main():
     ip_address = rospy.get_param("/ip_address")
     ip_address_nicolo = rospy.get_param("/ip_address_nicolo")
     #try:
-    socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, detection_image.data_size)
+    socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, perceptor.data_size)
     #except NameError:
         #detection_image=None
     socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
@@ -142,7 +142,7 @@ def main():
 
                 #when using Detector Config
                 #bbox_list, label_list, bboxes_legs, image = detection_image.detect(received_image)
-                bbox_list=SotPerceptor(received_image)
+                bbox_list, image=perceptor.forward(received_image)
                 print("in perception.py: bbox list:", bbox_list)
 
                 
@@ -156,17 +156,35 @@ def main():
                 #############################
 
                 bbox = tuple()
-                #print(bbox_list)
-                for i in range(len(bbox_list)):
+                bbox_visu=None
+                #Here we have only 1 bbox at the end as we are in Sot configuration
+
+                # if bbox_list:
+                #     for i in range(len(bbox_list)):
+                #         # Send bbox positions via socket to represent them in the Loomo
+                #         bbox_visu = bbox + (bbox_list[i][0], bbox_list[i][1], bbox_list[i][2], bbox_list[i][3], float(True))#float(label_list[i][0]))
+                        
+                #         #Loomo with Carlos App want the bbox in the following format: x_tl, y_tl, w, h
+                #         x_tl= bbox_list[i][0] - bbox_list[i][2]/2
+                #         y_tl= bbox_list[i][1] - bbox_list[i][3]/2
+                #         w= bbox_list[i][2]
+                #         h= bbox_list[i][3]
+                #         bbox= bbox+ (x_tl, y_tl, w, h, float(label_list[i][0]))
+                # else:
+                #     bbox=bbox+(0.0, 0.0, 0.0, 0.0, float(False))
+                
+                if bbox_list and np.asarray(bbox_list).ndim==1:
                     # Send bbox positions via socket to represent them in the Loomo
-                    bbox_visu = bbox + (bbox_list[i][0], bbox_list[i][1], bbox_list[i][2], bbox_list[i][3], float(label_list[i][0]))
+                    bbox_visu = bbox + (bbox_list[0], bbox_list[1], bbox_list[2], bbox_list[3], float(True))#float(label_list[i][0]))
                     
                     #Loomo with Carlos App want the bbox in the following format: x_tl, y_tl, w, h
-                    x_tl= bbox_list[i][0] - bbox_list[i][2]/2
-                    y_tl= bbox_list[i][1] - bbox_list[i][3]/2
-                    w= bbox_list[i][2]
-                    h= bbox_list[i][3]
-                    bbox= bbox+ (x_tl, y_tl, w, h, float(label_list[i][0]))
+                    x_tl= bbox_list[0] - bbox_list[2]/2
+                    y_tl= bbox_list[1] - bbox_list[3]/2
+                    w= bbox_list[2]
+                    h= bbox_list[3]
+                    bbox= bbox+ (x_tl, y_tl, w, h, float(True))
+                else:
+                    bbox=bbox+(0.0, 0.0, 0.0, 0.0, float(False))
 
                 ####################################
                 #  BBox Visualization

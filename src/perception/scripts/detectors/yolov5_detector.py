@@ -31,7 +31,7 @@ class Yolov5Detector():
         self.detection=np.array([0, 0, 0, 0])
 
         if self.verbose: 
-            print(f"-> Using {yolo_version} for detection.")
+            print(f"-> Using {self.yolo_version} for detection.")
         
 
     def bbox_format(self):

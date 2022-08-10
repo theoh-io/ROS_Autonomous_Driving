@@ -86,7 +86,7 @@ class YoloDetector():
             #modify the format of detection for bbox
             bbox=self.bbox_format()
             #bbox=self.detection
-            #if self.verbose is True: print("bbox after format: ", bbox)
+            if self.verbose is True: print("bbox after format: ", bbox)
             return bbox, [[True]], [[0.0, 0.0, 0.0, 0.0]]
         return [[0.0, 0.0, 0.0, 0.0]], [[False]], [[0.0, 0.0, 0.0, 0.0]]
 

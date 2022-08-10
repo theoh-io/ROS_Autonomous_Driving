@@ -73,7 +73,7 @@ def main():
         # Add detections into a list
         if socket3.received_ok:
             positions = [socket3.received_data_unpacked]
-            print(f"in map_state bbox (positions)={positions}")
+            #print(f"in map_state bbox (positions)={positions}")
         
             #Quel est le format de positions ??
             #Qu'est ce qui finis à l'interieur de list positions ?
@@ -86,7 +86,7 @@ def main():
             #print(f"list_positions: {list_positions}")
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
-            print(f"map total: {map_total}")
+            #print(f"map total: {map_total}")
             #map_total=[[0.5, 0.5, 1]] #forcing map to create fake obstacles
             #print(f"new map total: {map_total}") 
 
