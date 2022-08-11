@@ -136,7 +136,7 @@ def main():
             if len(desired_path_global)>int(N):
                 if CONTROL_FUNCTION == "Default":
                     control_cmd, predicted_states_local = MPC_Control.mpc_control_loomo(controller, state_local, desired_path_local)
-                    print(predicted_states_local)
+                    #print(predicted_states_local)
 
                 elif CONTROL_FUNCTION == "EPFL_Driverless":
                     controller.acquire_path(desired_path_global)

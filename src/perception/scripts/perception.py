@@ -17,9 +17,9 @@ import sys
 abs_path_to_tools = "/home/vita-w11/Autonomous_driving_pipeline/src/loomo/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 
-abs_path_to_ADP="/home/theo/Autonomous_driving_pipeline/src/trackers"
-sys.path.append(abs_path_to_ADP)
-print(sys.path)
+# abs_path_to_ADP="/home/theo/Autonomous_driving_pipeline/src/trackers"
+# sys.path.append(abs_path_to_ADP)
+#print(sys.path)
 from tools import classes
 import csv
 import cv2
@@ -84,7 +84,7 @@ def main():
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", verbose=True)
+                                                type_input = "opencv", verbose=False)
 
 
     #################################
@@ -143,7 +143,7 @@ def main():
                 #when using Detector Config
                 #bbox_list, label_list, bboxes_legs, image = detection_image.detect(received_image)
                 bbox_list, image=perceptor.forward(received_image)
-                print("in perception.py: bbox list:", bbox_list)
+                #print("Perception: bbox list:", bbox_list)
 
                 
 
@@ -177,6 +177,11 @@ def main():
                     # Send bbox positions via socket to represent them in the Loomo
                     bbox_visu = bbox + (bbox_list[0], bbox_list[1], bbox_list[2], bbox_list[3], float(True))#float(label_list[i][0]))
                     
+                    #Scaling down bbox
+                    scale=0.1
+                    bbox_list[2]=scale*bbox_list[2]
+                    bbox_list[3]=scale*bbox_list[3]
+
                     #Loomo with Carlos App want the bbox in the following format: x_tl, y_tl, w, h
                     x_tl= bbox_list[0] - bbox_list[2]/2
                     y_tl= bbox_list[1] - bbox_list[3]/2
@@ -207,7 +212,6 @@ def main():
                 #bbox=(tl[0], tl[1], br[0], br[1])
 
                 bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
-                print(f"in perception bbox: {bbox}")
                 socket5.sender(bbox)
 
                 # pixel_legs = tuple()

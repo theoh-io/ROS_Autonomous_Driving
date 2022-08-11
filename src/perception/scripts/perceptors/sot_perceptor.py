@@ -38,9 +38,7 @@ class SotPerceptor(BasePerceptor):
         return image
 
     def forward(self, img):
-        print(f"type img be4 preproc:{type(img)}")
         image=self.preproc(img)
-        print(f"type img after preproc:{type(image)}")
         # Detection
         tic1 = time.perf_counter()
         bbox_list = self.detector.forward(image)

@@ -12,6 +12,8 @@ abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
 
+import rospkg
+
 
 class Sender(object):
 
@@ -40,7 +42,11 @@ def main():
     prediction_activated = rospy.get_param("/prediction_activated")
     mapping_activated = rospy.get_param("/mapping_activated")
     PREDICTION_FUNCTION = rospy.get_param("/PREDICTION_FUNCTION")
-    path_model = rospy.get_param("/model_prediction_path")
+    #path_model = rospy.get_param("/model_prediction_path")
+    rospack=rospkg.RosPack()
+    abs_path_to_prediction=rospack.get_path('prediction')
+    path_model=os.path.abspath(os.path.join(abs_path_to_prediction,"scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl"))
+    print(f"prediction path")
 
     if prediction_activated and not mapping_activated:
         ip_address = rospy.get_param("/ip_address")
@@ -60,7 +66,6 @@ def main():
     
     elif PREDICTION_FUNCTION == "Trajnet":
         predictor = trajnetplus_predictor.TrajNetPredictor(dt=dt_prediction, pred_horizon=time_horizon_prediction, obs_length=n_past_observations, model=path_model)
-        
 
     # Initialize prediction variables
     global map_detections
@@ -69,6 +74,9 @@ def main():
     map_detections = []
     past_detections = []
     positions = [[0.0,0.0]]
+
+    #Print to help debugging
+    verbose=True
 
     rospy.loginfo("Prediction Node Ready")
     rospy.sleep(3.)
@@ -85,14 +93,25 @@ def main():
                 positions = [socket4.received_data_unpacked]
                 detections = []
 
+            if verbose:
+                print(f"in prediction: positions {positions}")
+
             for idx in range(int(len(positions[0])/2)-1):
                 
                 if positions[0][idx*2]!=0.0:
                     detections.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
+        
+        else:
+            if verbose:
+                print(f"in prediction:  {detections}")
+
 
         # Add present detections to past in a buffer and predict trajectories
         past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, n_past_observations)
         predicted_trajectories = predictor.prediction_function(past_present_positions)
+
+        if verbose:
+                print(f"in prediction: pred_traj {predicted_trajectories}")
 
         # Send prediction topic via ROS
         sender.send(predicted_trajectories)
