@@ -17,9 +17,9 @@ class BasePerceptor():
         # Image received size data.
         self.data_size = int(self.width * self.height * channels)
 
-        self.detector=detector(detector_size, verbose=False)
+        self.detector=detector(detector_size, verbose=self.verbose)
         if tracker:
-            self.tracker=tracker(tracker_model, tracking_conf)
+            self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose)
         self.type_input=type_input
 
         if self.verbose:

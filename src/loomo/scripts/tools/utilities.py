@@ -127,8 +127,6 @@ def MPC_Planner_restrictions_CHUV_straight(mobile_robot, points, v, t, N, x0=[0.
     
     if len(points)>1:
          v = min(abs((points[-1][0]-x0[0])/(t*N)), v)
-    
-    print(v)
     e = v*t
     plan = [x0]
     dist = 0.0

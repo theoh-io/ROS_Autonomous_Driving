@@ -39,6 +39,7 @@ def main():
     dt_mapping = rospy.get_param("/dt_map_state")
     rate = rospy.Rate(int(1/dt_mapping))
     mapping_activated = rospy.get_param("/mapping_activated")
+    verbose = rospy.get_param("/verbose_map")
     
     if mapping_activated:
         sender = Sender()
@@ -72,7 +73,8 @@ def main():
         if socket3.received_ok:
             positions = [socket3.received_data_unpacked]
             list_positions=[]
-            print(f"in map_state bbox (positions)={positions}")
+            #if verbose:
+                #print(f"in map_state bbox (positions)={positions}")
             #Quel est le format de positions ??
             #Qu'est ce qui finis à l'interieur de list positions ?
             #format obstacle dans map_total ? use openpifpaf perception and watch the topic map_global
@@ -81,10 +83,12 @@ def main():
                 
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
-            print(f"list_positions: {list_positions}")
+            if verbose:
+                print(f"list_positions: {list_positions}")
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
-            print(f"map total: {map_total}, map_state: {map_state}")
+            if verbose:
+                print(f"map total: {map_total}")#, map_state: {map_state}")
             #map_total=[[0.5, 0.5, 1]] #forcing map to create fake obstacles
             #print(f"new map total: {map_total}") 
 

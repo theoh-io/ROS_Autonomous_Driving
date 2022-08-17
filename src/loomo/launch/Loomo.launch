@@ -7,17 +7,18 @@
     <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="2.0" />
     <param name="wheel_base" value="0.57" />
-    <param name="speed" value="0.25" />
+    <param name="speed" value="0.3" />
     
 
     <!-- PERCEPTION PARAMETERS: Default, Openpifpaf -->
     <param name="PERCEPTION_FUNCTION" value="Stark" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
-    <param name="dt_perception" value="0.001" />
+    <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
-    <param name="detector_size" value="medium" />
-    <param name="tracking_confidence" value="0.7" />
-    <param name="visualization_activated" value="True" />
+    <param name="detector_size" value="large" />
+    <param name="tracking_confidence" value="0.4" />
+    <param name="visualization_activated" value="false" />
+    <param name="verbose_percep" type="bool" value= "False" />
 
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->
@@ -29,17 +30,18 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.02" />
+    <param name="verbose_map" value="True" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />
-    <param name="prediction_activated" value="True" />
+    <param name="prediction_activated" value="False" />
     <param name="model_prediction_path" value="/home/theo/Autonomous_driving_pipeline/src/prediction/scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl" />
-    <param name="time_horizon_prediction" value="0.09" />
+    <param name="time_horizon_prediction" value="0.15" />
     <param name="past_observations" value="3" />
-    <param name="dt_prediction" value="0.025" />
+    <param name="dt_prediction" value="0.05" />
 
     <!-- PATH PLANNING PARAMETERS: Default, CHUV -->
-    <param name="PATH_PLANNING_FUNCTION" value="Default" />
+    <param name="PATH_PLANNING_FUNCTION" value="CHUV" />
     <param name="dt_path_planning" value="0.4" /> 
     <param name="time_horizon_path_planning" value="1.2" />
     <param name="planner_type" value="straight" />
@@ -50,7 +52,7 @@
     <param name="workarea_x_max" value="5.0" />
     <param name="workarea_y_min" value="-1.0" />
     <param name="workarea_y_max" value="1.0" />
-    <param name="num_person" value="1" />
+    <param name="num_person" value="0" />
     
     <!-- CONTROL PARAMETERS: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />

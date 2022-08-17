@@ -38,6 +38,19 @@ from trackers import mmtracking_sot
 
 
 
+def img_sync(excess_img, current_img, socket):
+    global verbose
+    if excess_img:
+        current_img += excess_img
+        current_img += socket.received_data
+        if verbose:
+            print(f"img len before {len(current_img)}")
+        while len(current_img) > socket.data_size:
+            current_image=current_image[socket.data_size:]
+        if verbose:
+            print(f"len after repair {len(current_img)}")
+            print(f"socket {len(socket1.received_data)}, size {socket1.data_size}")
+    return current_img
 
 
 def main():
@@ -54,6 +67,8 @@ def main():
     detector_size=rospy.get_param("/detector_size")
     tracking_conf=rospy.get_param("/tracking_confidence")
     perception_vis=rospy.get_param("/visualization_activated")
+    verbose=rospy.get_param("/verbose_percep")
+    
 
     ###################################
     # Initialize Full detector
@@ -112,6 +127,8 @@ def main():
     # Initialize perception transmission variables
     net_received_length = 0
     received_image = b''
+    data_rcvd=False
+    next_img=[]
 
     rospy.loginfo("Perception Node Ready")
 
@@ -123,29 +140,45 @@ def main():
             #rospy.loginfo("Perception loop")
             start = time.time()
 
+            
             ################################
             # Receive Image from the Loomo
             ################################
 
             socket1.receiver(True)
-            received_image += socket1.received_data
-            net_received_length += len(socket1.received_data)
-            #print(f"perceptions size 1: {net_received_length}, size 2: {socket1.data_size}")
-            # If detector and received image size are the same
-            if net_received_length == socket1.data_size:
-                # Detect object/human
-                #  inside the image
+            #to avoid an offset in the img transmission
 
+            #FIX: add it in a separated function
+            #received_image=img_sync(next_img, received_image, socket1)
+
+            if next_img:
+                received_image += next_img
+            received_image += socket1.received_data
+            if verbose:
+                print(f"img len before {len(received_image)}")
+            while len(received_image) > socket1.data_size:
+                received_image=received_image[socket1.data_size:]
+                next_img=[]
+            if verbose:
+                print(f"len after repair {len(received_image)}")
+                print(f"recvd img{len(received_image)}, socket {len(socket1.received_data)}, size {socket1.data_size}")
+
+            
+
+            if len(received_image)==socket1.data_size:
+                # Detect object/human
+                data_rcvd=True
+                # Reset perception variables
+                input_img=received_image
+                received_image = b''
                 #############################
                 # Inference on Received Image
                 #############################
-
                 #when using Detector Config
                 #bbox_list, label_list, bboxes_legs, image = detection_image.detect(received_image)
-                bbox_list, image=perceptor.forward(received_image)
-                #print("Perception: bbox list:", bbox_list)
-
-                
+                bbox_list, image=perceptor.forward(input_img)
+                if verbose:
+                    print("Perception: bbox list:", bbox_list)
 
                 if visualization:
                     plt.clf()
@@ -211,6 +244,15 @@ def main():
                 #bbox= (0.0, 0.0, 0.0, 0.0, 1.0) #trying to hand code 0 bbox to see if it's transmitted
                 #bbox=(tl[0], tl[1], br[0], br[1])
 
+                #transmitting fake bbox in the center
+                # bbox_list=[160, 120, 50, 100]
+                # x_tl= bbox_list[0] - bbox_list[2]/2
+                # y_tl= bbox_list[1] - bbox_list[3]/2
+                # w= bbox_list[2]
+                # h= bbox_list[3]
+                # bbox= (x_tl, y_tl, w, h, float(True))
+
+
                 bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
                 socket5.sender(bbox)
 
@@ -231,12 +273,17 @@ def main():
                 #     dict_legs = {'time': pl[0], 'lhx': pl[1], 'lhy': pl[2], 'rhx': pl[3], 'rhy': pl[4], 'lkx': pl[5], 'lky': pl[6], 'rkx': pl[7], 'rky': pl[8], 'lax': pl[9], 'lay': pl[10], 'rax': pl[11], 'ray': pl[12]}
                 #     writer.writerow(dict_legs)
 
-                # Reset perception variables
-                net_received_length = 0
-                received_image = b''
+                
 
-            elif net_received_length > socket1.data_size:
-                net_received_length = 0
+            elif len(received_image) > socket1.data_size:
+                if verbose:
+                    print("Image Transmission not synced !!")
+                #net_received_length = 0
+                next_img=received_image[socket1.data_size:]
+                while len(next_img) > socket1.data_size:
+                    next_img=received_image[socket1.data_size:]
+                if verbose:
+                    print(f"surplus {len(next_img)}")
                 received_image = b''
 
             # Calculate node computation time
@@ -244,10 +291,12 @@ def main():
             #print(f"perception computation time {computation_time}")
 
             
-            # if computation_time > dt_perception:
-            #     rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
+            if computation_time > dt_perception:
+                rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
 
-            rate.sleep()
+            if data_rcvd:
+                data_rcvd=False
+                rate.sleep()
 
     f.close()
 
