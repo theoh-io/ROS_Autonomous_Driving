@@ -2,7 +2,7 @@
     <!-- Explanation in the README.md file -->
 
     <!-- GLOBAL PARAMETERS -->
-    <param name="ip_address" value="128.179.158.249" />
+    <param name="ip_address" value="128.179.177.55" />
     <param name="ip_address_nicolo" value="192.168.0.152" />
     <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="2.0" />
@@ -11,14 +11,14 @@
     
 
     <!-- PERCEPTION PARAMETERS: Default, Openpifpaf -->
-    <param name="PERCEPTION_FUNCTION" value="Stark" />
+    <param name="PERCEPTION_FUNCTION" value="Openpifpaf" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
     <param name="detector_size" value="large" />
     <param name="tracking_confidence" value="0.4" />
     <param name="visualization_activated" value="false" />
-    <param name="verbose_percep" type="bool" value= "False" />
+    <param name="verbose_percep" type="bool" value= "True" />
 
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->
@@ -30,7 +30,7 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.02" />
-    <param name="verbose_map" value="True" />
+    <param name="verbose_map" value="False" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />

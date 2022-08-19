@@ -11,18 +11,22 @@ from tools import classconverter, classes
 class Sender(object):
     def __init__(self):
         self.pub_map_global = rospy.Publisher('/State_Estimation/map_global', PositionArray, queue_size=1)
-        self.pub_map_state = rospy.Publisher('/State_Estimation/map_state', State, queue_size=1)
+        self.pub_map_state = rospy.Publisher('/State_Estimation/map_state', StateArray, queue_size=1)
 
     def send(self, map_global, map_state=[]):
 
         global map_state_activated
 
+        #print(f"map global {map_global}")
         cmd_map_global = classconverter.list2PositionArray(map_global)
+        #print(f"cmd map global {cmd_map_global}")
         # Publish "/map" commands:
         self.pub_map_global.publish(cmd_map_global)
 
         if map_state_activated:
-            cmd_map_state = classconverter.list2State(map_state)
+            #if map_state:
+            cmd_map_state = classconverter.list2StateArray(map_state)
+            print(f"cmd map state {cmd_map_state}")
             self.pub_map_state.publish(cmd_map_state)
 
 

@@ -59,3 +59,41 @@ class Utils():
         bbox[2]=offset_x*2
         bbox[3]=offset_y*2
         return bbox
+
+    @staticmethod
+    def bbox_xcentycentwh_to_xtlytlwh(bbox):
+        #convert from (xcenter,ycenter,width,height) to (x_topleft,y_topleft, width, height)
+        x_tl= bbox[0] - bbox[2]/2
+        y_tl= bbox[1] - bbox[3]/2
+        w= bbox[2]
+        h= bbox[3]
+        new_bbox=[x_tl, y_tl, w, h]
+        return new_bbox
+
+    @staticmethod
+    def bbox_xtlytlwh_to_xcentycentwh(bbox):
+        #convert from (x_topleft,y_topleft, width, height) to (xcenter,ycenter,width,height)
+        x= bbox[0] + bbox[2]/2
+        y= bbox[1] + bbox[3]/2
+        w= bbox[2]
+        h= bbox[3]
+        new_bbox=[x, y, w, h]
+        return new_bbox
+
+
+    @staticmethod
+    def bbox_scaling(bbox, scale):
+        #scaling using the parameter on width and height
+        bbox[2]=scale*bbox[2]
+        bbox[3]=scale*bbox[3]
+        return bbox
+
+    @staticmethod
+    def bbox_vis(bbox, image):
+        #input format (xcenter,ycenter,width,height) => cv2 (x_tl,y_tl,x_br,y_br)
+        if bbox is not None:
+            tl=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) 
+            br= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2))
+            cv2.rectangle(image, tl, br, (255,0,0), 2)
+        cv2.imshow('Camera Loomo',image)
+        cv2.waitKey(1)

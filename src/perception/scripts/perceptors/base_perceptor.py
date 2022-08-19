@@ -1,5 +1,8 @@
 from detectors.yolov5_detector import Yolov5Detector
 from trackers.mmtracking_sot import SotaTracker
+from PIL import Image
+import cv2
+import numpy as np
 
 
 class BasePerceptor():
@@ -28,6 +31,20 @@ class BasePerceptor():
             #        for tracking")
             print(f"-> Input image of type {self.type_input} and downscale {self.downscale}")
 
+    def preproc(self,image):
+        # Adapt image to detector requirements
+        pil_image = Image.frombytes('RGB', (self.width,self.height), image)
+        opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
+        self.opencvImage=opencvImage
+
+        if self.type_input == "opencv":
+            image = opencvImage
+        
+        elif self.type_input == "pil":
+            image = pil_image
+
+        return image
 
     def forward(self, image):
         raise NotImplementedError("perceptor Base Class does not provide a forward method.")

@@ -13,7 +13,7 @@ import math
 
 
 class Detector_pifpaf():
-    def __init__(self):
+    def __init__(self, detector_size, verbose):
 
         self.bboxes_hip_prev = [[0.0, 0.0], [0.0, 0.0]]
 
@@ -55,7 +55,7 @@ class Detector_pifpaf():
         return d
 
     # Openpifpaf algorithm
-    def forward(self, image, downscale):
+    def forward(self, image, verbose):
         
         # Openpifpaf preprocess
         data = openpifpaf.datasets.PilImageList([image], preprocess=self.preprocess)
@@ -90,10 +90,10 @@ class Detector_pifpaf():
                     y_leg_list[key.index(pred.keypoints[idx])] = e[1]
 
             # Bounding Box limits
-            x_min = int(min(x_list)/np.sqrt(downscale))
-            y_min = int(min(y_list)/np.sqrt(downscale))
-            x_max = int(max(x_list)/np.sqrt(downscale))
-            y_max = int(max(y_list)/np.sqrt(downscale))
+            x_min = int(min(x_list))#/np.sqrt(downscale))
+            y_min = int(min(y_list))#/np.sqrt(downscale))
+            x_max = int(max(x_list))#/np.sqrt(downscale))
+            y_max = int(max(y_list))#/np.sqrt(downscale))
 
             bbox.append([x_min, y_min, x_max-x_min, y_max-y_min])
             label.append([1])

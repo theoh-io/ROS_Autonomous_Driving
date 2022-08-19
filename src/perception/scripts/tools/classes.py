@@ -98,7 +98,7 @@ class NewDetectorConfig:
         if load:
             self.detector.load(global_path)
 
-    def detect(self, received_image):
+    def forward(self, received_image):
         # Adapt image to detector requirements
         pil_image = Image.frombytes('RGB', (self.width,self.height), received_image)
 

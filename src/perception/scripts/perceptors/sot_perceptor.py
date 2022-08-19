@@ -2,7 +2,6 @@ import numpy as np
 import os 
 # import logging
 import time
-from PIL import Image
 import cv2
 # from typing import List
 # # from perceptionloomo.detectors.pose_detectors import PoseDetector
@@ -18,25 +17,6 @@ from perceptors.base_perceptor import BasePerceptor
 
 
 class SotPerceptor(BasePerceptor):
-    def preproc(self,image):
-        # Adapt image to detector requirements
-        pil_image = Image.frombytes('RGB', (self.width,self.height), image)
-
-        # if self.scale_necessary:
-        #     maxsize = (self.width, self.height)
-        #     pil_image = pil_image.resize(maxsize, Image.ANTIALIAS)
-
-        opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-
-        if self.type_input == "opencv":
-            image = opencvImage
-        
-        elif self.type_input == "pil":
-            image = pil_image
-
-        return image
-
     def forward(self, img):
         image=self.preproc(img)
         # Detection
@@ -71,4 +51,6 @@ class SotPerceptor(BasePerceptor):
         if self.verbose:
                 print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
 
-        return bbox, image
+        Utils.bbox_vis(bbox, image)
+
+        return bbox, None, None, image
