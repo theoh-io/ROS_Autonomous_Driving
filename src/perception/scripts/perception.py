@@ -103,7 +103,7 @@ def main():
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", verbose=False)
+                                                type_input = "opencv", keypoints=True, verbose=False)
 
 
     #################################

@@ -50,6 +50,8 @@ class SotPerceptor(BasePerceptor):
         toc3 = time.perf_counter()
         if self.verbose:
                 print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
+        if bbox:
+            self.inference_3Dkeypoints(image, bbox)
 
         Utils.bbox_vis(bbox, image)
 
