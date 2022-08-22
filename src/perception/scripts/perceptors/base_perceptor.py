@@ -31,7 +31,8 @@ class BasePerceptor():
     def __init__(self, width=640, height=480, channels=3, downscale=4, 
                     detector=Yolov5Detector(), detector_size="default",
                     tracker=None, tracker_model=None, tracking_conf=0.5,
-                    type_input="opencv", keypoints=False, device="gpu", verbose=False):
+                    type_input="opencv", keypoints=False, save_video_keypoints=False,
+                    device="gpu", verbose=False):
 
         cpu = 'cpu' == device
         cuda = not cpu and torch.cuda.is_available()
@@ -53,14 +54,18 @@ class BasePerceptor():
         self.type_input=type_input
 
         #3D Pose Estimation
-        self.smooth= True
+        self.smooth= False
         self.frame_idx=0
-        self.show=True
+        self.show=False
         if keypoints:
             self.init_keypoints()
             self.init_3Dkeypoints()
         
-        
+        self.save_video_keypoints=save_video_keypoints
+        if save_video_keypoints:
+            self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            self.fps = 15
+            self.writer = None
         
         #rajouter le code pour sauver la video des keypoints 3D (l.388)
         #self.save_3D_video=True
@@ -124,6 +129,7 @@ class BasePerceptor():
             dataset_info=self.dataset_info,
             return_heatmap=None,
             outputs=None)
+        print(f"pose_det results: {self.pose_det_results}")
         # get track id for each person instance
         self.pose_det_results, self.next_id = get_track_id(
             self.pose_det_results,
@@ -131,10 +137,20 @@ class BasePerceptor():
             self.next_id,
             use_oks=False,
             tracking_thr=0.3)
+
+        # convert keypoint definition
+        for res in self.pose_det_results:
+            print("in keypoint conversion !!")
+            keypoints = res['keypoints']
+            print(f"keypoints before {keypoints}")
+            res['keypoints'] = Utils.convert_keypoint_definition(
+                keypoints, self.pose_det_dataset, self.pose_lift_dataset)
+            print(f"keypoints after {res['keypoints']}")
         
         self.pose_det_results_list.append(copy.deepcopy(self.pose_det_results))
 
     def init_3Dkeypoints(self):
+        print("in init 3D keypoints")
         pose_lifter_config=os.path.join(path_mmpose,"configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py")
         pose_lifter_checkpoint="https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth"
         self.pose_lift_model = init_pose_model(
@@ -143,11 +159,19 @@ class BasePerceptor():
         device=self.device)
         self.pose_lift_dataset = self.pose_lift_model.cfg.data['test']['type']
 
+        print(f"pose_det_results_list {self.pose_det_results_list}")
+
         # convert keypoint definition
-        for res in self.pose_det_results:
-            keypoints = res['keypoints']
-            res['keypoints'] = Utils.convert_keypoint_definition(
-                keypoints, self.pose_det_dataset, self.pose_lift_dataset)
+        # for pose_det_results in self.pose_det_results_list:
+        #     print("in keypoint conversion 1!!")
+        #     print(self.pose_det_results_list)
+        #     for res in pose_det_results:
+        #         print("in keypoint conversion 2!!")
+        #         keypoints = res['keypoints']
+        #         print(f"keypoints before {keypoints}")
+        #         res['keypoints'] = Utils.convert_keypoint_definition(
+        #             keypoints, self.pose_det_dataset, self.pose_lift_dataset)
+        #         print(f"keypoints after {res['keypoints']}")
         
         # load temporal padding config from model.data_cfg
         if hasattr(self.pose_lift_model.cfg, 'test_data_cfg'):
@@ -210,7 +234,7 @@ class BasePerceptor():
             keypoints_3d[..., 0] = -keypoints_3d[..., 0]
             keypoints_3d[..., 2] = -keypoints_3d[..., 2]
             # rebase height (z-axis)
-            rebase_keypoint_height=False
+            rebase_keypoint_height=True
             if rebase_keypoint_height:
                 keypoints_3d[..., 2] -= np.min(
                     keypoints_3d[..., 2], axis=-1, keepdims=True)
@@ -238,8 +262,18 @@ class BasePerceptor():
                 radius=3,
                 thickness=1,
                 num_instances=self.num_instances,
-                show=False)
+                show=self.show)
             print("after the visualisation")
+
+            if self.save_video_keypoints:
+                if self.writer is None:
+                    self.writer = cv2.VideoWriter(
+                        os.path.join(abs_path_to_perception,"keypoints_test.mp4"), self.fourcc,
+                        self.fps, (img_vis.shape[1], img_vis.shape[0]))
+                self.writer.write(img_vis)
+
+    # if save_out_video:
+    #     writer.release()
 
     def forward(self, image):
         raise NotImplementedError("perceptor Base Class does not provide a forward method.")
