@@ -17,4 +17,5 @@ src/visualization/src/tools/
 
 *.pyc
 
+*.pth
 empy*
