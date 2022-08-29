@@ -53,6 +53,7 @@ class SotPerceptor(BasePerceptor):
         if self.keypoints and bbox:
             self.inference_3Dkeypoints(image, bbox)
 
-        Utils.bbox_vis(bbox, image)
+        if self.show:
+            Utils.bbox_vis(bbox, image)
 
         return bbox, None, None, image

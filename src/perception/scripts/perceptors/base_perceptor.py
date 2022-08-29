@@ -32,7 +32,7 @@ class BasePerceptor():
                     detector=Yolov5Detector(), detector_size="default",
                     tracker=None, tracker_model=None, tracking_conf=0.5,
                     type_input="opencv", keypoints=False, save_video_keypoints=False,
-                    device="gpu", verbose=False):
+                    device="gpu", show="True", show3D="False", verbose=False):
 
         cpu = 'cpu' == device
         cuda = not cpu and torch.cuda.is_available()
@@ -52,11 +52,12 @@ class BasePerceptor():
         if tracker:
             self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose)
         self.type_input=type_input
+        self.show=show
 
         #3D Pose Estimation
         self.smooth= False
         self.frame_idx=0
-        self.show=False
+        self.show_3Dkeypoints=show3D
         self.keypoints=keypoints
         if self.keypoints:
             self.init_keypoints()
@@ -259,7 +260,7 @@ class BasePerceptor():
                 num_instances=self.num_instances,
                 show=False)
 
-            if self.show:
+            if self.show_3Dkeypoints:
                 cv2.imshow('Keypoints',img_vis)
                 cv2.waitKey(1)
             if self.save_video_keypoints:

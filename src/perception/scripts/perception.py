@@ -70,7 +70,8 @@ def main():
     tracking_conf=rospy.get_param("/tracking_confidence")
     keypoints_activated=rospy.get_param("/keypoints_activated")
     save_keypoints=rospy.get_param("/save_keypoints")
-    perception_vis=rospy.get_param("/visualization_activated")
+    perception_vis=rospy.get_param("/visualization_percep")
+    keypoints_vis=rospy.get_param("/visualization_3D_activated")
     verbose=rospy.get_param("/verbose_percep")
     
     ###################################
@@ -82,7 +83,8 @@ def main():
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", keypoints=keypoints_activated, save_video_keypoints=save_keypoints, verbose=False)
+                                                type_input = "opencv", keypoints=keypoints_activated, save_video_keypoints=save_keypoints, 
+                                                show=perception_vis, show3D=keypoints_vis, verbose=False)
     elif PERCEPTION_FUNCTION =="Openpifpaf":
         # perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
         #                                         global_path = '',
