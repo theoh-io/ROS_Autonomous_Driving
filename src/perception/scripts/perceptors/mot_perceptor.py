@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from perceptors.base_perceptor import BasePerceptor
-from utilities.utils import Utils
+from tools.utils import Utils
 
 
 class MotPerceptor(BasePerceptor):

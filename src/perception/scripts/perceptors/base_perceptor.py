@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import copy
 import torch
-from utilities.utils import Utils
+from tools.utils import Utils
 #add the path to mmpose
 import os
 import sys
@@ -64,6 +64,7 @@ class BasePerceptor():
             self.init_3Dkeypoints()
         
         self.save_video_keypoints=save_video_keypoints
+        self.name_video_keypoints="3DKeypoints.mp4"
         if save_video_keypoints:
             self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             self.fps = 15
@@ -266,7 +267,7 @@ class BasePerceptor():
             if self.save_video_keypoints:
                 if self.writer is None:
                     self.writer = cv2.VideoWriter(
-                        os.path.join(abs_path_to_perception,"keypoints_test.mp4"), self.fourcc,
+                        os.path.join(abs_path_to_perception,self.name_video_keypoints), self.fourcc,
                         self.fps, (img_vis.shape[1], img_vis.shape[0]))
                 self.writer.write(img_vis)
 

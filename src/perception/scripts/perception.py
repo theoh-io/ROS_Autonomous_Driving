@@ -14,6 +14,8 @@ from datetime import datetime
 import os
 import sys
 
+abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classes
 import csv
 import cv2
@@ -27,7 +29,7 @@ save_results = False
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
 from trackers import mmtracking_sot
-from utilities.utils import Utils
+from tools.utils import Utils
 
 
 

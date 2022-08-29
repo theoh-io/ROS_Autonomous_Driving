@@ -4,7 +4,7 @@ from mmtrack.apis import inference_sot, init_model
 import os
 import rospkg
 
-from utilities.utils import Utils
+from tools.utils import Utils
 
 
 class SotaTracker():

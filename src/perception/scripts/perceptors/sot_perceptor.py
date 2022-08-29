@@ -10,7 +10,7 @@ import cv2
 # from perceptionloomo.utils.utils import Utils
 # from perceptionloomo.deep_sort.utils.parser import YamlParser
 
-from utilities.utils import Utils
+from tools.utils import Utils
 from perceptors.base_perceptor import BasePerceptor
 
 

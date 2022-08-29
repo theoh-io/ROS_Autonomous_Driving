@@ -14,11 +14,11 @@ class SocketLoomo:
     # Initialize socket connection
     def __init__(self, port, dt, host, data_size = 0, packer = 25*'f ', unpacker = 10*'f '):
         self.data_size = data_size
-        self.max_waiting_time = dt/10
+        self.max_waiting_time = dt/10  #Fix /10 needed ??
         self.received_data = []
         self.received_ok = False
         self.received_data_unpacked = []
-
+        self.port=port
         try:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -71,13 +71,57 @@ class SocketLoomo:
 
         self.s.send(packed_data)
 
-
-class DetectorConfig:
+class NewDetectorConfig:
     # Initialize detector and its main properties
-    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv"):
+    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv", save_video=False, filename_video=""):
         # Detector expected input image dimensions
         self.width = int(width/downscale)
         self.height = int(height/downscale)
+        self.downscale = downscale
+
+        # if self.downscale == 1:
+        #     self.scale_necessary = False
+
+        # else:
+        #     self.scale_necessary = True
+
+        # Image received size data.
+        self.data_size = int(self.width * self.height * channels)
+        self.global_path = global_path
+        self.detector = detector
+        self.type_input = type_input
+
+        if load:
+            self.detector.load(global_path)
+
+    def forward(self, received_image):
+        # Adapt image to detector requirements
+        pil_image = Image.frombytes('RGB', (self.width,self.height), received_image)
+
+        # if self.scale_necessary:
+        #     maxsize = (self.width, self.height)
+        #     pil_image = pil_image.resize(maxsize, Image.ANTIALIAS)
+
+        opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
+
+        if self.type_input == "opencv":
+            image = opencvImage
+        
+        elif self.type_input == "pil":
+            image = pil_image
+
+        bbox_list, bbox_label , bbox_legs= self.detector.forward(image, self.downscale)
+
+        return bbox_list, bbox_label, bbox_legs, opencvImage
+
+
+class DetectorConfig:
+    # Initialize detector and its main properties
+    def __init__(self, width, height, channels, downscale, global_path='', detector='', load=True, type_input="opencv", save_video=False, filename_video=""):
+        # Detector expected input image dimensions
+        self.width = int(width)
+        self.height = int(height)
         self.downscale = downscale
 
         if self.downscale == 1:
@@ -87,14 +131,17 @@ class DetectorConfig:
             self.scale_necessary = True
 
         # Image received size data.
-        self.data_size = int(width * height * channels/downscale)
+        self.data_size = int(width * height * channels)
         self.global_path = global_path
         self.detector = detector
         self.type_input = type_input
 
         if load:
             self.detector.load(global_path)
-
+        self.save_video = save_video
+        if save_video:
+            self.result = cv2.VideoWriter(filename_video, cv2.VideoWriter_fourcc(*'MJPG'), 10, (self.width, self.height))
+    
     def detect(self, received_image):
         # Adapt image to detector requirements
         pil_image = Image.frombytes('RGB', (self.width,self.height), received_image)
@@ -107,16 +154,17 @@ class DetectorConfig:
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         #cv2.imshow('Test window',opencvImage)
         #cv2.waitKey(1)
-
+        if self.save_video:
+            self.result.write(opencvImage)
         if self.type_input == "opencv":
             image = opencvImage
         
         elif self.type_input == "pil":
             image = pil_image
 
-        bbox_list, bbox_label = self.detector.forward(image, self.downscale)
+        bbox_list, bbox_label, bbox_legs = self.detector.forward(image, self.downscale)
 
-        return bbox_list, bbox_label
+        return bbox_list, bbox_label, bbox_legs
 
 
 class MobileRobot:
@@ -124,5 +172,5 @@ class MobileRobot:
     def __init__(self, wheel_base, v_max):
         self.wheel_base = wheel_base
         self.v_max = v_max
-        self.w_max = 0.25
+        self.w_max = v_max / wheel_base
 

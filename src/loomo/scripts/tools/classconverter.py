@@ -41,7 +41,7 @@ def list2PositionArray(data):
     perception_command = PositionArray()
     perception_command.objects = []
 
-    for object in data:
+    for i,object in enumerate(data):
         object_i = Position()
         object_i.x = object[0]
         object_i.y = object[1]
@@ -63,7 +63,7 @@ def list2TrajectoryArray(data):
             prediction_j = Position()
             prediction_j.x = detection[j][0]
             prediction_j.y = detection[j][1]
-            prediction_j.t = 1.0
+            prediction_j.t = detection[j][2] #Previously just 1.0 ??
             prediction_j.id = idx + 1
             prediction_j.actual = True
 
