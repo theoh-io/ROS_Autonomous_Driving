@@ -108,6 +108,7 @@ def main():
     next_img=[]
 
     rospy.loginfo("Perception Node Ready")
+    runtime_list=[]
 
     with open(filename_data, 'w') as f:
         writer = csv.DictWriter(f, dialect='excel', fieldnames=['time', 'lhx', 'lhy', 'rhx', 'rhy', 'lkx', 'lky', 'rkx', 'rky', 'lax', 'lay', 'rax', 'ray'])
@@ -206,14 +207,17 @@ def main():
 
             # Calculate node computation time
             computation_time = time.time() - start
+            
 
             if computation_time > dt_perception:
                 rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
 
             if data_rcvd:
                 data_rcvd=False
+                runtime_list.append(computation_time)
                 rate.sleep()
-
+                
+    print(f"Average runtime: {np.average(runtime_list)}")
     f.close()
 
 if __name__ == "__main__":
