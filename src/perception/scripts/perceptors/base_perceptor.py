@@ -129,7 +129,6 @@ class BasePerceptor():
             dataset_info=self.dataset_info,
             return_heatmap=None,
             outputs=None)
-        print(f"pose_det results: {self.pose_det_results}")
         # get track id for each person instance
         self.pose_det_results, self.next_id = get_track_id(
             self.pose_det_results,
@@ -140,12 +139,9 @@ class BasePerceptor():
 
         # convert keypoint definition
         for res in self.pose_det_results:
-            print("in keypoint conversion !!")
             keypoints = res['keypoints']
-            print(f"keypoints before {keypoints}")
             res['keypoints'] = Utils.convert_keypoint_definition(
                 keypoints, self.pose_det_dataset, self.pose_lift_dataset)
-            print(f"keypoints after {res['keypoints']}")
         
         self.pose_det_results_list.append(copy.deepcopy(self.pose_det_results))
 
@@ -158,8 +154,6 @@ class BasePerceptor():
         pose_lifter_checkpoint,
         device=self.device)
         self.pose_lift_dataset = self.pose_lift_model.cfg.data['test']['type']
-
-        print(f"pose_det_results_list {self.pose_det_results_list}")
 
         # convert keypoint definition
         # for pose_det_results in self.pose_det_results_list:
@@ -262,9 +256,11 @@ class BasePerceptor():
                 radius=3,
                 thickness=1,
                 num_instances=self.num_instances,
-                show=self.show)
-            print("after the visualisation")
+                show=False)
 
+            if self.show:
+                cv2.imshow('Keypoints',img_vis)
+                cv2.waitKey(1)
             if self.save_video_keypoints:
                 if self.writer is None:
                     self.writer = cv2.VideoWriter(

@@ -168,10 +168,13 @@ def main():
                     # Send bbox positions via socket to represent them in the Loomo
                     bbox_visu = bbox + (bbox_list[0], bbox_list[1], bbox_list[2], bbox_list[3], float(True))#float(label_list[i][0]))
                     #Scaling down bbox so that depth estimation is more precise
-                    scale=0.3
+                    scale=1
                     bbox_list=Utils.bbox_scaling(bbox_list, scale)
                     #Loomo with Vita Testing App want the bbox in the following format: x_tl, y_tl, w, h
+
+                    #test 25_08
                     new_bbox=Utils.bbox_xcentycentwh_to_xtlytlwh(bbox_list)
+                    #new_bbox=bbox_list
                     bbox= bbox+(new_bbox[0], new_bbox[1], new_bbox[2], new_bbox[3], float(True))
 
                 elif PERCEPTION_FUNCTION =="Openpifpaf":

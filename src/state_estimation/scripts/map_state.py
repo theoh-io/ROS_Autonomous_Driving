@@ -75,7 +75,9 @@ def main():
 
         # Add detections into a list
         if socket3.received_ok:
+            print(f"socket mapping size {len(socket3.received_data)}")
             positions = [socket3.received_data_unpacked]
+            if verbose: print(f"positions {positions}")
             list_positions=[]
             #if verbose:
                 #print(f"in map_state bbox (positions)={positions}")
