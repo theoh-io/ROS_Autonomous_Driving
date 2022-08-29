@@ -68,6 +68,8 @@ def main():
     downscale = rospy.get_param("/downscale")
     detector_size=rospy.get_param("/detector_size")
     tracking_conf=rospy.get_param("/tracking_confidence")
+    keypoints_activated=rospy.get_param("/keypoints_activated")
+    save_keypoints=rospy.get_param("/save_keypoints")
     perception_vis=rospy.get_param("/visualization_activated")
     verbose=rospy.get_param("/verbose_percep")
     
@@ -76,13 +78,12 @@ def main():
     ###################################
     # Initialize Detector Configuration
     # Set width, height and channel values for the received image --> Loomo image dimensions without downscale: 640x480x3
-
-    # if PERCEPTION_FUNCTION == "Default":
-    #     perceptor = classes.DetectorConfig(width = 80, height = 60, channels = 3, downscale = downscale,
-    #                                             global_path = path_model,
-    #                                             detector = detector.Detector(), load = True, type_input = "opencv")
-    
-    if PERCEPTION_FUNCTION =="Openpifpaf":
+    if PERCEPTION_FUNCTION =="Default" or PERCEPTION_FUNCTION =="Stark":
+        perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
+                                                detector = yolov5_detector.Yolov5Detector, detector_size="default", 
+                                                tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
+                                                type_input = "opencv", keypoints=keypoints_activated, save_video_keypoints=save_keypoints, verbose=False)
+    elif PERCEPTION_FUNCTION =="Openpifpaf":
         # perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
         #                                         global_path = '',
         #                                         detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil",
@@ -99,11 +100,7 @@ def main():
                                                 detector = yolo_detector.YoloDetector(), load = False, type_input = "opencv",
                                                 save_video=save_results, filename_video=filename_video)
     
-    elif PERCEPTION_FUNCTION =="Stark":
-        perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
-                                                detector = yolov5_detector.Yolov5Detector, detector_size="default", 
-                                                tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", keypoints=True, save_video_keypoints=True, verbose=False)
+
 
 
     #################################

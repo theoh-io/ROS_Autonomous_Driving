@@ -57,7 +57,8 @@ class BasePerceptor():
         self.smooth= False
         self.frame_idx=0
         self.show=False
-        if keypoints:
+        self.keypoints=keypoints
+        if self.keypoints:
             self.init_keypoints()
             self.init_3Dkeypoints()
         
