@@ -4,7 +4,7 @@ import rospy
 from msg_types.msg import Position, PositionArray, TrajectoryArray, State, StateArray
 from Path_planning_Functions import RRT_star, CHUV_Planner
 import time
-from tools import classconverter, classes, transformations, utilities
+from tools import classconverter, classes, transformations
 from tools.utils import Utils, Plotting
 
 class Sender(object):

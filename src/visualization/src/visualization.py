@@ -9,7 +9,7 @@ import os
 import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classconverter, transformations, utilities
+from tools import classconverter, transformations
 from tools.utils import Utils, Plotting
 
 def callback_goal(data):

@@ -9,7 +9,7 @@ import os
 import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classconverter, classes, transformations, utilities
+from tools import classconverter, classes, transformations
 from tools.utils import Utils, Plotting
 
 class Sender(object):
@@ -125,9 +125,9 @@ def main():
             # Actual state in relation to first path planning position
             state_local = transformations.Global_to_Local(state_planner, [actual_state])[0]
             # Desired states we need for the control algorithm
-            planner_counter_l = utilities.minimum_distance(state_local, local_path)
+            planner_counter_l = Utils.minimum_distance(state_local, local_path)
             #print(f"planner counter is {planner_counter_l}")
-            planner_counter_g = utilities.minimum_distance(actual_state, global_path)
+            planner_counter_g = Utils.minimum_distance(actual_state, global_path)
             actual_path_local = local_path[planner_counter_l:]
             actual_path_global = global_path[planner_counter_g:]
             desired_path_local = actual_path_local[:N+1]

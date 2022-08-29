@@ -10,7 +10,7 @@ import os
 import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classconverter, classes, transformations, utilities
+from tools import classconverter, classes, transformations
 from tools.utils import Utils, Plotting
 
 import rospkg
@@ -108,7 +108,7 @@ def main():
 
 
         # Add present detections to past in a buffer and predict trajectories
-        past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, n_past_observations)
+        past_detections, past_present_positions = Utils.add_detections_to_past(detections, past_detections, n_past_observations)
         predicted_trajectories = predictor.prediction_function(past_present_positions)
 
         if verbose:

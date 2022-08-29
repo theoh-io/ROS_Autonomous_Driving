@@ -41,7 +41,7 @@ Where ```model_name``` can be set to ```"SGAN"``` or  ```"LSTM"``` architecture,
 Both detectors require previous ```n_past_observations```  of the object/person, and also past and current detections: 
 
 ```python
-past_detections, past_present_positions = utilities.add_detections_to_past(detections, past_detections, n_past_observations)
+past_detections, past_present_positions = Utils.add_detections_to_past(detections, past_detections, n_past_observations)
 predicted_trajectories = predictor.prediction_function(past_present_positions)
 ```
 

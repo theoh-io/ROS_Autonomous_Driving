@@ -10,7 +10,6 @@ sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools.classconverter import *
 from tools.classes import *
 from tools.transformations import *
-from tools.utilities import *
 
 def state_with_initial_calibration(initial_state, state_global):
 

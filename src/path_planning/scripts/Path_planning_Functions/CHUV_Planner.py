@@ -12,7 +12,7 @@ import os
 import sys
 abs_path_to_tools = "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classes, transformations, utilities
+from tools import classes, transformations
 from tools.utils import Utils, Plotting
 
 # Class for Person-Following path planning

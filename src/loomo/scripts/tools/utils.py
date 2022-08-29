@@ -280,7 +280,7 @@ class Utils():
         for i in range(1,80):
             
             while dist < e and it < len(points):
-                distAB = self.calculate_distance(points[it-2], points[it-1])
+                distAB = Utils.calculate_distance(points[it-2], points[it-1])
                 dist = dist + distAB
                 it = it + 1
 
@@ -323,7 +323,7 @@ class Utils():
         for i in range(1,80):
             
             while dist < e and it < len(points):
-                distAB = self.calculate_distance(points[it-2], points[it-1])
+                distAB = Utils.calculate_distance(points[it-2], points[it-1])
                 dist = dist + distAB
                 it = it + 1
 
@@ -365,7 +365,7 @@ class Utils():
         for i in range(1,80):
             
             while dist < e and it < len(points):
-                distAB = self.calculate_distance(points[it-2], points[it-1])
+                distAB = Utils.calculate_distance(points[it-2], points[it-1])
                 dist = dist + distAB
                 it = it + 1
 
@@ -409,7 +409,61 @@ class Utils():
 
     @staticmethod
     def new_heading_required(past_person, person):
-        return (self.calculate_distance(past_person, person)>0.3)
+        return (Utils.calculate_distance(past_person, person)>0.3)
+
+    @staticmethod
+    def GetClockAngle(v1, v2):
+        # Product of 2 vector modules
+        TheNorm = np.linalg.norm(v1)*np.linalg.norm(v2)
+        # Cross product
+        rho =  np.arcsin(np.cross(v1, v2)/TheNorm)
+        # Dot multiplication
+        theta = np.arccos(np.dot(v1,v2)/TheNorm)
+        
+        if rho < 0:
+            return - theta
+        else:
+            return theta
+    
+    @staticmethod
+    def add_detections_to_past(pos_detections, past_pos_detections, past_number): # past_pos_detections = [deque([x1(t-past_n),y1(t-past_n)],...,[x1(t-1),y1(t-1)]),...,deque([xN(t-past_n),yN(t-past_n)],...,[xN(t-1),yN(t-1)])]
+        '''
+        Add new detections to the past detections buffer
+        '''
+        list_idx = []
+        past_for_predictions = []
+        objects_detected = False
+
+        if len(pos_detections)>0:
+            objects_detected = True
+
+        if objects_detected:
+            if len(pos_detections[0])>0:
+
+                for detection in pos_detections:
+                    list_idx.append(detection[2]-1)
+
+                    if detection[2] > len(past_pos_detections):
+                        d = collections.deque(maxlen=past_number)
+
+                        for i in range(past_number):
+                            d.append([detection[0],detection[1],detection[2]])
+
+                        past_pos_detections.append(d)
+
+                    else:
+                        past_pos_detections[detection[2]-1].append([detection[0],detection[1], detection[2]])
+
+        for idx in range(len(past_pos_detections)):
+
+            if idx not in list_idx:
+                past_pos_detections[idx].append([past_pos_detections[idx][past_number-1][0], past_pos_detections[idx][past_number-1][1], idx+1])
+            
+            else:
+                past_for_predictions.append(list(past_pos_detections[idx]))
+
+        return past_pos_detections, past_for_predictions
+
 
 
 
