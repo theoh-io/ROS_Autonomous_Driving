@@ -8,33 +8,33 @@ from PIL import Image
 
 
 class Utils():
-    @staticmethod
-    #FIX: use BBOX format to crop, output format tensor image ?
-    def crop_img_bbox(bbox_list: list, img: np.ndarray):
-        img_list=[]
-        print(f"bbox_list: {bbox_list}")
-        print(type(img))
-        if bbox_list is not None:
-            for i in range(bbox_list.shape[0]):
-                bbox_indiv=bbox_list[i]
-                print(f"bbox_indiv{bbox_indiv}")
-                crop_img=img[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))]
-                #to apply the normalization need a PIL image
-                # PIL RGB while CV is BGR.
-                #crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
-                #crop_img = Image.fromarray(crop_img)
-                #tensor_img_indiv=image_processing(crop_img)
+    # @staticmethod
+    # #FIX: use BBOX format to crop, output format tensor image ?
+    # def crop_img_bbox(bbox_list: list, img: np.ndarray):
+    #     img_list=[]
+    #     print(f"bbox_list: {bbox_list}")
+    #     print(type(img))
+    #     if bbox_list is not None:
+    #         for i in range(bbox_list.shape[0]):
+    #             bbox_indiv=bbox_list[i]
+    #             print(f"bbox_indiv{bbox_indiv}")
+    #             crop_img=img[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))]
+    #             #to apply the normalization need a PIL image
+    #             # PIL RGB while CV is BGR.
+    #             #crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+    #             #crop_img = Image.fromarray(crop_img)
+    #             #tensor_img_indiv=image_processing(crop_img)
 
-                tensor_img_indiv=torch.unsqueeze(torch.from_numpy(crop_img), 0)
-                img_list.append(tensor_img_indiv)
-            #print()
-            np_img_list=np.asarray(img_list)
-            print(img_list.shape)
-            tensor_img=torch.from_numpy(np_img_list)
-            #tensor_img=torch.cat(img_list)
-            return tensor_img
-        else:
-            return None
+    #             tensor_img_indiv=torch.unsqueeze(torch.from_numpy(crop_img), 0)
+    #             img_list.append(tensor_img_indiv)
+    #         #print()
+    #         np_img_list=np.asarray(img_list)
+    #         print(img_list.shape)
+    #         tensor_img=torch.from_numpy(np_img_list)
+    #         #tensor_img=torch.cat(img_list)
+    #         return tensor_img
+    #     else:
+    #         return None
 
     @staticmethod
     def bbox_xcentycentwh_to_x1y1x2y2(bbox):
@@ -480,4 +480,26 @@ class Plotting():
         xl = [x + size * math.cos(np.deg2rad(d)) for d in deg]
         yl = [y + size * math.sin(np.deg2rad(d)) for d in deg]
         plt.plot(xl, yl, color)
+
+class Transmission():
+    @staticmethod
+    def img_sync(excess_img, current_img, socket, verbose):
+    #to avoid an offset in the img transmission due to desynchronization of transmission
+        if excess_img:
+            current_img += excess_img
+        current_img += socket.received_data
+        while len(current_img) > socket.data_size:
+            current_img=current_img[socket.data_size:]
+        return current_img
+
+    @staticmethod
+    def check_img_sync(input_img, socket, verbose):
+        if verbose:
+            print("Image Transmission not synced !!")
+        next_img=input_img[socket.data_size:]
+        while len(next_img) > socket1.data_size:
+            next_img=input_img[socket1.data_size:]
+        if verbose:
+            print(f"surplus {len(next_img)}")
+        return next_img
 

@@ -29,33 +29,9 @@ save_results = False
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
 from trackers import mmtracking_sot
-from tools.utils import Utils, Plotting
+from tools.utils import Utils, Plotting, Transmission
 
 
-
-def img_sync(excess_img, current_img, socket, verbose):
-    #to avoid an offset in the img transmission due to desynchronization of transmission
-    if excess_img:
-        current_img += excess_img
-    current_img += socket.received_data
-    # if verbose:
-    #     print(f"img len before {len(current_img)}")
-    while len(current_img) > socket.data_size:
-        current_img=current_img[socket.data_size:]
-    # if verbose:
-    #     print(f"len after sync {len(current_img)}")
-    #     print(f"socket {len(socket.received_data)}, size {socket.data_size}")
-    return current_img
-
-def check_img_sync(input_img, socket, verbose):
-    if verbose:
-        print("Image Transmission not synced !!")
-    next_img=input_img[socket.data_size:]
-    while len(next_img) > socket1.data_size:
-        next_img=input_img[socket1.data_size:]
-    if verbose:
-        print(f"surplus {len(next_img)}")
-    return next_img
 
 
 def main():
@@ -144,7 +120,7 @@ def main():
             # Receive Image from the Loomo
             ################################
             socket1.receiver(True)
-            received_image=img_sync(next_img, received_image, socket1, verbose)
+            received_image=Transmission.img_sync(next_img, received_image, socket1, verbose)
             next_img=[]
 
             if len(received_image)==socket1.data_size:
@@ -225,7 +201,7 @@ def main():
 
             #syncing Img transmission
             elif len(received_image) > socket1.data_size:
-                next_img=check_img_sync(received_image, socket, verbose)
+                next_img=Transmission.check_img_sync(received_image, socket, verbose)
                 received_image = b''
 
             # Calculate node computation time
