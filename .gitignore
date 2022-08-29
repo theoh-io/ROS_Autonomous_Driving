@@ -19,3 +19,4 @@ src/visualization/src/tools/
 
 *.pth
 empy*
+ignore/*
