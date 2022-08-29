@@ -12,6 +12,7 @@ import sys
 abs_path_to_tools = "/home/cconejob/StudioProjects/Autonomous_driving_pipeline/src/loomo/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
+from tools.utils import Utils, Plotting
 
 # Class for RRT Star planning
 class CHUV_Planner:
@@ -52,7 +53,7 @@ class CHUV_Planner:
             for i in range(len(x_list)):
                 path.append([x_list[i], y_list[i]])
 
-        mpc_path = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control)[:N+2]
+        mpc_path = Utils.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control)[:N+2]
 
         if len(mpc_path)<self.N:
 
@@ -87,7 +88,7 @@ class CHUV_Planner:
             for i in range(len(x_list)):
                 path.append([x_list[i], y_list[i]])
 
-        mpc_path_global = utilities.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+2]
+        mpc_path_global = Utils.MPC_Planner_restrictions_CHUV(self.mobile_robot, path, self.speed, self.dt_control, x0=x0)[:N+2]
         
         if len(mpc_path_global)<self.N:
 

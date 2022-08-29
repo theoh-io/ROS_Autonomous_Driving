@@ -29,7 +29,7 @@ save_results = False
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
 from trackers import mmtracking_sot
-from tools.utils import Utils
+from tools.utils import Utils, Plotting
 
 
 

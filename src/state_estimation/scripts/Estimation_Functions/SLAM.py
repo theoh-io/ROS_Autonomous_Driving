@@ -7,6 +7,7 @@ import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import transformations, utilities
+from tools.utils import Utils, Plotting
 
 
 class SlamConfiguration:
@@ -22,7 +23,7 @@ class SlamConfiguration:
     def mapping(self, state, position_objects_local):
 
         for i in range(len(position_objects_local)):
-            distance = utilities.calculate_distance(position_objects_local[i])
+            distance = Utils.calculate_distance(position_objects_local[i])
 
             # Check only if inside sensors range 
             if distance <= self.range_sensor:
@@ -38,7 +39,7 @@ class SlamConfiguration:
         for idx,object_map in enumerate(self.saved_map):
 
             if len(object_map) > 0:
-                distance = utilities.calculate_distance(object_global, object_map)
+                distance = Utils.calculate_distance(object_global, object_map)
 
                 # Data Assotiation if two detections in same range
                 if distance <= self.error_sensor:

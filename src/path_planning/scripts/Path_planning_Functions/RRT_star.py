@@ -12,6 +12,7 @@ import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
+from tools.utils import Utils, Plotting
 
 try:
     from .rrt import RRT
@@ -423,7 +424,7 @@ def planner_rrt_star(mobile_robot, array_predictions, speed, dt_control, goal=[0
 
         smooth_path = transformations.rotate(smooth_path_rotated, -goal_angle)
 
-    mpc_planner = utilities.MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
+    mpc_planner = Utils.MPC_Planner_restrictions(mobile_robot, smooth_path, speed, dt_control)
 
     # Correct only the angle if it is too high --> Only yaw rate commands to turn the vehicle
     if abs(goal_angle)> 90*math.pi/180:

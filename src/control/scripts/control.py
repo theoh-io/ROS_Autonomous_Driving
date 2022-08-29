@@ -10,6 +10,7 @@ import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations, utilities
+from tools.utils import Utils, Plotting
 
 class Sender(object):
 

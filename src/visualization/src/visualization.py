@@ -10,7 +10,7 @@ import sys
 abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, transformations, utilities
-
+from tools.utils import Utils, Plotting
 
 def callback_goal(data):
 
@@ -94,13 +94,13 @@ def visualization_function(predictions, planning, control, state_list, state, go
             for i in range(len(e)):
 
                 if len(e)==1:
-                    utilities.plot_circle(e[i][0],e[i][1], 0.25,"g-")
+                    Plotting.plot_circle(e[i][0],e[i][1], 0.25,"g-")
 
                 elif i == 0 and e!=[[]] and e[i][0]!=0.0:
-                    utilities.plot_circle(e[i][0],e[i][1], 0.25,"b-")
+                    Plotting.plot_circle(e[i][0],e[i][1], 0.25,"b-")
 
                 else:
-                    utilities.plot_circle(e[i][0],e[i][1], 0.25,"b--")
+                    Plotting.plot_circle(e[i][0],e[i][1], 0.25,"b--")
     
     debug_activated = False
 
@@ -118,7 +118,7 @@ def visualization_function(predictions, planning, control, state_list, state, go
     plt.plot([x for (x, y, heading) in control], [y for (x, y, heading) in control], 'g-.', linewidth=2)
     plt.pause(0.001)
 
-    new_d = utilities.calculate_distance([state_list[len(state_list)-1][0], state_list[len(state_list)-1][1]],[state_list[len(state_list)-2][0], state_list[len(state_list)-2][1]])
+    new_d = Utils.calculate_distance([state_list[len(state_list)-1][0], state_list[len(state_list)-1][1]],[state_list[len(state_list)-2][0], state_list[len(state_list)-2][1]])
     
     if new_d > 0.03:
         d += new_d
