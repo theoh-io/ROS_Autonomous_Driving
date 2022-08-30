@@ -29,7 +29,7 @@ filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 path_output=os.path.abspath(abs_path_to_loomo+"/..")
 path_data=path_output+"/"+filename_data
-save_results = True
+save_results = False
 
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
@@ -55,7 +55,9 @@ def main():
     save_keypoints=rospy.get_param("/save_keypoints")
     perception_vis=rospy.get_param("/visualization_percep")
     keypoints_vis=rospy.get_param("/visualization_3D_activated")
-    verbose=rospy.get_param("/verbose_percep")
+    verbose_level=rospy.get_param("/verbose_percep")
+    print(f"Verbose level is {verbose_level}")
+
     
     ###################################
     # Initialize Full detector
@@ -126,7 +128,7 @@ def main():
             # Receive Image from the Loomo
             ################################
             socket1.receiver(True)
-            received_image=Transmission.img_sync(next_img, received_image, socket1, verbose)
+            received_image=Transmission.img_sync(next_img, received_image, socket1)
             next_img=[]
 
             if len(received_image)==socket1.data_size:
@@ -138,7 +140,7 @@ def main():
                 # Inference on Received Image
                 #############################
                 bbox_list, label_list, results_keypoints, image = perceptor.forward(input_img)
-                if verbose:
+                if verbose_level >=1 :
                     print("Perception: bbox list:", bbox_list)
 
                 ############################
@@ -208,7 +210,7 @@ def main():
 
             #syncing Img transmission
             elif len(received_image) > socket1.data_size:
-                next_img=Transmission.check_img_sync(received_image, socket, verbose)
+                next_img=Transmission.check_img_sync(received_image, socket, verbose_level)
                 received_image = b''
 
             # Calculate node computation time
