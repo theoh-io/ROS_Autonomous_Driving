@@ -226,19 +226,17 @@ def main():
                 next_img=Transmission.check_img_sync(received_image, socket, verbose_level)
                 received_image = b''
 
-            # Calculate node computation time
-            end_perception=time.perf_counter()
-            computation_time = end_perception - start
-            
-
-            if computation_time > dt_perception:
-                rospy.logwarn("Perception computation time higher than node period by " + str((computation_time-dt_perception)*1e3) + " ms")
-
             if data_rcvd:
                 data_rcvd=False
+                # Calculate node computation time
+                end_perception=time.perf_counter()
+                computation_time = end_perception - start
                 runtime_list.append(computation_time)
                 if verbose_level>=2:
                     print(f"Elapsed time for full perception is: {computation_time* 1e3:.1f}ms")
+                if computation_time > dt_perception:
+                    rospy.logwarn("Perception computation time higher than node period by " + str((computation_time-dt_perception)*1e3) + " ms")
+                computation_time=0
                 rate.sleep()
                 
     print(f"Average runtime: {np.average(runtime_list)}")
