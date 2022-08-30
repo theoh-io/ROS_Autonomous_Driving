@@ -18,9 +18,9 @@
     <param name="detector_size" value="large" />
     <param name="tracking_confidence" value="0.4" />
     <param name="keypoints_activated" value="true" />
-    <param name="save_keypoints" value="False" />
+    <param name="save_keypoints" value="true" />
     <param name="visualization_percep" value="True" />
-    <param name="visualization_3D_activated" value="false" />
+    <param name="visualization_3D_activated" value="true" />
     <param name="verbose_percep" type="bool" value= "true" />
 
 

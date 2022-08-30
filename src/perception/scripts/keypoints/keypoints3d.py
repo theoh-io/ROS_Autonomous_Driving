@@ -184,27 +184,29 @@ class Keypoints3D():
             res['track_id'] = instance_id
             pose_lift_results_vis.append(res)
 
-            # Visualization
-            if self.num_instances < 0:
-                self.num_instances = len(pose_lift_results_vis)
-            img_vis = vis_3d_pose_result(
-                self.pose_lift_model,
-                result=pose_lift_results_vis,
-                img=frame,
-                dataset=self.pose_lift_dataset,
-                dataset_info=self.pose_lift_dataset_info,
-                out_file=None,
-                radius=3,
-                thickness=1,
-                num_instances=self.num_instances,
-                show=False)
+        # Visualization
+        if self.num_instances < 0:
+            self.num_instances = len(pose_lift_results_vis)
+        img_vis = vis_3d_pose_result(
+            self.pose_lift_model,
+            result=pose_lift_results_vis,
+            img=frame,
+            dataset=self.pose_lift_dataset,
+            dataset_info=self.pose_lift_dataset_info,
+            out_file=None,
+            radius=3,
+            thickness=1,
+            num_instances=self.num_instances,
+            show=False)
 
-            if self.show_3Dkeypoints:
-                cv2.imshow('Keypoints',img_vis)
-                cv2.waitKey(1)
-            if self.save_video_keypoints:
-                if self.writer is None:
-                    self.writer = cv2.VideoWriter(
-                        os.path.join(abs_path_to_perception,self.name_video_keypoints), self.fourcc,
-                        self.fps, (img_vis.shape[1], img_vis.shape[0]))
-                self.writer.write(img_vis)
+        if self.show_3Dkeypoints:
+            cv2.imshow('Keypoints',img_vis)
+            cv2.waitKey(1)
+        if self.save_video_keypoints:
+            if self.writer is None:
+                self.writer = cv2.VideoWriter(
+                    os.path.join(abs_path_to_perception,self.name_video_keypoints), self.fourcc,
+                    self.fps, (img_vis.shape[1], img_vis.shape[0]))
+            self.writer.write(img_vis)
+        
+        return res

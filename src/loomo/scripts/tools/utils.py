@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import collections
 import cv2
 from PIL import Image
+import time
 
 
 class Utils():
@@ -239,6 +240,27 @@ class Utils():
                     f'{pose_det_dataset}')
 
         return keypoints_new
+
+    @staticmethod
+    def save_2Dkeypoints(keypoints_result, threshold, writer, init_time):
+        #format of keypoints depends on datasets used check convert_keypoints function
+        #pose_lift_dataset= Body3DH36MDataset
+        #pose_det_dataset= TopDownCocoDataset
+        #0:pelvis, 1: right hip, 2: rknee, 3:rankle, 4:left hip, 5:lknee, 6:la, 7:spine
+        #8:thorax, 9:nose, 10:head, 11:left shoulder,12:lelbow, 13:lw, 14: rs, 15:re, 16:rw 
+        k2D=keypoints_result["keypoints"]
+        #if score is too low replace values by None
+        for pt in k2D:
+            if pt[2]<threshold:
+                pt[0]=None
+                pt[1]=None
+        curr_time=time.time()-init_time
+        dict_legs={'time': curr_time, 'lhx': k2D[4][0], 'lhy': k2D[4][1], 'rhx': k2D[1][0], 'rhy': k2D[4][1], 'lkx': k2D[5][0], 'lky': k2D[5][1], 'rkx': k2D[2][0], 'rky': k2D[2][1], 'lax': k2D[6][0], 'lay': k2D[6][1], 'rax': k2D[3][0], 'ray': k2D[3][1]}
+        writer.writerow(dict_legs)
+
+    @staticmethod
+    def save_3Dkeypoints(keypoints_result, writer):
+        keypoints3D=keypoints_results["keypoints"]
     
     @staticmethod
     def calculate_distance(object1, object2=[0.0, 0.0]):
