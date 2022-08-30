@@ -117,6 +117,7 @@ def main():
     # Initialize perception transmission variables
     received_image = b''
     data_rcvd=False
+    timer_started=False
     next_img=[]
 
     rospy.loginfo("Perception Node Ready")
@@ -128,7 +129,9 @@ def main():
 
         while not rospy.is_shutdown():
             #rospy.loginfo("Perception loop")
-            start = time.time()
+            if not data_rcvd and not timer_started:
+                start = time.perf_counter()
+                timer_started=True
             ################################
             # Receive Image from the Loomo
             ################################
@@ -138,6 +141,11 @@ def main():
 
             if len(received_image)==socket1.data_size:
                 data_rcvd=True
+                timer_started=False
+                end_transmission=time.perf_counter()
+                if verbose_level >=2:
+                    print(f"Elapsed time for Image Transmission: {(end_transmission-start)* 1e3:.1f}ms")
+                    
                 # Reset perception variables
                 input_img=received_image
                 received_image = b''
@@ -219,18 +227,22 @@ def main():
                 received_image = b''
 
             # Calculate node computation time
-            computation_time = time.time() - start
+            end_perception=time.perf_counter()
+            computation_time = end_perception - start
             
 
             if computation_time > dt_perception:
-                rospy.logwarn("Perception computation time higher than node period by " + str(computation_time-dt_perception) + " seconds")
+                rospy.logwarn("Perception computation time higher than node period by " + str((computation_time-dt_perception)*1e3) + " ms")
 
             if data_rcvd:
                 data_rcvd=False
                 runtime_list.append(computation_time)
+                if verbose_level>=2:
+                    print(f"Elapsed time for full perception is: {computation_time* 1e3:.1f}ms")
                 rate.sleep()
                 
     print(f"Average runtime: {np.average(runtime_list)}")
+    print(runtime_list)
     f.close()
 
 if __name__ == "__main__":

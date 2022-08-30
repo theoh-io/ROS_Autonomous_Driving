@@ -505,7 +505,7 @@ class Plotting():
 
 class Transmission():
     @staticmethod
-    def img_sync(excess_img, current_img, socket, verbose):
+    def img_sync(excess_img, current_img, socket):
     #to avoid an offset in the img transmission due to desynchronization of transmission
         if excess_img:
             current_img += excess_img
@@ -515,13 +515,13 @@ class Transmission():
         return current_img
 
     @staticmethod
-    def check_img_sync(input_img, socket, verbose):
-        if verbose:
+    def check_img_sync(input_img, socket, verbose_level):
+        if verbose_level >=4 :
             print("Image Transmission not synced !!")
         next_img=input_img[socket.data_size:]
         while len(next_img) > socket1.data_size:
             next_img=input_img[socket1.data_size:]
-        if verbose:
+        if verbose_level>=4:
             print(f"surplus {len(next_img)}")
         return next_img
 
