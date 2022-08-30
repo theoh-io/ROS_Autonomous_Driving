@@ -16,7 +16,6 @@ import sys
 import rospkg
 rospack=rospkg.RosPack()
 abs_path_to_loomo=rospack.get_path('loomo')
-print(f"path loomo: {abs_path_to_loomo} !!!!!")
 abs_path_to_tools=abs_path_to_loomo+"/scripts/tools"
 #abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
@@ -30,7 +29,6 @@ filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 path_output=os.path.abspath(abs_path_to_loomo+"/..")
 path_data=path_output+"/"+filename_data
-print(f"path data {path_data}")
 save_results = True
 
 from perceptors import sot_perceptor, mot_perceptor
