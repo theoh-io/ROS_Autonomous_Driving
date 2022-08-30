@@ -3,13 +3,6 @@ import os
 # import logging
 import time
 import cv2
-# from typing import List
-# # from perceptionloomo.detectors.pose_detectors import PoseDetector
-# from perceptionloomo.detectors.pose_yolo_detector import PoseYoloDetector
-# from perceptionloomo.trackers.fused_ds_reid import FusedDsReid
-# from perceptionloomo.utils.utils import Utils
-# from perceptionloomo.deep_sort.utils.parser import YamlParser
-
 from tools.utils import Utils
 from perceptors.base_perceptor import BasePerceptor
 
@@ -50,8 +43,8 @@ class SotPerceptor(BasePerceptor):
         toc3 = time.perf_counter()
         if self.verbose:
                 print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
-        if self.keypoints and bbox:
-            self.inference_3Dkeypoints(image, bbox)
+        if self.keypoints_activ and bbox:
+            self.Keypoints3D.inference_3Dkeypoints(image, bbox)
 
         if self.show:
             Utils.bbox_vis(bbox, image)

@@ -17,11 +17,11 @@
     <param name="downscale" value="2" />
     <param name="detector_size" value="large" />
     <param name="tracking_confidence" value="0.4" />
-    <param name="keypoints_activated" value="false" />
-    <param name="save_keypoints" value="false" />
+    <param name="keypoints_activated" value="true" />
+    <param name="save_keypoints" value="False" />
     <param name="visualization_percep" value="True" />
     <param name="visualization_3D_activated" value="false" />
-    <param name="verbose_percep" type="bool" value= "False" />
+    <param name="verbose_percep" type="bool" value= "true" />
 
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->
