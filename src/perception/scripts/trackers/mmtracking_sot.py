@@ -8,7 +8,7 @@ from tools.utils import Utils
 
 
 class SotaTracker():
-    def __init__(self, tracker_name="Stark", tracking_conf="0.5", device='gpu', verbose="False"):
+    def __init__(self, tracker_name="Stark", tracking_conf="0.5", device='gpu', verbose=0):
         '''
         init_model parameters: 
         tracker_name (Stark/Siamese) 
@@ -60,7 +60,7 @@ class SotaTracker():
         track_bbox=result['track_bboxes']
         #remove last index -1
         confidence=track_bbox[4]
-        if self.verbose:
+        if self.verbose>=3:
             print(f"Tracking conf is: {confidence}")
         bbox=track_bbox[:4]#[test_bbox[0], test_bbox[1], test_bbox[2]-test_bbox[0], test_bbox[3]-test_bbox[1]]
         
@@ -69,9 +69,8 @@ class SotaTracker():
             bbox=Utils.bbox_x1y1x2y2_to_xcentycentwh(bbox)
             bbox = [int(x) for x in bbox]
         else:
-            if self.verbose:
+            if self.verbose >=3:
                 print("Under Tracking threshold")
-            #bbox=[0, 0, 0, 0]
             bbox=None
 
         return bbox

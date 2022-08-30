@@ -16,7 +16,7 @@ class SotPerceptor(BasePerceptor):
         tic1 = time.perf_counter()
         bbox_list = self.detector.forward(image)
         toc1 = time.perf_counter()
-        if self.verbose:
+        if self.verbose_level >=2:
             print(f"Elapsed time for detector forward pass: {(toc1 - tic1) * 1e3:.1f}ms")
 
         # #Solve this to make it clearer always bbox_list = None if no detections
@@ -35,19 +35,25 @@ class SotPerceptor(BasePerceptor):
         if bbox_list is not None:
             bbox = self.tracker.forward(cut_imgs,bbox_list,image)
             toc2 = time.perf_counter()
-            if self.verbose:
+            if self.verbose_level>= 2:
                 print(f"Elapsed time for tracker forward pass: {(toc2 - tic2) * 1e3:.1f}ms")
         else: 
             bbox=None
 
-        toc3 = time.perf_counter()
-        if self.verbose:
-                print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
         if self.keypoints_activ and bbox:
+            tic3 = time.perf_counter()
             results_keypoints=self.Keypoints3D.inference_3Dkeypoints(image, bbox)
+            toc3 = time.perf_counter()
+            if self.verbose_level >=2:
+                print(f"Elapsed time for 3D keypoints forward pass: {(toc3 - tic3) * 1e3:.1f}ms")
+
         else:
             results_keypoints=None
+        
         if self.show:
             Utils.bbox_vis(bbox, image)
+        toc4 = time.perf_counter()
+        if self.verbose_level >=2:
+                print(f"Elapsed time for perceptor forward pass: {(toc4 - tic1) * 1e3:.1f}ms")
 
         return bbox, None, results_keypoints, image

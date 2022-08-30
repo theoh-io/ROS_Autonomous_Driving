@@ -2,7 +2,7 @@
     <!-- Explanation in the README.md file -->
 
     <!-- GLOBAL PARAMETERS -->
-    <param name="ip_address" value="128.179.180.167" />
+    <param name="ip_address" value="128.179.153.185" />
     <param name="ip_address_nicolo" value="192.168.0.152" />
     <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
     <param name="v_max" value="2.0" />
@@ -18,10 +18,10 @@
     <param name="detector_size" value="large" />
     <param name="tracking_confidence" value="0.4" />
     <param name="keypoints_activated" value="true" />
-    <param name="save_keypoints" value="true" />
-    <param name="visualization_percep" value="True" />
+    <param name="save_keypoints" value="False" />
+    <param name="visualization_percep" value="True" /> 
     <param name="visualization_3D_activated" value="true" />
-    <param name="verbose_percep" type="bool" value= "true" />
+    <param name="verbose_percep" type="int" value= "3" /> <!-- level of verbose 0 to 4-->
 
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->

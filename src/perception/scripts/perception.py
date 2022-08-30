@@ -28,8 +28,13 @@ now = datetime.now().strftime("%Y%m%d%H%M%S")
 filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 path_output=os.path.abspath(abs_path_to_loomo+"/..")
-path_data=path_output+"/"+filename_data
 save_results = False
+if save_results:
+    path_data=path_output+"/"+filename_data
+else:
+    #save the csv in .ros folder so that it doesn't annoy 
+    path_data=os.getcwd()+"/log.csv"
+
 
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
@@ -69,7 +74,7 @@ def main():
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
                                                 type_input = "opencv", keypoints=keypoints_activated, save_video_keypoints=save_keypoints, 
-                                                show=perception_vis, show3D=keypoints_vis, verbose=False)
+                                                show=perception_vis, show3D=keypoints_vis, verbose=verbose_level)
     elif PERCEPTION_FUNCTION =="Openpifpaf":
         # perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
         #                                         global_path = '',

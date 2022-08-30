@@ -33,7 +33,7 @@ class BasePerceptor():
                     detector=Yolov5Detector(), detector_size="default",
                     tracker=None, tracker_model=None, tracking_conf=0.5,
                     type_input="opencv", keypoints=False, save_video_keypoints=False,
-                    device="gpu", show="True", show3D="False", verbose=False):
+                    device="gpu", show="True", show3D="False", verbose=0):
 
         cpu = 'cpu' == device
         cuda = not cpu and torch.cuda.is_available()
@@ -44,43 +44,24 @@ class BasePerceptor():
         self.height = int(height/downscale)
         self.resolution=(width, height)
         self.downscale = downscale
-        self.verbose=verbose
+        self.verbose_level=verbose
 
         # Image received size data.
         self.data_size = int(self.width * self.height * channels)
 
-        self.detector=detector(detector_size, verbose=self.verbose)
+        self.detector=detector(detector_size, verbose=self.verbose_level)
         if tracker:
-            self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose)
+            self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose_level)
         self.type_input=type_input
         self.show=show
 
         #3D Pose Estimation
-        # self.smooth= False
-        # self.frame_idx=0
-        # self.show_3Dkeypoints=show3D
         self.keypoints_activ=keypoints
         if self.keypoints_activ:
             self.Keypoints3D=Keypoints3D(self.device, self.resolution, show3D, save_video_keypoints)
-            #self.init_keypoints()
-            # init_keypoints()
-            # #self.init_3Dkeypoints()
-            # init_3Dkeypoints()
-        
-        # self.save_video_keypoints=save_video_keypoints
-        # self.name_video_keypoints="3DKeypoints.mp4"
-        # if save_video_keypoints:
-        #     self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        #     self.fps = 15
-        #     self.writer = None
-        
-        #rajouter le code pour sauver la video des keypoints 3D (l.388)
-        #self.save_3D_video=True
 
-        if self.verbose:
+        if self.verbose_level:
             print("Initializing Perceptor")
-            #print(f"-> Using {str(self.detector)} for detection and {str(self.tracker)} 
-            #        for tracking")
             print(f"-> Input image of type {self.type_input} and downscale {self.downscale}")
 
     def preproc(self,image):

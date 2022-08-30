@@ -13,7 +13,7 @@ import numpy as np
 
 
 class Yolov5Detector():
-    def __init__(self, model_size='default', verbose = False):       
+    def __init__(self, model_size='default', verbose = 0):       
         if model_size=='default':
             self.yolo_version = "yolov5s"
         elif model_size=="medium":
@@ -51,7 +51,6 @@ class Yolov5Detector():
           bbox=np.expand_dims(bbox, axis=0)
           return bbox
         else:
-          if self.verbose is True: print(self.detection.shape)
           bbox_list=[]
           for i in range(self.detection.shape[0]):
             xmin=self.detection[i][0]
@@ -63,11 +62,8 @@ class Yolov5Detector():
             width=xmax-xmin
             height=ymax-ymin
             bbox_unit=np.array([x_center, y_center, width, height])
-            if self.verbose is True: print(bbox_unit)
             bbox_list.append(bbox_unit)
           bbox_list=np.vstack(bbox_list)
-          #bbox_list=bbox_list.tolist()
-          if self.verbose is True: print("final bbox", bbox_list)
           return bbox_list
 
             
@@ -112,24 +108,17 @@ class Yolov5Detector():
         #threshold for confidence detection
         # Inference
         results = self.model(image) #might need to specify the size
-
         #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
         detect_pandas=results.pandas().xyxy
-
         self.detection=np.array(detect_pandas)
-        if self.verbose is True: print("shape of the detection: ", self.detection.shape)
-        #print("detection: ",self.detection)
-
+        if self.verbose >=3 : 
+            print("shape of the detection: ", self.detection.shape)
         if (self.detection.shape[1]!=0):
-            if self.verbose is True: print("DETECTED SOMETHING !!!")
-            #save resuts
-            #results.save()
-            
             #use np.squeeze to remove 0 dim from the tensor
             self.detection=np.squeeze(self.detection,axis=0) 
-            if self.verbose is True: print("bbox before format: ", self.detection)
+            #if self.verbose >: print("bbox before format: ", self.detection)
             #modify the format of detection for bbox
             bbox=self.bbox_format()
-            if self.verbose is True: print("bbox after format: ", bbox)
+            if self.verbose >= 4: print("bbox detection after format: ", bbox)
             return bbox
         return None
