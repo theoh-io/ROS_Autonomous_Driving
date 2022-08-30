@@ -13,8 +13,12 @@ from datetime import datetime
 
 import os
 import sys
-
-abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+import rospkg
+rospack=rospkg.RosPack()
+abs_path_to_loomo=rospack.get_path('loomo')
+print(f"path loomo: {abs_path_to_loomo} !!!!!")
+abs_path_to_tools=abs_path_to_loomo+"/scripts/tools"
+#abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classes
 import csv
@@ -24,7 +28,10 @@ import numpy as np
 now = datetime.now().strftime("%Y%m%d%H%M%S")
 filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
-save_results = False
+path_output=os.path.abspath(abs_path_to_loomo+"/..")
+path_data=path_output+"/"+filename_data
+print(f"path data {path_data}")
+save_results = True
 
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
@@ -110,7 +117,7 @@ def main():
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
 
-    with open(filename_data, 'w') as f:
+    with open(path_data, 'w+') as f:
         writer = csv.DictWriter(f, dialect='excel', fieldnames=['time', 'lhx', 'lhy', 'rhx', 'rhy', 'lkx', 'lky', 'rkx', 'rky', 'lax', 'lay', 'rax', 'ray'])
         writer.writeheader()
 
@@ -132,7 +139,7 @@ def main():
                 #############################
                 # Inference on Received Image
                 #############################
-                bbox_list, label_list, bboxes_legs, image = perceptor.forward(input_img)
+                bbox_list, label_list, results_keypoints, image = perceptor.forward(input_img)
                 if verbose:
                     print("Perception: bbox list:", bbox_list)
 
@@ -184,7 +191,8 @@ def main():
                 # Keypoints Logging & Transmission #
                 ####################################
                 # pixel_legs = tuple()
-
+                if save_results and results_keypoints:
+                    Utils.save_2Dkeypoints(results_keypoints, 0.25, writer, init)
                 # for i in range(len(bboxes_legs)):
                 #     # Send bbox positions via socket to represent them in the Loomo
                 #     pixel_legs = pixel_legs + (bboxes_legs[i][0], bboxes_legs[i][1])
