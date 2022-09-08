@@ -15,12 +15,12 @@
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
-    <param name="detector_size" value="large" />
-    <param name="tracking_confidence" value="0.4" />
-    <param name="keypoints_activated" value="true" />
-    <param name="save_keypoints" value="False" />
-    <param name="visualization_percep" value="True" /> 
-    <param name="visualization_3D_activated" value="true" />
+    <param name="detector_size" value="medium" />
+    <param name="tracking_confidence" value="0.8" />
+    <param name="keypoints_activated" value="false" />
+    <param name="save_keypoints" value="false" />
+    <param name="visualization_percep" value="true" /> 
+    <param name="visualization_3D_activated" value="false" />
     <param name="verbose_percep" type="int" value= "2" /> <!-- level of verbose 0 to 4-->
 
 
@@ -33,11 +33,11 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.06" />
-    <param name="verbose_map" value="False" />
+    <param name="verbose_map" value="false" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />
-    <param name="prediction_activated" value="False" />
+    <param name="prediction_activated" value="false" />
     <param name="model_prediction_path" value="/home/theo/Autonomous_driving_pipeline/src/prediction/scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl" />
     <param name="time_horizon_prediction" value="0.15" />
     <param name="past_observations" value="3" />
@@ -59,7 +59,7 @@
     
     <!-- CONTROL PARAMETERS: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.4" />
+    <param name="dt_control" value="0.001" />
     <param name="time_horizon_control" value="1.2" />
     <param name="n_states" value="3" />
 
