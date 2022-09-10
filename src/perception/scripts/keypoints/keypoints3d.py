@@ -29,7 +29,7 @@ class Keypoints3D():
         self.name_video_keypoints="3DKeypoints.mp4"
         if save_video_keypoints:
             self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-            self.fps = 15
+            self.fps = 2.5
             self.writer = None
         self.init_keypoints()
         self.init_3Dkeypoints()

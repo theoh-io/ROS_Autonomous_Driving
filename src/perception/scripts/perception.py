@@ -23,6 +23,8 @@ from tools import classes
 import csv
 import cv2
 import numpy as np
+import PIL
+from PIL import Image
 
 now = datetime.now().strftime("%Y%m%d%H%M%S")
 filename_data = "Stream_MR_" + str(now) + ".csv"
@@ -120,8 +122,15 @@ def main():
     timer_started=False
     next_img=[]
 
+    counter=0
+    list_counter=[]
+    list_perf1=[]
+    list_perf2=[]
+    list_perf=[]
+
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
+    img_transmission_list=[]
 
     with open(path_data, 'w+') as f:
         writer = csv.DictWriter(f, dialect='excel', fieldnames=['time', 'lhx', 'lhy', 'rhx', 'rhy', 'lkx', 'lky', 'rkx', 'rky', 'lax', 'lay', 'rax', 'ray'])
@@ -135,14 +144,33 @@ def main():
             ################################
             # Receive Image from the Loomo
             ################################
+            tic1=time.perf_counter()
             socket1.receiver(True)
+            toc1=time.perf_counter()
+            list_perf1.append(toc1-tic1)
+            tic2=time.perf_counter()
             received_image=Transmission.img_sync(next_img, received_image, socket1)
+            toc2=time.perf_counter()
+            list_perf2.append(toc2-tic2)
             next_img=[]
-
             if len(received_image)==socket1.data_size:
+                toc3=time.perf_counter()
+                tic4=time.perf_counter()
+                perfs=[np.average(list_perf1), np.average(list_perf2), toc3-start]
+                list_perf1=[]
+                list_perf2=[]
+                if verbose_level >= 5:
+                    print(f"perf 1:{perfs[0]*1e3}ms,perf 2:{perfs[1]*1e3}ms,perf 3:{perfs[2]*1e3}ms")
+                list_perf.append(perfs)
                 data_rcvd=True
                 timer_started=False
                 end_transmission=time.perf_counter()
+                img_transmission_list.append(end_transmission-start)
+                toc4=time.perf_counter()
+                if verbose_level >= 5:
+                    perf4=toc4-tic4
+                    print(f"perf 4:{perf4*1e3}ms")
+                    print(f"manual sum {counter*(perfs[0]+perfs[1])}")
                 if verbose_level >=2:
                     print(f"Elapsed time for Image Transmission: {(end_transmission-start)* 1e3:.1f}ms")
                     
@@ -239,8 +267,7 @@ def main():
                 computation_time=0
                 rate.sleep()
                 
-    print(f"Average runtime: {np.average(runtime_list)}")
-    print(runtime_list)
+    print(f"Average runtime: {np.average(runtime_list)*1e3}ms, Image Transmission: {np.average(img_transmission_list)*1e3}ms")
     f.close()
 
 if __name__ == "__main__":
