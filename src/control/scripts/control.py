@@ -4,6 +4,7 @@ import rospy
 from msg_types.msg import Position, PositionArray, TrajectoryArray, State, StateArray, ControlCmd
 from Control_Functions import MPC_Control, MPC_Eloi
 import time
+import numpy as np
 
 import os
 import sys
@@ -85,6 +86,7 @@ def main():
     control_prediction_horizon = rospy.get_param("/time_horizon_control") # s
     path_type = rospy.get_param("/planner_type")
     straight = (path_type == "straight")
+    verbose_level = rospy.get_param("/verbose_ctrl")
 
     if CONTROL_FUNCTION == "Default":
         controller = MPC_Control.MPC(loomo, dt_control, control_prediction_horizon, straight)
@@ -108,6 +110,7 @@ def main():
     planner_counter = 0
     predicted_states_local = []
     local_predictions = []
+    runtime_list=[]
 
     rospy.loginfo("Control Node Ready")
     rospy.sleep(1.)
@@ -156,12 +159,14 @@ def main():
 
         # Calculate node computation time
         computation_time = time.time() - start
+        runtime_list.append(computation_time)
         #print(f"in Control: computation time is : {computation_time}")
         if computation_time > dt_control:
             rospy.logwarn("Control computation time higher than node period by " + str(computation_time-dt_control) + " seconds")
 
         rate.sleep()
 
+    print(f"Average ctrl runtime: {np.average(runtime_list)*1e3}ms")
     values = (0.0, 0.0)
     socket0.sender(values)
 
