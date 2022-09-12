@@ -44,7 +44,7 @@ Autonomous Pipeline
 ---
 ## Install
 
-Grab a cup of coffee :coffee: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. Everything is going to be fine :relieved:.
+Grab a cup of coffee :coffee: :cookie: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. Everything is going to be fine :relieved:.
 
 First step is to clone the repository inside the desired ROS folder using:
 
@@ -82,20 +82,46 @@ Finally we advise to update pip and basic package using `python -m pip install -
 
 We have built a bash script and a requirements.txt file with all the python modules required for our ROS pipeline. You can run them in your command line by typing:
 
-:warning: this step might cause you some trouble, if the scripts keeps throwing error messages try to run it line by line and identifying the command causing problem. If it persists feel free to create an issue in the repo.
-
 ```shell
 sudo chmod +x dependencies_Autonomous_driving_pipeline.sh
 ./dependencies_Autonomous_driving_pipeline.sh
 pip install -r requirements.txt
 ```
 
+:warning: this step might cause you some trouble, if the scripts keeps throwing error messages try to run it line by line and identifying the command causing problem. If it persists feel free to create an issue in the repo.
+
 **TrajNet++**
 
-Follow the installation procedure described in the [trajnetbaseline](https://github.com/vita-epfl/trajnetplusplusbaselines) repo. and this step by step [guide](https://thedebugger811.github.io/posts/2020/03/intro_trajnetpp/).
+Package used in Prediction.
 
-[trajnetplusplusdataset]()
-[ẗrajnetplusplustools]()
+We have made a bash script to automatize the installation, you can run it by calling:
+
+    sudo ./trajnet.sh
+    ./trajnet.sh
+
+In case of problem or for detailed install, follow the installation procedure described in the [trajnetbaseline](https://github.com/vita-epfl/trajnetplusplusbaselines) repo. and this step by step [guide](https://thedebugger811.github.io/posts/2020/03/intro_trajnetpp/).
+
+**MMTracking**
+
+Package used in Perception. Implementation of state-of-the-art method in SOT/MOT
+
+We have made a bash script to automatize the installation, you can run it by calling:
+
+    sudo ./mmtracking.sh
+    ./mmtracking.sh
+
+In case of problem or for further details, please check the official repo: [MMTracking](https://github.com/open-mmlab/mmtracking)
+
+**MMPose**
+
+Package used in Perception. Implementation of state-of-the-art method for 2D/3D pose and keypoints estimation.
+
+We have made a bash script to automatize the installation, you can run it by calling:
+
+    sudo ./mmpose.sh
+    ./mmpose.sh
+
+In case of problem or for further details, please check the official repo: [MMPose](https://github.com/open-mmlab/mmpose)
 
 
 Indicative list of dependencies:

@@ -34,7 +34,7 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.06" />
-    <param name="verbose_map" value="true" />
+    <param name="verbose_map" value="false" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />
