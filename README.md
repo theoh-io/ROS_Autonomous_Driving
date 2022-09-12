@@ -12,6 +12,21 @@ Before adopting the pipeline for a singular purpose, we strongly recommend to re
 
 ### Quick Start
 
+In the root folder, ROS request that we type the following command everytime before launching any package.
+
+```shell
+source devel/setup.bash
+```
+
+If we need to change some parameters of the ROS structure, we can go to [Loomo.launch](/src/loomo) inside the launch folder.
+
+The Autonomous System used in our work is a [Loomo](https://store.segway.com/segway-loomo-mini-transporter-robot-sidekick) Segway Robot. We need beforehand to install a specific Android app to enable the connection between the client (Loomo) and the server (ROS pipeline). The app source code and package can be found [here](https://github.com/theoh-io/Loomo_app_ADP).
+
+Once everything is set up and adjusted to our specific context, we are ready to launch:
+
+```shell
+roslaunch loomo Loomo.launch
+```
 
 
 ### Structure
@@ -21,11 +36,19 @@ We present all the different pillars of the pipeline and a brief explanation of 
 ```
 Autonomous Pipeline
 │
-│─── Loomo ───> Package which contains the launch file with all configurable parameters.
+│─── Loomo ───> Package which contains the launch file with all configurable parameters. Also contains the tools (functions common to every modules)
 │
 │─── Message Types ───> Package which includes all types of messages for topics.
 │
-│─── Perception ───> Package and node to robustly detect and track from cameras and depth sensors.
+│─── Perception ───> Package and node to robustly detect and track from cameras and depth sensors. Perception package is modular enabling for change in used configurations.
+|       |
+|       |─── Detectors ───> Person Detection algorithms (Yolov5).
+|       |
+|       |─── Trackers ───> Single Object Tracker running on top of detection to robustly track the person of Interest (Stark).
+|       |
+|       |─── Keypoints ───> 2D/3D keypoints Estimation to get the position of the link of the target in real time.
+|       |
+|       |─── Perceptors ───> High Level Class where we combine all the perception module providing simple call to perception.
 │
 │─── Estimation ───> Package to estimate current state from sensors information.
 │       │
@@ -37,14 +60,14 @@ Autonomous Pipeline
 │
 │─── Path Planning ───> Package and node to calculate robot's desired path to avoid collision.
 │
-│─── Control ───> Package and node to ensure that the robot is following the desired path.
+│─── Control ───> Package and node to compute control commands using Model Predictive Control and ensure that the robot is following the desired path.
 │
 └─── Visualization ───> Plotting tools for all nodes current data.
 ```
 ---
 ## Install
 
-Grab a cup of coffee :coffee: :cookie: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. Everything is going to be fine :relieved:.
+Grab a cup of coffee :coffee: :cookie: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. Everything is going to be fine :relieved:. (Please open an issue in case of problem)
 
 First step is to clone the repository inside the desired ROS folder using:
 
@@ -129,7 +152,8 @@ In case of problem or for further details, please check the official repo: [MMPo
 
 
 Indicative list of dependencies:
-* Openpifpaf 0.11.9
+
+* Openpifpaf 
 
 * TrajNet++
 
@@ -143,13 +167,17 @@ Indicative list of dependencies:
 
 * PIL
 
-* torch 1.7.1
+* torch 
+
+* torchvision
 
 * collections
 
-* cython 0.29.21 
+* cython 
 
-* OpenCV 3.3
+* OpenCV
+
+* MMCV
 
 ### Build
 
@@ -161,26 +189,19 @@ catkin_make
 
 If the command ```catkin_make``` fails, try executing it again and check if the percentage is growing.
 
-In the same folder, type the following command before launching all packages.
+### Perception functions weight
 
-```shell
-source devel/setup.bash
-```
+Please Check the [installation procedure](./src/perception/README.md) for the different Perception algorithm you plan to use.
 
-If we need to change some parameters of the ROS structure, we can go to [Loomo.launch](/src/loomo) inside the launch folder.
+### End of Install
 
-The Autonomous System used in our work is a Loomo Segway Robot. It needs some specific algorithms to enable the connection with the server (ROS pipeline), presented in https://github.com/cconejob/loomo-vita-testing-app.
-
-Once everything is set up and adjusted to our specific context, we are ready to launch:
-
-```shell
-roslaunch loomo Loomo.launch
-```
+:tada: Congrats if you managed to reach this point most of the installation should be done, you can finally test the program.
 
 ## Future Improvements
 - [x] Add Perception functions from MMTrack
 - [x] Add more Documentation
 - [x] Redo the Install Procedure
+- [ ] Create a Perception object only running yolo for simple quickstart
 - [ ] Create Docker Image for easy install
 - [ ] Support for Multiple Person Tracking and Avoidance 
 - [ ] Create a simulation environment in gazebo to be able to test the algorithms without the robot
