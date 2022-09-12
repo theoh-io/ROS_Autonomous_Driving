@@ -343,12 +343,12 @@ class Utils():
         heading_ant = 0.0
 
         for i in range(1,80):
-            
+            #compute number of points in plans for 1 control step
             while dist < e and it < len(points):
                 distAB = Utils.calculate_distance(points[it-2], points[it-1])
                 dist = dist + distAB
                 it = it + 1
-
+            #supplement distance to reach discrete path planning objective in x, y, heading
             if dist >= e:
                 it = it - 1
                 d = dist - e
@@ -358,6 +358,7 @@ class Utils():
                 heading = math.atan2((y - y_ant),(x - x_ant))
                 v = abs(v)
 
+                # condition if rate of orientation > rotation possible by loomo in one control step
                 if abs(heading-heading_ant) > mobile_robot.w_max * t:
                     heading = 0.0
                     x = x_ant - e * np.cos(heading)

@@ -69,6 +69,7 @@ class CHUV_Planner:
 
         # If path is too short, add the last states, N times)
         if len(mpc_path)<= (1 + self.N):
+            #print("in CHUV Plavver straight path is too short")
 
             return mpc_path + [mpc_path[-1],]*(2+self.N - len(mpc_path))
         

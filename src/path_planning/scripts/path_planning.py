@@ -51,15 +51,17 @@ def callback_mapping(data):
 def main():
     # Initialize ROS
     rospy.init_node("path_planning")
+    #parameters from launch file
     dt_path_planning = rospy.get_param("/dt_path_planning")
     rate = rospy.Rate(int(1/dt_path_planning))
-    sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     prediction_activated = rospy.get_param("/prediction_activated")
     print(f"pathplanning: prediction ={prediction_activated}")
     mapping_activated = rospy.get_param("/mapping_activated")
     print(f"pathplanning: mapping ={mapping_activated}")
     PATH_PLANNING_FUNCTION = rospy.get_param("/PATH_PLANNING_FUNCTION")
 
+    # Ros Topic Subscription
+    sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     if prediction_activated:
         sub_prediction = rospy.Subscriber('/Prediction/predicted_trajectories_global', TrajectoryArray, callback_prediction, queue_size = 1)
         
@@ -77,6 +79,7 @@ def main():
     speed = rospy.get_param("/speed")
     wheel_base = rospy.get_param("/wheel_base") # m
     v_max = rospy.get_param("/v_max") # m/s
+    # /!\ seems strange should be time horizon path planning
     time_horizon_control = rospy.get_param("/time_horizon_control")
     N = int(time_horizon_control/dt_control)
     num_person = int(rospy.get_param("/num_person"))-1
@@ -113,6 +116,7 @@ def main():
 
         if not prediction_activated and not mapping_activated:
             # Receive detection positions (x, y) in relation to the Loomo
+            #FIX: these positions are relative => use local to Global predictions
             socket3.receiver()
 
             if socket3.received_ok:
@@ -124,6 +128,7 @@ def main():
 
                     if position[0]!=0.0:
                         array_predictions.append([list(position)+[idx+1]+[0.0]])
+                
 
         start = time.time()
         x0 = state

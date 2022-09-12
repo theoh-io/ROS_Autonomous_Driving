@@ -30,13 +30,7 @@ now = datetime.now().strftime("%Y%m%d%H%M%S")
 filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 path_output=os.path.abspath(abs_path_to_loomo+"/..")
-save_results = False
-if save_results:
-    path_data=path_output+"/"+filename_data
-else:
-    #save the csv in .ros folder so that it doesn't annoy 
-    path_data=os.getcwd()+"/log.csv"
-
+# save_results = False
 
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
@@ -59,11 +53,19 @@ def main():
     detector_size=rospy.get_param("/detector_size")
     tracking_conf=rospy.get_param("/tracking_confidence")
     keypoints_activated=rospy.get_param("/keypoints_activated")
-    save_keypoints=rospy.get_param("/save_keypoints")
+    save_keypoints=rospy.get_param("/save_keypoints_vid")
+    keypoints_logging=rospy.get_param("/keypoints_logging")
     perception_vis=rospy.get_param("/visualization_percep")
     keypoints_vis=rospy.get_param("/visualization_3D_activated")
     verbose_level=rospy.get_param("/verbose_percep")
     print(f"Verbose level is {verbose_level}")
+
+
+    if keypoints_logging:
+        path_data=path_output+"/"+filename_data
+    else:
+        #save the csv in .ros folder so that it doesn't annoy 
+        path_data=os.getcwd()+"/log.csv"
 
     
     ###################################
@@ -122,12 +124,6 @@ def main():
     timer_started=False
     next_img=[]
 
-    counter=0
-    list_counter=[]
-    list_perf1=[]
-    list_perf2=[]
-    list_perf=[]
-
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
     img_transmission_list=[]
@@ -139,40 +135,22 @@ def main():
         while not rospy.is_shutdown():
             #rospy.loginfo("Perception loop")
             if not data_rcvd and not timer_started:
-                start = time.perf_counter()
+                start_transmission = time.perf_counter()
                 timer_started=True
             ################################
             # Receive Image from the Loomo
             ################################
-            tic1=time.perf_counter()
             socket1.receiver(True)
-            toc1=time.perf_counter()
-            list_perf1.append(toc1-tic1)
-            tic2=time.perf_counter()
             received_image=Transmission.img_sync(next_img, received_image, socket1)
-            toc2=time.perf_counter()
-            list_perf2.append(toc2-tic2)
             next_img=[]
+
             if len(received_image)==socket1.data_size:
-                toc3=time.perf_counter()
-                tic4=time.perf_counter()
-                perfs=[np.average(list_perf1), np.average(list_perf2), toc3-start]
-                list_perf1=[]
-                list_perf2=[]
-                if verbose_level >= 5:
-                    print(f"perf 1:{perfs[0]*1e3}ms,perf 2:{perfs[1]*1e3}ms,perf 3:{perfs[2]*1e3}ms")
-                list_perf.append(perfs)
                 data_rcvd=True
                 timer_started=False
                 end_transmission=time.perf_counter()
-                img_transmission_list.append(end_transmission-start)
-                toc4=time.perf_counter()
-                if verbose_level >= 5:
-                    perf4=toc4-tic4
-                    print(f"perf 4:{perf4*1e3}ms")
-                    print(f"manual sum {counter*(perfs[0]+perfs[1])}")
+                img_transmission_list.append(end_transmission-start_transmission)
                 if verbose_level >=2:
-                    print(f"Elapsed time for Image Transmission: {(end_transmission-start)* 1e3:.1f}ms")
+                    print(f"Elapsed time for Image Transmission: {(end_transmission-start_transmission)* 1e3:.1f}ms")
                     
                 # Reset perception variables
                 input_img=received_image
@@ -232,7 +210,7 @@ def main():
                 # Keypoints Logging & Transmission #
                 ####################################
                 # pixel_legs = tuple()
-                if save_results and results_keypoints:
+                if keypoints_logging and results_keypoints:
                     Utils.save_2Dkeypoints(results_keypoints, 0.25, writer, init)
                 # for i in range(len(bboxes_legs)):
                 #     # Send bbox positions via socket to represent them in the Loomo
@@ -258,7 +236,7 @@ def main():
                 data_rcvd=False
                 # Calculate node computation time
                 end_perception=time.perf_counter()
-                computation_time = end_perception - start
+                computation_time = end_perception - start_transmission
                 runtime_list.append(computation_time)
                 if verbose_level>=2:
                     print(f"Elapsed time for full perception is: {computation_time* 1e3:.1f}ms")
