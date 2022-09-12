@@ -103,6 +103,10 @@ In case of problem or for detailed install, follow the installation procedure de
 
 **MMTracking**
 
+#### Dependency
+
+:warning: before install openmmlab kits be sure to have definitive version of torch and torchvision otherwise you will have to uninstall and re-install everything. In our case we use a RTX3090 GPU specifying special version of torch and torchvision. We provide a script for that: [torch script](./torch.sh)
+
 Package used in Perception. Implementation of state-of-the-art method in SOT/MOT
 
 We have made a bash script to automatize the installation, you can run it by calling:
