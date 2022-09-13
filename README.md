@@ -1,12 +1,10 @@
 # Autonomous Driving Pipeline in ROS
 
-## Paper
-Before adopting the pipeline for a singular purpose, we strongly recommend to read the article that explains our work in detail:
-[Design and Implementation for Fully Autonomous Driving Systems. Paraplegic Patients Assistance](/paper.pdf) [pdf]
-
-<p align="center">
-<img src="./src/control/Images/MR_Loomo_closed_loop.gif" alt="drawing" width="700"/>
+<p float="left">
+  <img src="./img/ADP.gif" width="300" />
+  <img src="./src/control/Images/MR_Loomo_closed_loop.gif" width="300" /> 
 </p>
+
 
 ## User Guide
 
@@ -64,6 +62,14 @@ Autonomous Pipeline
 │
 └─── Visualization ───> Plotting tools for all nodes current data.
 ```
+
+## Acknowledgements
+
+This Repository is based on the previous project [Autonomous Driving Pipeline](https://github.com/cconejob/Autonomous_driving_pipeline)
+
+Before adopting the pipeline for a singular purpose, we recommend to read the article that explains the previous version of this work in detail:
+[Design and Implementation for Fully Autonomous Driving Systems. Paraplegic Patients Assistance](/paper.pdf) [pdf]
+
 ---
 ## Install
 
