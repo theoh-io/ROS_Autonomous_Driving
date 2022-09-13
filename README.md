@@ -1,8 +1,8 @@
 # Autonomous Driving Pipeline in ROS
 
 <p float="left">
-  <img src="./img/ADP.gif" width="300" />
-  <img src="./src/control/Images/MR_Loomo_closed_loop.gif" width="300" /> 
+  <img src="./img/ADP.gif" width="400" />
+  <img src="./src/control/Images/MR_Loomo_closed_loop.gif" width="400" /> 
 </p>
 
 
