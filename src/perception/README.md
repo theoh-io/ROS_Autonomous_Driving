@@ -8,33 +8,30 @@
 
 </center>
 
+## Description
 
+The perception module is based on a multi-stage perceptor class. It provides Top-Down 3D Pose Estimation based on Detection and Tracking. Furthermore, we designed our perception module to be modular meaning that we can later easily change every stage of the perceptor.
 
 ### Detector
 
-We offer two different detectors, built by VITA laboratory: 
 
-* **Openpifpaf** 
+* **Yolov5** Object Detection architecture pretrained on COCO dataset, Multiple model size available. Inference time for medium size model ~20ms. We restrict the object detection to the Human class.
 
-Human detector. Reference: https://github.com/vita-epfl/openpifpaf
+![alt text](./Images/yolov5.gif)
 
-<center>
+### Tracker
 
-Closed-Loop Tests               |  Openpifpaf Keypoint Extraction
-:-------------------------: |:-------------------------:
-<img src="../control/Images/MR_EPFL.gif" alt="drawing" width="500"/> | <img src="../control/Images/MR_EPFL_skeleton.gif" alt="drawing" width="500"/>
+* **Stark** Learning Spatio-Temporal Transformer for Visual Tracking. (SOT) Single Object Tracker. Robustly track the initial target across frames. Inference time ~20ms.
 
-</center>
+![alt text](./Images/STARK.gif)
 
-* **Minion (Default)** 
+### 3D Keypoints
 
-Minion images detector. Reference: https://github.com/vita-epfl/socket-loomo/blob/master/python/detector.py
+* **VideoPose3D** 3D human pose estimation in video with temporal convolutions and semi-supervised training. Trained on Human3.6M dataset. 3D keypoints from 2D image. Inference time > 100 ms
 
-<p align="center">
-<img src="./Images/Perception_minion.gif" alt="drawing" width="400"/>
-</p>
+![alt text](./Images/3Dkeypoints.gif)
 
-**Comparison between both detectors:**
+## Creating Perceptor Object (Doc not updated)
 
 All real time detectors can be added inside the pipeline, setting the required parameters.
 
