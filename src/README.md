@@ -50,25 +50,25 @@ In this project, we used a Loomo Segway robot. Anyway, the structure could be im
 
 </center>
 
-## Perception
+## [Perception](./perception)
 
 The package's main goal is to detect the human target robustly and in real-time inside raw images received from the robot and send back bounding boxes to the Loomo.
 
 We implement Multi-stage Perception algorithms running Detection using **Yolov5**, Single Object Tracking using **STARK** and 3D Pose Estimation using **VideoPose3D**.
 
-## State Estimation
+## [State Estimation](state_estimation)
 
 The state can be acquired more accurately than the sensor's data using estimation algorithms. We also give the possibility of storing a map that contains all previous observations with the last observation.
 
 **Extended Kalman Filters** (with kinematic model) and **Data Association** (mapping) are included inside the package.
 
-## Prediction
+## [Prediction](./prediction)
 
 We predict the detections' future positions inside this package, depending on their motion during the last frames. The user can change the predictor algorithm depending on the requirements.
 
 We include simple **Linear Predictor** and **TrajNet++** in the pipeline.
 
-## Path Planning
+## [Path Planning](path_planning)
 
 The main goal is to design a path for the mobile robot to avoid object collision, follow a person, etc.
 
@@ -76,17 +76,17 @@ In this project, we use **Prediction RRT*** to avoid object collision going from
 
 We also implement a **Human-Tracking** path planning program based on the Perception information. 
 
-## Control
+## [Control](./control)
 
 In the Control package, we design an algorithm to follow the previously calculated desired path. 
 
 We implemented a **Model Predictive Control** with a kinematic model.
 
-## Message Types
+## [Message Types](./msg_types)
 
 It contains all types of messages for the different topics we need for the pipeline.
 
-## Visualization
+## [Visualization](./visualization)
 
 Finally, we visualize the essential ROS topics in order to check if all algorithms are working correctly. 
 
