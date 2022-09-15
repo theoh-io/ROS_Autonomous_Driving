@@ -1,10 +1,19 @@
 # Autonomous Driving Pipeline in ROS
 
+Open Source Autonomous Driving Pipeline implemented in ROS. It is part of EPFL [VITA](https://www.epfl.ch/labs/vita/) Lab project
+
 <p float="left">
   <img src="./img/ADP.gif" width="400" />
   <img src="./src/control/Images/MR_Loomo_closed_loop.gif" width="400" /> 
 </p>
 
+## Description
+
+We propose a modular pipeline for autonomous systems, which combines Computer Vision algorithms leveraging Deep Learning with classic robust methods for Path Planning, State Estimation and Control tasks. Our structure is designed to be general to adapt to different types of mobile robots and also flexible to easily change algorithms in its various independent modules. 
+
+We use [Robot Operating System (ROS)](https://www.ros.org/) and network socket to establish wireless connection between the Server (Computer running the pipeline) and the Client (Mobile Robot).
+
+For our implementation we use a [Loomo Segway Robot]
 
 ## User Guide
 
