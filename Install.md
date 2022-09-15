@@ -1,6 +1,6 @@
 # 🛠️ Install
 
-Grab a cup of coffee :coffee: :cookie: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. Everything is going to be fine :relieved:. (Please open an issue in case of problem)
+Grab a cup of coffee :coffee: :cookie: and get ready for the full installation procedure. This is a long and quite tedious process, take your time and follow each step carrefully. 
 
 First step is to clone the repository inside the desired ROS folder using:
 
