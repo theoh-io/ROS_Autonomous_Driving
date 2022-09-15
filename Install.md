@@ -7,7 +7,6 @@ First step is to clone the repository inside the desired ROS folder using:
     git clone https://github.com/theoh-io/ROS_Autonomous_Driving
 
 ## Dependencies
----
 
 **Python 3.7**
 
@@ -114,7 +113,6 @@ Indicative list of dependencies:
 * MMCV
 
 ## Build
----
 
 Once we have installed all **dependencies** (see section below), we need to build the ```devel``` and ```build``` folders by typing inside the ```Autonomous_driving_Pipeline``` folder:
 
@@ -125,7 +123,6 @@ catkin_make
 If the command ```catkin_make``` fails, try executing it again and check if the percentage is growing.
 
 ## Perception functions weight
----
 
 Please Check the [installation procedure](./src/perception/README.md) to download the weights of the different models, depending on the custom Perception algorithm you plan to use.
 
