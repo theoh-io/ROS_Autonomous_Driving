@@ -13,7 +13,9 @@ We propose a modular pipeline for autonomous systems, which combines Computer Vi
 
 We use [Robot Operating System (ROS)](https://www.ros.org/) and network socket to establish wireless connection between the Server (Computer running the pipeline) and the Client (Mobile Robot).
 
-For our implementation we use a [Loomo Segway Robot]
+For our implementation we use a [Loomo Segway Robot](https://store.segway.com/segway-loomo-mini-transporter-robot-sidekick).
+
+Finally in our case we specifically adapt this general Autonomous Driving framework to fit the needs of neuroscience research area by precisely estimating the 3D Pose of the target, helping paraplegic patients to walk using our Loomo mobile robot as an assistant.
 
 ## User Guide
 
