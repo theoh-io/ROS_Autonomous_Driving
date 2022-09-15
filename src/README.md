@@ -27,7 +27,7 @@ After the short description, we show how we connect all different nodes and the 
 
 <center>
 
-![alt text](./control/Images/Software_pipeline.png)
+![alt text](./control/Images/Diagram.png)
 
 </center>
 
@@ -45,9 +45,9 @@ In this project, we used a Loomo Segway robot. Anyway, the structure could be im
 
 ## Perception
 
-The package's main goal is to detect objects, animals or humans (depending on the detector used) inside raw images from the robot and send bounding boxes to the Loomo.
+The package's main goal is to detect the human target robustly and in real-time inside raw images received from the robot and send back bounding boxes to the Loomo.
 
-We implement a simple **Minion** images detector and a complex human detector, called **Openpifpaf**.
+We implement Multi-stage Perception algorithms running Detection using **Yolov5**, Single Object Tracking using **STARK** and 3D Pose Estimation using **VideoPose3D**.
 
 ## State Estimation
 
@@ -67,7 +67,7 @@ The main goal is to design a path for the mobile robot to avoid object collision
 
 In this project, we use **Prediction RRT*** to avoid object collision going from a start point to a goal, considering the observations' possible motion.
 
-We also implement a **Human-Tracking** path planning program based on the Openpifpaf information. 
+We also implement a **Human-Tracking** path planning program based on the Perception information. 
 
 ## Control
 
