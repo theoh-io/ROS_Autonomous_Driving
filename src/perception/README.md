@@ -57,6 +57,7 @@ bbox_list, label_list = detection_image.detect(received_image)
 
 (Not Yet Implemented)
 [Yolov7](https://github.com/WongKinYiu/yolov7): Trainable bag-of-freebies, State-of-the-art object detector
+
     cd src/PostureTrack/detectors/weights
     wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-tiny.pt
     wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7.pt
