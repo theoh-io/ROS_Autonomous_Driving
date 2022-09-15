@@ -27,13 +27,20 @@ After the short description, we show how we connect all different nodes and the 
 
 <center>
 
+![alt text](./control/Images/Software_pipeline.png)
+
+</center>
+
+Complementary view to get a better understanding of the chronological progress of the program.
+<center>
+
 ![alt text](./control/Images/Diagram.png)
 
 </center>
 
-## Loomo
+## [Loomo](./loomo)
 
-In this package, the user can change the main parameters of the pipeline. It includes the launch file that enables running all nodes at the same time. 
+In this package, the user can change the main parameters of the pipeline and common functions to every modules. It includes the launch file to specify parameters values and enabling running all nodes at the same time. 
 
 In this project, we used a Loomo Segway robot. Anyway, the structure could be implemented in other autonomous vehicles.
 
