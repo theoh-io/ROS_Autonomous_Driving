@@ -209,6 +209,7 @@ Please Check the [installation procedure](./src/perception/README.md) for the di
 - [x] Redo the Install Procedure
 - [ ] Create a Perception object only running yolo for simple quickstart
 - [ ] Create Docker Image for easy install
+- [ ] New Node for 2D/3D Keypoints to reduce latency
 - [ ] Support for Multiple Person Tracking and Avoidance 
 - [ ] Create a simulation environment in gazebo to be able to test the algorithms without the robot
 - [ ] add a Robot description file (.urdf) of Loomo robot 
