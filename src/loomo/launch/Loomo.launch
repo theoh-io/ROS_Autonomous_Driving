@@ -2,12 +2,12 @@
     <!-- Explanation in the README.md file -->
 
     <!-- GLOBAL PARAMETERS -->
-    <param name="ip_address" value="128.179.153.185" />
-    <param name="ip_address_nicolo" value="192.168.0.152" />
+    <param name="ip_address" value="128.179.153.165" />
+    <!-- <param name="ip_address_neuro" value="192.168.0.152" /> -->
     <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
-    <param name="v_max" value="0.7" />
-    <param name="wheel_base" value="1" />
-    <param name="speed" value="0.7" />
+    <param name="v_max" value="0.3" />
+    <param name="wheel_base" value="0.57" />
+    <param name="speed" value="0.3" />
     
 
     <!-- PERCEPTION PARAMETERS: Default, Openpifpaf -->
@@ -16,11 +16,11 @@
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
     <param name="detector_size" value="medium" />
-    <param name="tracking_confidence" value="0.5" />
+    <param name="tracking_confidence" value="0.9" />
     <param name="keypoints_activated" value="false" />
     <param name="save_keypoints_vid" value="false" />
     <param name="keypoints_logging" value="false" />
-    <param name="visualization_percep" value="false" /> 
+    <param name="visualization_percep" value="true" /> 
     <param name="visualization_3D_activated" value="false" />
     <param name="verbose_percep" type="int" value= "2" /> <!-- level of verbose 0 to 4-->
 
@@ -34,7 +34,7 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.06" />
-    <param name="verbose_map" value="true" />
+    <param name="verbose_map" value="false" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Default" />
@@ -60,7 +60,7 @@
     
     <!-- CONTROL PARAMETERS: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.25" />
+    <param name="dt_control" value="0.1" />
     <param name="time_horizon_control" value="1.2" />
     <param name="n_states" value="3" />
     <param name="verbose_ctrl" value="2" />

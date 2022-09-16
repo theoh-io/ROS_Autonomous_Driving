@@ -111,8 +111,8 @@ def main():
     socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
 
     #socket connection NeuroRestore
-    #ip_address_nicolo = rospy.get_param("/ip_address_nicolo")
-    #socket6 = classes.SocketLoomo(8086, dt_perception, ip_address_nicolo, packer=13*'f ', sockettype="datagram")
+    #ip_address_neuro = rospy.get_param("/ip_address_neuro")
+    #socket6 = classes.SocketLoomo(8086, dt_perception, ip_address_neuro, packer=13*'f ', sockettype="datagram")
 
     init = time.time()
     ##############################

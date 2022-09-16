@@ -9,10 +9,10 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | Parameter   |  Description                                 |
 |:---------:  |:-------------------------:                   |
 | ip_address_robot  | IP Address Autonomous System (client)  |
-| ip_address_nicolo    | Second Client IP Address (keypoint information) |
+| ip_address_neuro    | IP Address 2nd Client: NeuroProstethics Device (keypoint information) |
 | abs_path_to_tools    | Global path to pipeline tools |
 | v_max       | Robot's maximum speed [m/s]                  |
-| wheel_base  | Robot's length between wheels [m]            |
+| wheel_base  | Robot's length between wheels [m] (0.57 for Loomo)           |
 | speed                   | Constant speed of the robot [m/s]           |
 
 </p>
@@ -23,9 +23,18 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 
 | Parameter           |  Description                              |
 |:---------:          |:-------------------------:                |
-| PERCEPTION_FUNCTION | Detection algorithm used                  |
-| dt_perception       | Perception sampling time [s]              |
+| PERCEPTION_FUNCTION | Detection algorithm used: Stark           |
+| dt_perception       | Perception sampling time [s] (will just wait to finish if its above)             |
 | downscale           | Downscale for robot images (check follow.cfg) |
+| detector_size       | DSize of detection model (small, medium, large, xlarge) |
+| tracking_confidence  | treshold for tracking confidence 0.8 (id switches) -> 0.99 (not able to track) |
+| keypoints_activated  | Boolean to activate 3D Pose Estimation |
+| save_keypoints_vid   | Create a mp4 video to view 3D keypoints |
+| keypoints_logging    | saving the coordinates of the 3D keypoints in a CSV file |
+| visualization_percep | Boolean to visualize the image of loomo and bounding box |
+| visualization_3D_activated  | Boolean to visualize the 3D Pose in Real Time |
+| verbose_percep       | int value level of printing [0;4]: 0(minimal)->2(runtime)->4(full/debugging)  |
+
 
 
 </p>
@@ -51,6 +60,7 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | mapping_activated       | Mapping algorithm required?   |
 | map_state_activated     | Estimate the state with map?  |
 | dt_map_state            | Map State sampling time [s]   |
+| verbose_map             | Boolean to indicate if we want to print messages   |
 
 </p>
 
