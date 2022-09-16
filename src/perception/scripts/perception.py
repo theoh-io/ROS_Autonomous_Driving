@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 # VITA, EPFL
-
-
 ##################
 #IMPORTS
 ##################
@@ -10,7 +8,6 @@ import matplotlib.pyplot as plt
 import time
 import glob
 from datetime import datetime
-
 import os
 import sys
 import rospkg
@@ -25,12 +22,13 @@ import numpy as np
 import PIL
 from PIL import Image
 
+#Format of the Logging File
 now = datetime.now().strftime("%Y%m%d%H%M%S")
 filename_data = "Stream_MR_" + str(now) + ".csv"
 filename_video = "Stream_MR_" + str(now) + ".avi"
 path_output=os.path.abspath(abs_path_to_loomo+"/..")
-# save_results = False
 
+#import custom perception packages
 from perceptors import sot_perceptor, mot_perceptor
 from detectors import yolov5_detector, pifpaf_detector
 from trackers import mmtracking_sot
@@ -65,8 +63,6 @@ def main():
     else:
         #save the csv in .ros folder so that it doesn't annoy 
         path_data=os.getcwd()+"/log.csv"
-
-    
     ###################################
     # Initialize Full detector
     ###################################
@@ -78,35 +74,12 @@ def main():
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
                                                 type_input = "opencv", keypoints=keypoints_activated, save_video_keypoints=save_keypoints, 
                                                 show=perception_vis, show3D=keypoints_vis, verbose=verbose_level)
-    elif PERCEPTION_FUNCTION =="Openpifpaf":
-        # perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
-        #                                         global_path = '',
-        #                                         detector = pifpaf_detector.Detector_pifpaf(), load = False, type_input = "pil",
-        #                                         save_video=save_results, filename_video=filename_video)
-        perceptor = mot_perceptor.MotPerceptor(width = 640, height = 480, channels = 3, downscale = downscale,
-                                                detector = pifpaf_detector.Detector_pifpaf, detector_size="default", 
-                                                tracker=None, tracker_model=None, tracking_conf=None,
-                                                type_input = "pil", verbose=False)
-
-
-    elif PERCEPTION_FUNCTION =="Yolo":
-        perceptor = classes.NewDetectorConfig(width = 640, height = 480, channels = 3, downscale = downscale,
-                                                global_path = '',
-                                                detector = yolo_detector.YoloDetector(), load = False, type_input = "opencv",
-                                                save_video=save_results, filename_video=filename_video)
-    
-
-
-
     #################################
     # Initialize socket connections
     #################################
     #socket connection with Loomo => socket1: Receiver = Loomo's Camera; socket5: Sender = Detection Bbox 
     ip_address = rospy.get_param("/ip_address")
-    #try:
     socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, perceptor.data_size)
-    #except NameError:
-        #detection_image=None
     socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
 
     #socket connection NeuroRestore
@@ -122,27 +95,30 @@ def main():
     data_rcvd=False
     timer_started=False
     next_img=[]
-
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
     img_transmission_list=[]
 
+    #open csv file for keypoint logging
     with open(path_data, 'w+') as f:
         writer = csv.DictWriter(f, dialect='excel', fieldnames=['time', 'lhx', 'lhy', 'rhx', 'rhy', 'lkx', 'lky', 'rkx', 'rky', 'lax', 'lay', 'rax', 'ray'])
         writer.writeheader()
 
         while not rospy.is_shutdown():
-            #rospy.loginfo("Perception loop")
+            # start of main perception loop
             if not data_rcvd and not timer_started:
+                # start timer for img transmission
                 start_transmission = time.perf_counter()
                 timer_started=True
             ################################
             # Receive Image from the Loomo
             ################################
             socket1.receiver(True)
+            # safety in case img transmission is not synchronized
             received_image=Transmission.img_sync(next_img, received_image, socket1)
             next_img=[]
 
+            # Image Processing only if we received the full package
             if len(received_image)==socket1.data_size:
                 data_rcvd=True
                 timer_started=False
@@ -166,24 +142,19 @@ def main():
                 #############################
                 bbox = tuple()
                 bbox_visu=None
-                #Here we have only 1 bbox at the end as we are in Sot configuration
+
+                #SOT configurationwe have only 1 bbox at the end
                 if bbox_list and np.asarray(bbox_list).ndim==1:
                     # Send bbox positions via socket to represent them in the Loomo
                     bbox_visu = bbox + (bbox_list[0], bbox_list[1], bbox_list[2], bbox_list[3], float(True))#float(label_list[i][0]))
-                    #Scaling down bbox so that depth estimation is more precise
+                    #Optional parameter: Scaling down bbox so that depth estimation is more precise inside small region
                     scale=1
                     bbox_list=Utils.bbox_scaling(bbox_list, scale)
-                    #Loomo with Vita Testing App want the bbox in the following format: x_tl, y_tl, w, h
-
-                    #test 25_08
+                    #Loomo with ADP App want the bbox in the following format: x_tl, y_tl, w, h
                     new_bbox=Utils.bbox_xcentycentwh_to_xtlytlwh(bbox_list)
                     #new_bbox=bbox_list
                     bbox= bbox+(new_bbox[0], new_bbox[1], new_bbox[2], new_bbox[3], float(True))
 
-                elif PERCEPTION_FUNCTION =="Openpifpaf":
-                        for bbox_indiv in bbox_list:
-                            bbox_visu = Utils.bbox_xtlytlwh_to_xcentycentwh(bbox_indiv)
-                            bbox=bbox+(bbox_indiv[0], bbox_indiv[1], bbox_indiv[2], bbox_indiv[3], float(True))
                 else:
                     bbox=bbox+(0.0, 0.0, 0.0, 0.0, float(False))            
 
@@ -191,17 +162,6 @@ def main():
                 # Transmission to Loomo
                 ###################################
                 # Send bbox to the robot -> Camera tracking and motion controller algorithm
-
-                #Tests with Hand coded bbox
-                #bbox= (0.0, 0.0, 0.0, 0.0, 1.0) #trying to hand code 0 bbox to see if it's transmitted
-                #transmitting fake bbox in the center
-                # bbox_list=[160, 120, 50, 100]
-                # x_tl= bbox_list[0] - bbox_list[2]/2
-                # y_tl= bbox_list[1] - bbox_list[3]/2
-                # w= bbox_list[2]
-                # h= bbox_list[3]
-                # bbox= (x_tl, y_tl, w, h, float(True))
-
                 bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
                 socket5.sender(bbox)
 
@@ -211,6 +171,11 @@ def main():
                 # pixel_legs = tuple()
                 if keypoints_logging and results_keypoints:
                     Utils.save_2Dkeypoints(results_keypoints, 0.25, writer, init)
+
+                #####################################################
+                # Previous code for communication with Neuro Device #
+                #####################################################
+                
                 # for i in range(len(bboxes_legs)):
                 #     # Send bbox positions via socket to represent them in the Loomo
                 #     pixel_legs = pixel_legs + (bboxes_legs[i][0], bboxes_legs[i][1])

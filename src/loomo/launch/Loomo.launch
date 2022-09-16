@@ -10,8 +10,8 @@
     <param name="speed" value="0.7" />
     
 
-    <!-- PERCEPTION PARAMETERS: Default, Openpifpaf -->
-    <param name="PERCEPTION_FUNCTION" value="Stark" />
+    <!-- PERCEPTION PARAMETERS: Default, Stark -->
+    <param name="PERCEPTION_FUNCTION" value="Default" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
