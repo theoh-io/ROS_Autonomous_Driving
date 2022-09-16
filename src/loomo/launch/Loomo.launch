@@ -4,7 +4,7 @@
     <!-- GLOBAL PARAMETERS -->
     <param name="ip_address" value="128.179.153.165" />
     <!-- <param name="ip_address_neuro" value="192.168.0.152" /> -->
-    <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" />
+    <!-- <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" /> -->
     <param name="v_max" value="0.3" />
     <param name="wheel_base" value="0.57" />
     <param name="speed" value="0.3" />
@@ -15,7 +15,7 @@
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
-    <param name="detector_size" value="medium" />
+    <param name="detector_size" value="large" />
     <param name="tracking_confidence" value="0.9" />
     <param name="keypoints_activated" value="false" />
     <param name="save_keypoints_vid" value="false" />
@@ -60,7 +60,7 @@
     
     <!-- CONTROL PARAMETERS: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.1" />
+    <param name="dt_control" value="0.2" />
     <param name="time_horizon_control" value="1.2" />
     <param name="n_states" value="3" />
     <param name="verbose_ctrl" value="2" />

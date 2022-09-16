@@ -9,8 +9,7 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | Parameter   |  Description                                 |
 |:---------:  |:-------------------------:                   |
 | ip_address_robot  | IP Address Autonomous System (client)  |
-| ip_address_neuro    | IP Address 2nd Client: NeuroProstethics Device (keypoint information) |
-| abs_path_to_tools    | Global path to pipeline tools |
+| ip_address_neuro (not used)   | IP Address 2nd Client: NeuroProstethics Device (keypoint information) |
 | v_max       | Robot's maximum speed [m/s]                  |
 | wheel_base  | Robot's length between wheels [m] (0.57 for Loomo)           |
 | speed                   | Constant speed of the robot [m/s]           |
@@ -24,9 +23,9 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | Parameter           |  Description                              |
 |:---------:          |:-------------------------:                |
 | PERCEPTION_FUNCTION | Detection algorithm used: Stark           |
-| dt_perception       | Perception sampling time [s] (will just wait to finish if its above)             |
+| dt_perception       | Perception minimum sampling time [s] (will just wait to finish if its above)             |
 | downscale           | Downscale for robot images (check follow.cfg) |
-| detector_size       | DSize of detection model (small, medium, large, xlarge) |
+| detector_size       | DSize of detection model (small, medium, large) |
 | tracking_confidence  | treshold for tracking confidence 0.8 (id switches) -> 0.99 (not able to track) |
 | keypoints_activated  | Boolean to activate 3D Pose Estimation |
 | save_keypoints_vid   | Create a mp4 video to view 3D keypoints |
@@ -57,7 +56,7 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | Parameter               |  Description                  |
 |:---------:              |:-------------------------:    |
 | MAP_STATE_FUNCTION      | Map State algorithm used      |
-| mapping_activated       | Mapping algorithm required?   |
+| mapping_activated       | Boolean to decide if we map the environment   |
 | map_state_activated     | Estimate the state with map?  |
 | dt_map_state            | Map State sampling time [s]   |
 | verbose_map             | Boolean to indicate if we want to print messages   |

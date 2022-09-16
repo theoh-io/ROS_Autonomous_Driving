@@ -9,7 +9,10 @@ import rospy
 
 import os
 import sys
-abs_path_to_tools = rospy.get_param("/abs_path_to_tools")
+import rospkg
+rospack=rospkg.RosPack()
+abs_path_to_loomo=rospack.get_path('loomo')
+abs_path_to_tools=abs_path_to_loomo+"/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
 from tools import classconverter, classes, transformations
 from tools.utils import Utils, Plotting
