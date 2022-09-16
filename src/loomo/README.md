@@ -2,6 +2,8 @@
 
 Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most important parameters of the pipeline depending on the requirements of the test, on the server where is being launched, ...
 
+See the tradeoff section at the end.
+
 ## Global
 
 <p align="center">
@@ -29,10 +31,10 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | tracking_confidence  | treshold for tracking confidence 0.8 (id switches) -> 0.99 (not able to track) |
 | keypoints_activated  | Boolean to activate 3D Pose Estimation |
 | save_keypoints_vid   | Create a mp4 video to view 3D keypoints |
-| keypoints_logging    | saving the coordinates of the 3D keypoints in a CSV file |
+| keypoints_logging    | Saving the coordinates of the 3D keypoints in a CSV file |
 | visualization_percep | Boolean to visualize the image of loomo and bounding box |
 | visualization_3D_activated  | Boolean to visualize the 3D Pose in Real Time |
-| verbose_percep       | int value level of printing [0;4]: 0(minimal)->2(runtime)->4(full/debugging)  |
+| verbose_percep       | 0 (minimal) ->4 (full) level of verbose, above 2 to see runtime |
 
 
 
@@ -71,6 +73,7 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 |:---------:              |:-------------------------:                  |
 | PREDICTION_FUNCTION     | Prediction algorithm used                   |
 | prediction_activated    | Prediction algorithm required?              |
+| model_prediction_path   | global path to the prediction model         |
 | time_horizon_prediction | Last predicted time [s]                     |
 | past_observations       | Number of past observations needed          |
 | dt_prediction           | Prediction sampling time [s]                |
@@ -116,3 +119,11 @@ Inside [Loomo.launch](./launch/Loomo.launch) [xml], users can change the most im
 | dt_visualization       | Visualization sampling time [s]              |
 
 </p>
+
+## Tradeoff :warning:
+
+When tuning the parameters of the program one must be conscious about the coupling effects of some parameters. The dt_control is one of the most important one and should be approximately the same value as the runtime printed on the Loomo app so that motion planning and communications can be synchronized. It is intuitive that adding more components to the perception node will slow it's inference therefore it's important to adapt the speed of the robot to the dt_control value.
+
+Some combinations of parameters tht seemed to work for me:
+* Simple tracking: speed up to 0.7 m/s, keypoints not activated, dt_control around 0.25s
+* 3D keypoints: speed around 0.3 m/s, keypoints and visualizations activated, dt_control around 0.4s

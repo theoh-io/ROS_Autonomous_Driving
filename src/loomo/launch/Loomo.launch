@@ -15,7 +15,7 @@
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.06" />
     <param name="downscale" value="2" />
-    <param name="detector_size" value="large" />
+    <param name="detector_size" value="medium" />
     <param name="tracking_confidence" value="0.9" />
     <param name="keypoints_activated" value="false" />
     <param name="save_keypoints_vid" value="false" />
