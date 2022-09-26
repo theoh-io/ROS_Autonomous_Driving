@@ -252,6 +252,13 @@ def main():
     # Initialize ROS prediction node
     rospy.init_node("pose_estimation")
     dt_pose_estimation = rospy.get_param("/dt_pose_estimation")
+    downscale = rospy.get_param("/downscale")
+    keypoints_activ= rospy.get_param("/keypoints_activated")
+    show3D= rospy.get_param("/visualization_3D_activated")
+    save_video_keypoints=rospy.get_param("/save_keypoints_vid")
+    verbose= rospy.get_param("/verbose_keypoints")
+    resolution=(int(640/downscale), int(480/downscale))
+    device=torch.device('cuda:0')
     rate = rospy.Rate(int(1/dt_pose_estimation))
     #subscriber perception topic
     global bbox
@@ -261,14 +268,6 @@ def main():
     sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
     sub_img= rospy.Subscriber('/Perception/img', Image, callback_img, queue_size=1)
     
-    #3D Pose Estimation
-    keypoints_activ=True
-    show3D=True
-    save_video_keypoints=None
-    downscale = 2
-    resolution=(int(640/downscale), int(480/downscale))
-    device=torch.device('cuda:0')
-    verbose=True
 
 
     if keypoints_activ:
