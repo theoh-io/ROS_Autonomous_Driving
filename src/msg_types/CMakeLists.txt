@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS message_generation std_msgs geometry_msg
    Position.msg
    PositionArray.msg
    TrajectoryArray.msg
+   Bbox.msg
  )
 
 ## Generate services in the 'srv' folder
