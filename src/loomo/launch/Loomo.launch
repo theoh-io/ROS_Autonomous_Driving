@@ -7,26 +7,26 @@
     <!-- <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" /> -->
     <param name="v_max" value="1" />
     <param name="wheel_base" value="0.57" />
-    <param name="speed" value="0.7" />
+    <param name="speed" value="0.5" />
     
 
     <!-- PERCEPTION PARAMETERS: Default, Stark -->
     <param name="PERCEPTION_FUNCTION" value="Default" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
-    <param name="dt_perception" value="0.06" />
+    <param name="dt_perception" value="0.2" />
     <param name="downscale" value="2" />
     <param name="detector_size" value="medium" />
     <param name="tracking_confidence" value="0.9" />
     <param name="visualization_percep" value="true" /> 
-    <param name="verbose_percep" type="int" value= "0" /> <!-- level of verbose 0 to 4-->
+    <param name="verbose_percep" type="int" value= "2" /> <!-- level of verbose 0 to 4-->
 
     <!-- POSE ESTIMATION PARAMETERS: Default, VideoPose3D -->
     <param name="POSE_ESTIMATION_FUNCTION" value="Default" />
     <param name="keypoints_activated" value="true" />
-    <param name="dt_pose_estimation" value="0.1" />
-    <param name="visualization_3D_activated" value="true" />
+    <param name="dt_pose_estimation" value="0.2" />
+    <param name="visualization_3D_activated" value="false" />
     <param name="keypoints_logging" value="false" />
-    <param name="save_keypoints_vid" value="false" />
+    <param name="save_keypoints_vid" value="true" />
     <param name="verbose_keypoints" value="true" />
     
 
@@ -65,7 +65,7 @@
     
     <!-- CONTROL PARAMETERS: Default, EPFL_Driverless -->
     <param name="CONTROL_FUNCTION" value="Default" />
-    <param name="dt_control" value="0.2" />
+    <param name="dt_control" value="0.25" />
     <param name="time_horizon_control" value="1.2" />
     <param name="n_states" value="3" />
     <param name="verbose_ctrl" value="2" />

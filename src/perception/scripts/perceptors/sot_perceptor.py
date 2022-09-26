@@ -39,23 +39,13 @@ class SotPerceptor(BasePerceptor):
                 print(f"Elapsed time for tracker forward pass: {(toc2 - tic2) * 1e3:.1f}ms")
         else: 
             bbox=None
-
-        if self.keypoints_activ and bbox:
-            tic3 = time.perf_counter()
-            results_keypoints=self.Keypoints3D.inference_3Dkeypoints(image, bbox)
-            toc3 = time.perf_counter()
-            if self.verbose_level >=2:
-                print(f"Elapsed time for 3D keypoints forward pass: {(toc3 - tic3) * 1e3:.1f}ms")
-
-        else:
-            results_keypoints=None
         
         if self.show:
             #plot the rectangle on a copy of the image to be able to transmit to pose_est without rectangle
             image_bbox=image.copy()
             Utils.bbox_vis(bbox, image_bbox)
-        toc4 = time.perf_counter()
+        toc3 = time.perf_counter()
         if self.verbose_level >=2:
-                print(f"Elapsed time for perceptor forward pass: {(toc4 - tic1) * 1e3:.1f}ms")
+                print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
 
-        return bbox, None, results_keypoints, image
+        return bbox, image
