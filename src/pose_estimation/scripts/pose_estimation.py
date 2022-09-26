@@ -213,6 +213,8 @@
 #     print(f"Average runtime: {np.average(runtime_list)*1e3}ms, Image Transmission: {np.average(img_transmission_list)*1e3}ms")
 #     f.close()
 import rospy
+import torch
+import time
 import os
 import sys
 import rospkg
@@ -225,6 +227,7 @@ import cv2
 from msg_types.msg import Bbox
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from keypoints3d import Keypoints3D
 
 
 def callback_bbox(data):
@@ -257,33 +260,36 @@ def main():
     bbox=[0, 0, 0, 0]
     sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
     sub_img= rospy.Subscriber('/Perception/img', Image, callback_img, queue_size=1)
+    
+    #3D Pose Estimation
+    keypoints_activ=True
+    show3D=True
+    save_video_keypoints=None
+    downscale = 2
+    resolution=(int(640/downscale), int(480/downscale))
+    device=torch.device('cuda:0')
+    verbose=True
+
+
+    if keypoints_activ:
+        keypoints3D=Keypoints3D(device, resolution, show3D, save_video_keypoints)
+
     while not rospy.is_shutdown():
         print("hello World")
         print(bbox)
         if cv_image is not None:
             cv2.imshow("pose est", cv_image)
             cv2.waitKey(1)
+            if keypoints_activ and bbox:
+                tic = time.perf_counter()
+                results_keypoints=keypoints3D.inference_3Dkeypoints(cv_image, bbox)
+                toc = time.perf_counter()
+                if verbose:
+                    print(f"Elapsed time for 3D keypoints forward pass: {(toc - tic) * 1e3:.1f}ms")
+
 
         rate.sleep()
-#     class Receiver(object):
 
-#     def __init__(self):
-#         self.receive_bbox = sub_estimation = rospy.Subscriber('/Perception/bounding_box', PositionArray, callback_estimation, queue_size = 1)
-
-#     def send(self, predicted_trajectories):
-#         predicted_trajectories_cmd = classconverter.list2TrajectoryArray(predicted_trajectories)
-
-#         # Publish "/predicted_trajectory_array" commands:
-#         self.pub_trajectories.publish(predicted_trajectories_cmd)
-
-
-# def callback_estimation(data):
-
-#     global map_detections
-
-#     map_detections = classconverter.PositionArray2list(data)
-
-# sub_estimation = rospy.Subscriber('/State_Estimation/map_global', PositionArray, callback_estimation, queue_size = 1)
 
 if __name__ == "__main__":
 

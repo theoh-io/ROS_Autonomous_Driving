@@ -7,6 +7,7 @@ import sys
 import rospkg
 rospack=rospkg.RosPack()
 abs_path_to_perception=rospack.get_path('perception')
+abs_path_to_pose_est=rospack.get_path('pose_estimation')
 path_mmpose=os.path.abspath(os.path.join(abs_path_to_perception,"../../mmpose"))
 print(f"path to mmpose {path_mmpose}")
 sys.path.append(path_mmpose)
@@ -205,7 +206,7 @@ class Keypoints3D():
         if self.save_video_keypoints:
             if self.writer is None:
                 self.writer = cv2.VideoWriter(
-                    os.path.join(abs_path_to_perception,self.name_video_keypoints), self.fourcc,
+                    os.path.join(abs_path_to_pose_est,self.name_video_keypoints), self.fourcc,
                     self.fps, (img_vis.shape[1], img_vis.shape[0]))
             self.writer.write(img_vis)
         
