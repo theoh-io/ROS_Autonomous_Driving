@@ -15,7 +15,7 @@ rospack=rospkg.RosPack()
 abs_path_to_loomo=rospack.get_path('loomo')
 abs_path_to_tools=abs_path_to_loomo+"/scripts/tools"
 sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
-from tools import classes
+from tools import classes, classconverter
 import csv
 import cv2
 import numpy as np
@@ -34,6 +34,27 @@ from detectors import yolov5_detector, pifpaf_detector
 from trackers import mmtracking_sot
 from tools.utils import Utils, Plotting, Transmission
 
+#import msg type for the communication with pose_estimation node
+from msg_types.msg import Bbox
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+
+
+class Sender(object):
+    def __init__(self):
+        self.pub_bbox = rospy.Publisher('/Perception/bbox', Bbox, queue_size=1)
+        self.pub_img = rospy.Publisher('/Perception/img', Image, queue_size=1)
+
+        self.bridge=CvBridge()
+
+    def send(self, bbox, opencv_img):
+        #print(f"map global {map_global}")
+        bbox_msg = classconverter.list2Bbox(bbox)
+        self.pub_bbox.publish(bbox_msg)
+        #try:
+        self.pub_img.publish(self.bridge.cv2_to_imgmsg(opencv_img, "bgr8"))
+        #except CvBridgeError as e:
+            #print(e)
 
 
 
@@ -98,6 +119,9 @@ def main():
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
     img_transmission_list=[]
+
+    #initialize msg sender for pose estimation
+    sender=Sender()
 
     #open csv file for keypoint logging
     with open(path_data, 'w+') as f:
@@ -164,6 +188,11 @@ def main():
                 # Send bbox to the robot -> Camera tracking and motion controller algorithm
                 bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
                 socket5.sender(bbox)
+
+                # Send pose_estimation topic via ROS
+                if bbox_visu:
+                    print(f"bbox in perception{bbox_visu}")
+                    sender.send(bbox_visu, image)
 
                 ####################################
                 # Keypoints Logging & Transmission #

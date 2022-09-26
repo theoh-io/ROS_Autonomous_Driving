@@ -51,7 +51,9 @@ class SotPerceptor(BasePerceptor):
             results_keypoints=None
         
         if self.show:
-            Utils.bbox_vis(bbox, image)
+            #plot the rectangle on a copy of the image to be able to transmit to pose_est without rectangle
+            image_bbox=image.copy()
+            Utils.bbox_vis(bbox, image_bbox)
         toc4 = time.perf_counter()
         if self.verbose_level >=2:
                 print(f"Elapsed time for perceptor forward pass: {(toc4 - tic1) * 1e3:.1f}ms")

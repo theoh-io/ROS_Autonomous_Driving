@@ -212,17 +212,59 @@
                 
 #     print(f"Average runtime: {np.average(runtime_list)*1e3}ms, Image Transmission: {np.average(img_transmission_list)*1e3}ms")
 #     f.close()
-
 import rospy
+import os
+import sys
+import rospkg
+rospack=rospkg.RosPack()
+abs_path_to_loomo=rospack.get_path('loomo')
+abs_path_to_tools=abs_path_to_loomo+"/scripts/tools"
+sys.path.append(os.path.dirname(os.path.abspath(abs_path_to_tools)))
+from tools import classconverter
+import cv2
+from msg_types.msg import Bbox
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+
+
+def callback_bbox(data):
+
+    global bbox
+
+    bbox = classconverter.Bbox2list(data)
+    
+def callback_img(data):
+
+    global cv_image
+    bridge=CvBridge()
+
+    try:
+        cv_image=bridge.imgmsg_to_cv2(data, "bgr8")
+    except CvBridgeError as e:
+        print(e)
+
+    
 
 def main():
     # Initialize ROS prediction node
     rospy.init_node("pose_estimation")
     dt_pose_estimation = rospy.get_param("/dt_pose_estimation")
     rate = rospy.Rate(int(1/dt_pose_estimation))
-    print("hello World")
+    #subscriber perception topic
+    global bbox
+    global cv_image
+    cv_image=None
+    bbox=[0, 0, 0, 0]
+    sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
+    sub_img= rospy.Subscriber('/Perception/img', Image, callback_img, queue_size=1)
+    while not rospy.is_shutdown():
+        print("hello World")
+        print(bbox)
+        if cv_image is not None:
+            cv2.imshow("pose est", cv_image)
+            cv2.waitKey(1)
 
-    rate.sleep()
+        rate.sleep()
 #     class Receiver(object):
 
 #     def __init__(self):
