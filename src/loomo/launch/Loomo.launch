@@ -24,6 +24,9 @@
     <param name="visualization_3D_activated" value="false" />
     <param name="verbose_percep" type="int" value= "2" /> <!-- level of verbose 0 to 4-->
 
+    <!-- POSE ESTIMATION PARAMETERS: Default, VideoPose3D -->
+    <param name="POSE_ESTIMATION_FUNCTION" value="Default" />
+    <param name="dt_pose_estimation" value="0.1" />
 
     <!-- ROBOT STATE PARAMETERS: Default, EPFL_Driverless -->
     <param name="ROBOT_STATE_FUNCTION" value="Default" />
@@ -72,6 +75,10 @@
 
     <!-- PERCEPTION NODE -->
     <node pkg="perception" type="perception.py" name="perception" output="screen">
+    </node>
+
+    <!-- POSE ESTIMATION NODE -->
+    <node pkg="pose_estimation" type="pose_estimation.py" name="pose_estimation" output="screen">
     </node>
 
     <!-- STATE ESTIMATION NODE -->
