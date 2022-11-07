@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 from msg_types.msg import State, StateArray, TrajectoryArray, PositionArray
 from tools import classconverter, classes
-from tools.utils import Utils, Plotting
+from tools.utils import Utils, Plotting, Transmission, DepthProcessing
 
 
 class Sender(object):
@@ -37,6 +37,12 @@ def callback_estimation(data): # data is State --> [x, y, heading]
 
     state = classconverter.State2list(data)
 
+# def callback_bbox(data):
+
+#     global bbox
+
+#     bbox = classconverter.Bbox2list(data)
+
 
 def main():
     # Initialize ROS
@@ -45,18 +51,27 @@ def main():
     rate = rospy.Rate(int(1/dt_mapping))
     mapping_activated = rospy.get_param("/mapping_activated")
     verbose = rospy.get_param("/verbose_map")
+
+    downscale = rospy.get_param("/downscale")
+    data_size=int(int(640/downscale) * int(480/downscale) * 3)
     
     if mapping_activated:
         sender = Sender()
         sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
         ip_address = rospy.get_param("/ip_address")
-        socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
+        socket3 = classes.SocketLoomo(8083, dt_mapping, ip_address, data_size)
+
 
     # Parameter Initialization
     slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=5.0)
 
     # Variable Initialization
     global state, map_state_activated
+
+    # bbox=[0, 0, 0, 0]
+    # sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
+    received_d_image = b''
+    depth_target=0
 
     state = [0.0, 0.0, 0.0, 0.0, 0.0]
     map_state_activated = rospy.get_param("/map_state_activated")
@@ -72,10 +87,14 @@ def main():
     while not rospy.is_shutdown() and mapping_activated:
         start = time.time()
         # Receive detection positions (x, y) in relation to the Loomo
-        socket3.receiver()
+        socket3.receiver(True)
+        received_d_image += socket3.received_data
 
         # Add detections into a list
-        if socket3.received_ok:
+        if len(received_d_image)==socket3.data_size:
+
+            depth_target=DepthProcessing.extract_target(bbox, depth_image)
+
             positions = [socket3.received_data_unpacked]
             if verbose: print(f"positions {positions}")
             list_positions=[]

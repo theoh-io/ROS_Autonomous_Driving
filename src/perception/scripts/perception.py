@@ -41,7 +41,6 @@ class Sender(object):
     def __init__(self):
         self.pub_bbox = rospy.Publisher('/Perception/bbox', Bbox, queue_size=1)
         self.pub_img = rospy.Publisher('/Perception/img', Image, queue_size=1)
-
         self.bridge=CvBridge()
 
     def send(self, bbox, opencv_img):
@@ -91,7 +90,7 @@ def main():
     #socket connection with Loomo => socket1: Receiver = Loomo's Camera; socket5: Sender = Detection Bbox 
     ip_address = rospy.get_param("/ip_address")
     socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, perceptor.data_size)
-    socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
+    #socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
 
     #socket connection NeuroRestore
     #ip_address_neuro = rospy.get_param("/ip_address_neuro")
@@ -171,8 +170,8 @@ def main():
             # Transmission to Loomo
             ###################################
             # Send bbox to the robot -> Camera tracking and motion controller algorithm
-            bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
-            socket5.sender(bbox)
+            # bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
+            # socket5.sender(bbox)
 
             # Send pose_estimation topic via ROS
             if bbox_visu:

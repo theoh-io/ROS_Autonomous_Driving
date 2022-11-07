@@ -526,3 +526,11 @@ class Transmission():
             print(f"surplus {len(next_img)}")
         return next_img
 
+class DepthProcessing():
+    @staticmethod
+    def extract_target(bbox, depth_image):
+        print(f" in extract target, bbox: {bbox}, depth: {depth_image.size()}")
+        center=[bbox[0], bbox[1]]
+        depth_target=depth_image[center]
+        return depth_target
+
