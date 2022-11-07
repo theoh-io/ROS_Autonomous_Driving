@@ -37,11 +37,11 @@ def callback_estimation(data): # data is State --> [x, y, heading]
 
     state = classconverter.State2list(data)
 
-# def callback_bbox(data):
+def callback_bbox(data):
 
-#     global bbox
+    global bbox
 
-#     bbox = classconverter.Bbox2list(data)
+    bbox = classconverter.Bbox2list(data)
 
 
 def main():
@@ -68,8 +68,8 @@ def main():
     # Variable Initialization
     global state, map_state_activated
 
-    # bbox=[0, 0, 0, 0]
-    # sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
+    bbox=[0, 0, 0, 0]
+    sub_bbox = rospy.Subscriber('/Perception/bbox', Bbox, callback_bbox, queue_size = 1)
     received_d_image = b''
     depth_target=0
 
@@ -93,9 +93,10 @@ def main():
         # Add detections into a list
         if len(received_d_image)==socket3.data_size:
 
-            depth_target=DepthProcessing.extract_target(bbox, depth_image)
-
-            positions = [socket3.received_data_unpacked]
+            if not bbox.count(0) == len(bbox):
+                depth_target=DepthProcessing.extract_target(bbox, depth_image)
+                positions =depth_target  #[socket3.received_data_unpacked]
+            
             if verbose: print(f"positions {positions}")
             list_positions=[]
             #if verbose:
