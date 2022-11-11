@@ -29,11 +29,10 @@ from mmpose.models import PoseLifter, TopDown
 
 class BasePerceptor():
 
-    def __init__(self, width=640, height=480, channels=3, downscale=4, 
+    def __init__(self, width=640, height=480, downscale=4, 
                     detector=Yolov5Detector(), detector_size="default",
                     tracker=None, tracker_model=None, tracking_conf=0.5,
-                    type_input="opencv", keypoints=False, save_video_keypoints=False,
-                    device="gpu", show="True", show3D="False", verbose=0):
+                    type_input="opencv", device="gpu", show="True", verbose=0):
 
         cpu = 'cpu' == device
         cuda = not cpu and torch.cuda.is_available()
@@ -47,6 +46,7 @@ class BasePerceptor():
         self.verbose_level=verbose
 
         # Image received size data.
+        channels=3
         self.data_size = int(self.width * self.height * channels)
 
         self.detector=detector(detector_size, verbose=self.verbose_level)
@@ -54,11 +54,6 @@ class BasePerceptor():
             self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose_level)
         self.type_input=type_input
         self.show=show
-
-        #3D Pose Estimation
-        self.keypoints_activ=keypoints
-        if self.keypoints_activ:
-            self.Keypoints3D=Keypoints3D(self.device, self.resolution, show3D, save_video_keypoints)
 
         if self.verbose_level:
             print("Initializing Perceptor")

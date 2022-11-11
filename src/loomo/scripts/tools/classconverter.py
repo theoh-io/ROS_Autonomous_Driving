@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # VITA, EPFL
-from msg_types.msg import PositionArray, Position, TrajectoryArray, State, StateArray, ControlCmd
+from msg_types.msg import PositionArray, Position, TrajectoryArray, State, StateArray, ControlCmd, Bbox
 from copy import deepcopy
 
 
@@ -140,3 +140,15 @@ def PositionArray2TrajectoryArraylist(data):
         traj_objects = []
 
     return traj_objects
+
+def list2Bbox(data):
+    bbox = Bbox()
+    bbox.xcenter = data[0]
+    bbox.ycenter = data[1]
+    bbox.width = data[2]
+    bbox.height = data[3]
+    return bbox
+
+def Bbox2list(bbox):
+    bbox_list=[bbox.xcenter, bbox.ycenter, bbox.width, bbox.height]
+    return bbox_list
