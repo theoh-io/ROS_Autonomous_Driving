@@ -2,7 +2,7 @@
     <!-- Explanation in the README.md file -->
 
     <!-- GLOBAL PARAMETERS -->
-    <param name="ip_address" value="128.179.159.159" />
+    <param name="ip_address" value="128.179.192.102" />
     <!-- <param name="ip_address_neuro" value="192.168.0.152" /> -->
     <!-- <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" /> -->
     <param name="v_max" value="1" />
@@ -24,7 +24,7 @@
     <param name="POSE_ESTIMATION_FUNCTION" value="Default" />
     <param name="keypoints_activated" value="true" />
     <param name="dt_pose_estimation" value="0.2" />
-    <param name="visualization_3D_activated" value="false" />
+    <param name="visualization_3D_activated" value="true" />
     <param name="keypoints_logging" value="false" />
     <param name="save_keypoints_vid" value="true" />
     <param name="verbose_keypoints" value="true" />
