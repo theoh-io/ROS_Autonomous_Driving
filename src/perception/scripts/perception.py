@@ -37,25 +37,25 @@ from cv_bridge import CvBridge, CvBridgeError
 import warnings
 warnings.filterwarnings("ignore")
 
-class Sender(object):
-    def __init__(self):
-        self.pub_bbox = rospy.Publisher('/Perception/bbox', Bbox, queue_size=1)
-        self.pub_img = rospy.Publisher('/Perception/img', Image, queue_size=1)
+# class Sender(object):
+#     def __init__(self):
+#         self.pub_bbox = rospy.Publisher('/Perception/bbox', Bbox, queue_size=1)
+#         self.pub_img = rospy.Publisher('/Perception/img', Image, queue_size=1)
 
-        self.bridge=CvBridge()
+#         self.bridge=CvBridge()
 
-    def send(self, bbox, opencv_img):
-        #print(f"map global {map_global}")
-        if not bbox:
-            bbox=[0, 0, 0, 0]
+#     def send(self, bbox, opencv_img):
+#         #print(f"map global {map_global}")
+#         if not bbox:
+#             bbox=[0, 0, 0, 0]
 
-        bbox_msg = classconverter.list2Bbox(bbox)
-        self.pub_bbox.publish(bbox_msg)
+#         bbox_msg = classconverter.list2Bbox(bbox)
+#         self.pub_bbox.publish(bbox_msg)
 
-        #try:
-        self.pub_img.publish(self.bridge.cv2_to_imgmsg(opencv_img, "bgr8"))
-        #except CvBridgeError as e:
-            #print(e)
+#         #try:
+#         self.pub_img.publish(self.bridge.cv2_to_imgmsg(opencv_img, "bgr8"))
+#         #except CvBridgeError as e:
+#             #print(e)
 
 
 
@@ -88,10 +88,11 @@ def main():
     #################################
     # Initialize socket connections
     #################################
-    #socket connection with Loomo => socket1: Receiver = Loomo's Camera; socket5: Sender = Detection Bbox 
+    #socket connection with Loomo => socket1: Receiver = Loomo's Camera; socket4: Receiver = Depth Img
     ip_address = rospy.get_param("/ip_address")
     socket1 = classes.SocketLoomo(8081, dt_perception, ip_address, perceptor.data_size)
-    socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
+    socket4 = classes.SocketLoomo(8084, dt_perception, ip_address, perceptor.data_size)
+    #socket5 = classes.SocketLoomo(8085, dt_perception, ip_address, packer=25*'f ')
 
     #socket connection NeuroRestore
     #ip_address_neuro = rospy.get_param("/ip_address_neuro")
@@ -103,15 +104,15 @@ def main():
     ###############################
     # Initialize perception transmission variables
     received_image = b''
+    received_depth = b''
     data_rcvd=False
     timer_started=False
     next_img=[]
+    next_depth=[]
     rospy.loginfo("Perception Node Ready")
     runtime_list=[]
     img_transmission_list=[]
 
-    #initialize msg sender for pose estimation
-    sender=Sender()
 
     while not rospy.is_shutdown():
         # start of main perception loop
@@ -123,11 +124,18 @@ def main():
         # Receive Image from the Loomo
         ################################
         socket1.receiver(True)
+        socket4.receiver(True)
         # safety in case img transmission is not synchronized
         received_image=Transmission.img_sync(next_img, received_image, socket1)
         next_img=[]
 
+        received_depth += socket4.received_data#Transmission.img_sync(next_depth, received_depth, socket4)
+        
         # Image Processing only if we received the full package
+        #temporary
+        print(f"received depth {len(received_depth)}")
+        if len(received_depth)==socket1.data_size:
+            print("received depth")
         if len(received_image)==socket1.data_size:
             data_rcvd=True
             timer_started=False
@@ -167,22 +175,24 @@ def main():
             else:
                 bbox=bbox+(0.0, 0.0, 0.0, 0.0, float(False))            
 
-            ###################################
-            # Transmission to Loomo
-            ###################################
-            # Send bbox to the robot -> Camera tracking and motion controller algorithm
-            bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
-            socket5.sender(bbox)
+            # ###################################
+            # # Transmission to Loomo
+            # ###################################
+            # # Send bbox to the robot -> Camera tracking and motion controller algorithm
+            # bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
+            # socket5.sender(bbox)
 
             # Send pose_estimation topic via ROS
             if bbox_visu and verbose_level>=1:
                 print(f"bbox in perception{bbox_visu}")
-            sender.send(bbox_visu, image)
+            #sender.send(bbox_visu, image)
 
         #syncing Img transmission
         elif len(received_image) > socket1.data_size:
-            next_img=Transmission.check_img_sync(received_image, socket, verbose_level)
+            next_img=Transmission.check_img_sync(received_image, socket1, verbose_level)
             received_image = b''
+            # next_depth=Transmission.check_img_sync(received_depth, socket4, verbose_level)
+            # received_depth = b''
 
         if data_rcvd:
             data_rcvd=False
