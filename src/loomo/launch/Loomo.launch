@@ -12,6 +12,7 @@
 
     <!-- PERCEPTION PARAMETERS: Default, Stark -->
     <param name="PERCEPTION_FUNCTION" value="Default" />
+    <param name="mot_activated" value="True" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.2" />
     <param name="downscale" value="2" />
@@ -22,7 +23,7 @@
 
     <!-- POSE ESTIMATION PARAMETERS: Default, VideoPose3D -->
     <param name="POSE_ESTIMATION_FUNCTION" value="Default" />
-    <param name="keypoints_activated" value="true" />
+    <param name="keypoints_activated" value="False" />
     <param name="dt_pose_estimation" value="0.2" />
     <param name="visualization_3D_activated" value="False" />
     <param name="keypoints_logging" value="false" />

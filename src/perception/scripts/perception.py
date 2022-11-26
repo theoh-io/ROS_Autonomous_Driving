@@ -66,6 +66,7 @@ def main():
     # Initialize ROS perception node
     rospy.init_node("perception")
     dt_perception = rospy.get_param("/dt_perception")
+    mot_activated = rospy.get_param("mot_activated")
     rate = rospy.Rate(int(1/dt_perception))    
     PERCEPTION_FUNCTION = rospy.get_param("/PERCEPTION_FUNCTION")
     downscale = rospy.get_param("/downscale")
@@ -84,7 +85,9 @@ def main():
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, downscale = downscale,
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", show=perception_vis, verbose=verbose_level)
+                                                mot_activated=mot_activated, type_input = "opencv", show=perception_vis, verbose=verbose_level)
+
+    
     #################################
     # Initialize socket connections
     #################################

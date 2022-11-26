@@ -30,7 +30,10 @@ class SotPerceptor(BasePerceptor):
         #     if self.verbose is True: print("No person detected.")
         cut_imgs = None
 
-        # Tracking
+
+        
+
+        # Single Object Tracking (Target)
         tic2 = time.perf_counter()
         if bbox_list is not None:
             bbox = self.tracker.forward(cut_imgs,bbox_list,image)
@@ -39,13 +42,25 @@ class SotPerceptor(BasePerceptor):
                 print(f"Elapsed time for tracker forward pass: {(toc2 - tic2) * 1e3:.1f}ms")
         else: 
             bbox=None
-        
+
+        #Multi-Object Tracking
+
+        if self.mot_activated:
+            tic3 = time.perf_counter()
+            if bbox_list is not None:
+                mot_bbox=self.mot_tracker.forward(image)
+                print(f"bbox candidates from MOT {mot_bbox}")
+                tic3 = time.perf_counter()
+                if self.verbose_level>= 2:
+                    print(f"Elapsed time for tracker forward pass: {(tic3 - toc3) * 1e3:.1f}ms")
+
+
         if self.show:
             #plot the rectangle on a copy of the image to be able to transmit to pose_est without rectangle
             image_bbox=image.copy()
             Utils.bbox_vis(bbox, image_bbox)
-        toc3 = time.perf_counter()
+        toc4 = time.perf_counter()
         if self.verbose_level >=2:
-                print(f"Elapsed time for perceptor forward pass: {(toc3 - tic1) * 1e3:.1f}ms")
+                print(f"Elapsed time for perceptor forward pass: {(toc4 - tic1) * 1e3:.1f}ms")
 
         return bbox, image
