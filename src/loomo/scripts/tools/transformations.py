@@ -92,7 +92,7 @@ def Global_to_Local (state, array_global, is_object = False):
     for e in array_global:
         # X_local = inv(R) * (X_global - T)
         vec = np.array([e[0], e[1]])
-        vec -= np.array([state[0],state[1]])
+        vec = vec - np.array([state[0],state[1]])
         vec = np.matmul(matrix, vec)
         vec = [vec[0], vec[1]]
 
@@ -133,7 +133,7 @@ def Global_to_Local_prediction(state, array_global):
         for e in array:
             # X_local = inv(R) * (X_global - T)
             vec = np.array([e[0], e[1]])
-            vec -= np.array([state[0],state[1]])
+            vec = vec - np.array([state[0],state[1]])
             vec = np.matmul(matrix, vec)
             vec = [vec[0], vec[1], e[2], e[3]]
 

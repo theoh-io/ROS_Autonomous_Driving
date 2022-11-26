@@ -59,13 +59,14 @@ def main():
     mapping_activated = rospy.get_param("/mapping_activated")
     print(f"pathplanning: mapping ={mapping_activated}")
     PATH_PLANNING_FUNCTION = rospy.get_param("/PATH_PLANNING_FUNCTION")
-
+    print(f"path planning function {PATH_PLANNING_FUNCTION}")
+    cyclic_goal = rospy.get_param("/cyclic_goal")
     # Ros Topic Subscription
     sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     if prediction_activated:
         sub_prediction = rospy.Subscriber('/Prediction/predicted_trajectories_global', TrajectoryArray, callback_prediction, queue_size = 1)
         
-    if mapping_activated:
+    if mapping_activated and PATH_PLANNING_FUNCTION != "Fake_Obst":
         sub_mapping = rospy.Subscriber('/State_Estimation/map_global', PositionArray, callback_mapping, queue_size = 1)
 
     if not prediction_activated and not mapping_activated:
@@ -99,6 +100,16 @@ def main():
         goal_global = [goal_x, goal_y]
         work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
 
+    #Same as Default but use arbitrary obstacles positions
+    elif PATH_PLANNING_FUNCTION == "Fake_Obst":
+        #fake_obst=[[[0.0, 1.0, 0, 0]], [[1.0, 2, 0, 0]], [[2, 0.75, 0, 0]]]
+        fake_obst=[[[1.0, 0.0, 0, 0]], [[0.5, 0.0, 0, 0]], [[2, 3.0, 0, 0]]]
+        goal_x = rospy.get_param("/goal_x")
+        goal_y = rospy.get_param("/goal_y")
+        goal_global = [goal_x, goal_y]
+        work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
+
+
     # Initialize path planning variables
     global array_predictions, array_mapping, state
 
@@ -109,6 +120,12 @@ def main():
     path = []
     iterations = 0
 
+    #used for cyclic goal go back to origin
+    previous_goal=[0.0, 0.0]
+
+    if PATH_PLANNING_FUNCTION == "Fake_Obst":
+        array_mapping=fake_obst
+        
     rospy.loginfo("Path Planning Node Ready")
     rospy.sleep(2.)
 
@@ -133,7 +150,7 @@ def main():
         start = time.time()
         x0 = state
         array_total_global = array_predictions + array_mapping
-        
+        #print(f"array total {array_total_global}")
         # Actual detection movement prediction
         if len(array_total_global) > 0:
             objects_now_local = transformations.Global_to_Local_prediction(x0, array_total_global)
@@ -148,8 +165,17 @@ def main():
                 path, goal_local = planner_class.path_planning_curvilinear(array_total_global[num_person], x0)
 
         # Obstacle avoidance path calculation
-        elif PATH_PLANNING_FUNCTION == "Default":
+        elif PATH_PLANNING_FUNCTION == "Default" or PATH_PLANNING_FUNCTION == "Fake_Obst":
             goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
+            #print(f"objects_now_local {objects_now_local}")
+            #check if we are close enough to goal then just stay in place
+            print(f"in prediction goal local")
+            if Utils.calculate_distance(goal_local)<0.1:
+                print("GOAL REACHED")
+                goal_local=[0.0, 0.0]
+                temp=goal_global
+                goal_global=previous_goal
+                previous_goal=temp
             path, goal_local = RRT_star.planner_rrt_star(loomo, objects_now_local, speed, dt_control, goal_local, N, work_area, prediction_activated=prediction_activated)
 
         if len(path)>=N and iterations >= 0:

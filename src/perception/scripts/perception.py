@@ -175,7 +175,7 @@ def main():
             socket5.sender(bbox)
 
             # Send pose_estimation topic via ROS
-            if bbox_visu:
+            if bbox_visu and verbose_level>=1:
                 print(f"bbox in perception{bbox_visu}")
             sender.send(bbox_visu, image)
 
