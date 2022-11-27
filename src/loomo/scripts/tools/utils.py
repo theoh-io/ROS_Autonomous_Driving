@@ -61,13 +61,36 @@ class Utils():
         return bbox
 
     @staticmethod
+    def adapt_bbox(bbox):
+        #adapt in case corner outside of screen
+        x_tl= bbox[0] - bbox[2]/2
+        y_tl= bbox[1] - bbox[3]/2
+        w= bbox[2]
+        h= bbox[3]
+        if x_tl<0:
+            w+=x_tl
+            x_tl=0
+        if y_tl<0:
+            h+=y_tl
+            y_tl=0
+        return [x_tl, y_tl, w, h]
+
+        
+
+    @staticmethod
     def bbox_xcentycentwh_to_xtlytlwh(bbox):
         #convert from (xcenter,ycenter,width,height) to (x_topleft,y_topleft, width, height)
+        #Fixed 0 0 if outside the cam
         x_tl= bbox[0] - bbox[2]/2
         y_tl= bbox[1] - bbox[3]/2
         w= bbox[2]
         h= bbox[3]
         new_bbox=[x_tl, y_tl, w, h]
+        
+        if x_tl<0 or y_tl <0:
+            new_bbox=Utils.adapt_bbox(bbox)
+        
+        
         return new_bbox
 
     @staticmethod
@@ -95,6 +118,17 @@ class Utils():
             tl=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) 
             br= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2))
             cv2.rectangle(image, tl, br, (255,0,0), 2)
+        cv2.imshow('Camera Loomo',image)
+        cv2.waitKey(1)
+    
+    @staticmethod
+    def mult_bbox_vis(bbox_list, image):
+        #input format (xcenter,ycenter,width,height) => cv2 (x_tl,y_tl,x_br,y_br)
+        if bbox_list:
+            for bbox in bbox_list:
+                tl=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) 
+                br= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2))
+                cv2.rectangle(image, tl, br, (255,0,0), 2)
         cv2.imshow('Camera Loomo',image)
         cv2.waitKey(1)
 

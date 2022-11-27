@@ -5,27 +5,27 @@
     <param name="ip_address" value="128.179.201.219" />
     <!-- <param name="ip_address_neuro" value="192.168.0.152" /> -->
     <!-- <param name="abs_path_to_tools" value="/home/theo/Autonomous_driving_pipeline/src/loomo/scripts/tools" /> -->
-    <param name="v_max" value="1" />
+    <param name="v_max" value="0.5" />
     <param name="wheel_base" value="0.57" />
     <param name="speed" value="0.5" />
     
 
     <!-- PERCEPTION PARAMETERS: Default, Stark -->
     <param name="PERCEPTION_FUNCTION" value="Default" />
-    <param name="mot_activated" value="True" />
+    <param name="mot_activated" value="False" />
     <param name="model_perception_path" value="/home/theo/Autonomous_driving_pipeline/src/perception/scripts/Perception_Functions/saved_model.pth" />
     <param name="dt_perception" value="0.2" />
     <param name="downscale" value="2" />
     <param name="detector_size" value="medium" />
     <param name="tracking_confidence" value="0.9" />
     <param name="visualization_percep" value="true" /> 
-    <param name="verbose_percep" type="int" value= "0" /> <!-- level of verbose 0 to 4-->
+    <param name="verbose_percep" type="int" value= "2" /> <!-- level of verbose 0 to 4-->
 
     <!-- POSE ESTIMATION PARAMETERS: Default, VideoPose3D -->
     <param name="POSE_ESTIMATION_FUNCTION" value="Default" />
-    <param name="keypoints_activated" value="False" />
+    <param name="keypoints_activated" value="True" />
     <param name="dt_pose_estimation" value="0.2" />
-    <param name="visualization_3D_activated" value="False" />
+    <param name="visualization_3D_activated" value="True" />
     <param name="keypoints_logging" value="false" />
     <param name="save_keypoints_vid" value="True" />
     <param name="verbose_keypoints" value="True" />
@@ -40,7 +40,7 @@
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
     <param name="dt_map_state" value="0.06" />
-    <param name="verbose_map" value="false" />
+    <param name="verbose_map" value="False" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Trajnet" />
