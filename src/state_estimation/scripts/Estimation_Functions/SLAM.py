@@ -38,20 +38,23 @@ class SlamConfiguration:
 
     # Check if detection was observed before
     def check_if_position_in_map(self, object_global):
-
+        print(f"object global {object_global}")
+        print(f"saved map before {self.saved_map}")
+        if not self.saved_map:
+            self.n_landmarks = len(self.saved_map) + 1
+            self.saved_map.append([object_global[0], object_global[1], self.n_landmarks])
+            print(f"saved map after {self.saved_map}")
         for idx,object_map in enumerate(self.saved_map):
+            #if len(object_map) > 0:
+            distance = Utils.calculate_distance(object_global, object_map)
+            print(f"distance association {distance}")
+            # Data Assotiation if two detections in same range
+            if distance <= self.error_sensor:
+                self.saved_map[idx] = [object_global[0], object_global[1], idx+1]
 
-            if len(object_map) > 0:
-                distance = Utils.calculate_distance(object_global, object_map)
-
-                # Data Assotiation if two detections in same range
-                if distance <= self.error_sensor:
-                    self.saved_map[idx] = [object_global[0], object_global[1], idx+1]
-
-                    return
-
-        # Add new detection to map if it cannot be assotiated
-        self.n_landmarks = len(self.saved_map) + 1
-        self.saved_map.append([object_global[0], object_global[1], self.n_landmarks])
-
-
+            else:
+                # Add new detection to map if it cannot be assotiated
+                self.n_landmarks = len(self.saved_map) + 1
+                self.saved_map.append([object_global[0], object_global[1], self.n_landmarks])
+                print(f"saved map after {self.saved_map}")
+    

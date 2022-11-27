@@ -80,7 +80,7 @@ def main():
     positions = [[0.0,0.0]]
 
     #Print to help debugging
-    verbose=True
+    verbose=False
 
     rospy.loginfo("Prediction Node Ready")
     rospy.sleep(3.)
@@ -107,11 +107,14 @@ def main():
         
         else:
             if verbose:
+                #detection coming from mapping
                 print(f"in prediction:  {detections}")
 
 
         # Add present detections to past in a buffer and predict trajectories
         past_detections, past_present_positions = Utils.add_detections_to_past(detections, past_detections, n_past_observations)
+        if verbose:
+            print(f"debug past det {past_detections}, past present {past_present_positions}")
         predicted_trajectories = predictor.prediction_function(past_present_positions)
 
         if verbose:

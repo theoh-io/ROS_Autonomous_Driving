@@ -1,5 +1,6 @@
 from detectors.yolov5_detector import Yolov5Detector
 from trackers.mmtracking_sot import SotaTracker
+from trackers.mmtracking_mot import MotTracker
 from keypoints.keypoints3d import Keypoints3D
 from PIL import Image
 import cv2
@@ -32,6 +33,7 @@ class BasePerceptor():
     def __init__(self, width=640, height=480, downscale=4, 
                     detector=Yolov5Detector(), detector_size="default",
                     tracker=None, tracker_model=None, tracking_conf=0.5,
+                    mot_activated=False,
                     type_input="opencv", device="gpu", show="True", verbose=0):
 
         cpu = 'cpu' == device
@@ -54,6 +56,10 @@ class BasePerceptor():
             self.tracker=tracker(tracker_model, tracking_conf, verbose=self.verbose_level)
         self.type_input=type_input
         self.show=show
+
+        self.mot_activated=mot_activated
+        if mot_activated:
+            self.mot_tracker=MotTracker(tracking_conf=0.8)
 
         if self.verbose_level:
             print("Initializing Perceptor")

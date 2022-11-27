@@ -53,7 +53,7 @@ def main():
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=5.0)
+    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=1.0)
 
     # Variable Initialization
     global state, map_state_activated
@@ -69,24 +69,26 @@ def main():
 
     rospy.sleep(0.2)
 
+    #to initialize the timer
+    data_received=True
+
     while not rospy.is_shutdown() and mapping_activated:
-        start = time.time()
+        if data_received is True:
+            start = time.time()
+            data_received=False
         # Receive detection positions (x, y) in relation to the Loomo
         socket3.receiver()
 
         # Add detections into a list
         if socket3.received_ok:
+            data_received=True
             positions = [socket3.received_data_unpacked]
+            #info sent by Extract Target on Loomo App: (depth and angle)
             if verbose: print(f"positions {positions}")
             list_positions=[]
-            #if verbose:
-                #print(f"in map_state bbox (positions)={positions}")
-            #Quel est le format de positions ??
-            #Qu'est ce qui finis à l'interieur de list positions ?
-            #format obstacle dans map_total ? use openpifpaf perception and watch the topic map_global
-            ##Comprendre la fonction slam.mapping et map_total, map_state diff
+            
             for idx in range(int(len(positions[0])/2)-1):
-                
+                #list positions has the relative positions of the detections plus index starting at 1
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
             if verbose:
@@ -106,12 +108,12 @@ def main():
 
 
             
-        # Send state estimation topics via ROS
-        if map_state_activated:
-            sender.send(map_total, map_state)
+            # Send state estimation topics via ROS
+            if map_state_activated:
+                sender.send(map_total, map_state)
 
-        else:
-            sender.send(map_total)
+            else:
+                sender.send(map_total)
 
         # Calculate node computation time
         computation_time = time.time() - start

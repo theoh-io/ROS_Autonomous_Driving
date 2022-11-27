@@ -66,6 +66,7 @@ def main():
     # Initialize ROS perception node
     rospy.init_node("perception")
     dt_perception = rospy.get_param("/dt_perception")
+    mot_activated = rospy.get_param("mot_activated")
     rate = rospy.Rate(int(1/dt_perception))    
     PERCEPTION_FUNCTION = rospy.get_param("/PERCEPTION_FUNCTION")
     downscale = rospy.get_param("/downscale")
@@ -84,7 +85,9 @@ def main():
         perceptor = sot_perceptor.SotPerceptor(width = 640, height = 480, downscale = downscale,
                                                 detector = yolov5_detector.Yolov5Detector, detector_size="default", 
                                                 tracker=mmtracking_sot.SotaTracker, tracker_model="Stark", tracking_conf=tracking_conf,
-                                                type_input = "opencv", show=perception_vis, verbose=verbose_level)
+                                                mot_activated=mot_activated, type_input = "opencv", show=perception_vis, verbose=verbose_level)
+
+    
     #################################
     # Initialize socket connections
     #################################
@@ -144,25 +147,34 @@ def main():
             #############################
             bbox_list, image = perceptor.forward(input_img)
             if verbose_level >=1 :
-                print("Perception: bbox list:", bbox_list)
+                print("Perception: full bbox list:", bbox_list)
 
             ############################
             # Bounding Boxes Processing and Formatting
             #############################
             bbox = tuple()
-            bbox_visu=None
+            bbox_sot=None
 
             #SOT configurationwe have only 1 bbox at the end
-            if bbox_list and np.asarray(bbox_list).ndim==1:
-                # Send bbox positions via socket to represent them in the Loomo
-                bbox_visu = bbox + (bbox_list[0], bbox_list[1], bbox_list[2], bbox_list[3], float(True))#float(label_list[i][0]))
-                #Optional parameter: Scaling down bbox so that depth estimation is more precise inside small region
-                scale=1
-                bbox_list=Utils.bbox_scaling(bbox_list, scale)
-                #Loomo with ADP App want the bbox in the following format: x_tl, y_tl, w, h
-                new_bbox=Utils.bbox_xcentycentwh_to_xtlytlwh(bbox_list)
-                #new_bbox=bbox_list
-                bbox= bbox+(new_bbox[0], new_bbox[1], new_bbox[2], new_bbox[3], float(True))
+            # Send bbox positions via socket to represent them in the Loomo
+            if bbox_list:
+                for i, bbox_indiv in enumerate(bbox_list):
+                    if i==0 and not all(v == 0 for v in bbox_indiv):
+                        #Target BBox send to pose estimation
+                        bbox_sot = bbox + (bbox_indiv[0], bbox_indiv[1], bbox_indiv[2], bbox_indiv[3], float(True))#float(label_list[i][0]))
+                    #Optional parameter: Scaling down bbox so that depth estimation is more precise inside small region
+                    scale=1
+                    bbox_indiv=Utils.bbox_scaling(bbox_indiv, scale)
+
+                    # if i==0 and not all(v == 0 for v in bbox_indiv):
+                    #Loomo with ADP App want the bbox in the following format: x_tl, y_tl, w, h
+                    new_bbox=Utils.bbox_xcentycentwh_to_xtlytlwh(bbox_indiv)                    # else:
+
+                    if all(v == 0 for v in bbox_indiv):
+                        #handle case of lost target
+                        bbox=bbox+(new_bbox[0], new_bbox[1], new_bbox[2], new_bbox[3], float(False))
+                    else:
+                        bbox=bbox+(new_bbox[0], new_bbox[1], new_bbox[2], new_bbox[3], float(True))
 
             else:
                 bbox=bbox+(0.0, 0.0, 0.0, 0.0, float(False))            
@@ -172,12 +184,14 @@ def main():
             ###################################
             # Send bbox to the robot -> Camera tracking and motion controller algorithm
             bbox = bbox + (0.0,)*(25-len(bbox)) #this line just adding 20 times 0.0 after bbox which is 4+ 1 (label)
+            if verbose_level>=3:
+                print(f"debug bbox just before sending {bbox}")
             socket5.sender(bbox)
 
             # Send pose_estimation topic via ROS
-            if bbox_visu and verbose_level>=1:
-                print(f"bbox in perception{bbox_visu}")
-            sender.send(bbox_visu, image)
+            if bbox_sot and verbose_level>=1:
+                print(f"bbox sent to pose est{bbox_sot}")
+            sender.send(bbox_sot, image)
 
         #syncing Img transmission
         elif len(received_image) > socket1.data_size:
