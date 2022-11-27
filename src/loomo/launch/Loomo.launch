@@ -39,16 +39,16 @@
     <param name="MAP_STATE_FUNCTION" value="Default" />
     <param name="mapping_activated" value="True" />
     <param name="map_state_activated" value="False" />
-    <param name="dt_map_state" value="0.06" />
-    <param name="verbose_map" value="False" />
+    <param name="dt_map_state" value="0.2" />
+    <param name="verbose_map" value="True" />
 
     <!-- PREDICTION PARAMETERS: Default, Trajnet -->
     <param name="PREDICTION_FUNCTION" value="Trajnet" />
-    <param name="prediction_activated" value="False" />
+    <param name="prediction_activated" value="True" />
     <param name="model_prediction_path" value="/home/theo/Autonomous_driving_pipeline/src/prediction/scripts/Prediction_Functions/models/lstm_directional_one_12_6_rerun.pkl" />
-    <param name="time_horizon_prediction" value="0.15" />
+    <param name="time_horizon_prediction" value="0.6" />
     <param name="past_observations" value="3" />
-    <param name="dt_prediction" value="0.05" />
+    <param name="dt_prediction" value="0.2" />
 
     <!-- PATH PLANNING PARAMETERS: Default, Fake_Obst, CHUV -->
     <param name="PATH_PLANNING_FUNCTION" value="CHUV" />
