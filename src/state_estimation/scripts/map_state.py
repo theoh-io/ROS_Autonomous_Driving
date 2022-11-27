@@ -53,7 +53,7 @@ def main():
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=1)
+    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=1.0)
 
     # Variable Initialization
     global state, map_state_activated
