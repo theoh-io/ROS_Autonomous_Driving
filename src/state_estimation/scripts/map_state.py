@@ -53,7 +53,7 @@ def main():
         socket3 = classes.SocketLoomo(8083, dt_mapping/4, ip_address, unpacker=10*'f ')
 
     # Parameter Initialization
-    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=5.0)
+    slam = SLAM.SlamConfiguration(range_sensor=10.0, error_sensor=1)
 
     # Variable Initialization
     global state, map_state_activated
@@ -77,16 +77,12 @@ def main():
         # Add detections into a list
         if socket3.received_ok:
             positions = [socket3.received_data_unpacked]
+            #info sent by Extract Target on Loomo App: (depth and angle)
             if verbose: print(f"positions {positions}")
             list_positions=[]
-            #if verbose:
-                #print(f"in map_state bbox (positions)={positions}")
-            #Quel est le format de positions ??
-            #Qu'est ce qui finis à l'interieur de list positions ?
-            #format obstacle dans map_total ? use openpifpaf perception and watch the topic map_global
-            ##Comprendre la fonction slam.mapping et map_total, map_state diff
+            
             for idx in range(int(len(positions[0])/2)-1):
-                
+                #list positions has the relative positions of the detections plus index starting at 1
                 if positions[0][idx*2]!=0.0:
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
             if verbose:
