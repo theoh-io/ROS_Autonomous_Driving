@@ -127,6 +127,7 @@ def main():
                     runtime_list.append(computation_time)
             if computation_time > dt_pose_estimation:
                 rospy.logwarn("Perception computation time higher than node period by " + str((computation_time-dt_pose_estimation)*1e3) + " ms")
+            cv_image=None #to avoid running pose estimation on same image
         rate.sleep()
 
     print(f"Average 3D pose runtime: {np.average(runtime_list)*1e3}ms")
