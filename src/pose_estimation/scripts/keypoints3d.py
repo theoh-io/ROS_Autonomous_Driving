@@ -4,6 +4,7 @@ import copy
 from tools.utils import Utils
 import os
 import sys
+import time
 import rospkg
 rospack=rospkg.RosPack()
 abs_path_to_perception=rospack.get_path('perception')
@@ -20,7 +21,8 @@ from mmpose.datasets import DatasetInfo
 from mmpose.models import PoseLifter, TopDown
 
 class Keypoints3D():
-    def __init__(self, device, img_resolution, show3D=False, save_video_keypoints=False,smooth=False):
+    def __init__(self, device, img_resolution, show3D=False, save_video_keypoints=False,smooth=False, verbose=False):
+        self.verbose=verbose
         self.device=device
         self.resolution=img_resolution
         self.smooth= smooth
@@ -138,7 +140,9 @@ class Keypoints3D():
             self.pose_lift_dataset_info = DatasetInfo(self.pose_lift_dataset_info)
 
     def inference_3Dkeypoints(self, frame, bbox):
+        tic1=time.time()
         self.inference_keypoints(frame,bbox)
+        toc1=time.time()
         pose_results_2d = extract_pose_sequence(
             self.pose_det_results_list,
             frame_idx=self.frame_idx,
@@ -150,7 +154,11 @@ class Keypoints3D():
         # smooth 2d results
         if self.smoother:
             pose_results_2d = self.smoother.smooth(pose_results_2d)
+        
 
+        if self.verbose:
+            print(f"2D pose estimation: {(toc1-tic1)* 1e3:.1f}ms")
+        tic2=time.time()
         # 2D-to-3D pose lifting
         pose_lift_results = inference_pose_lifter_model(
             self.pose_lift_model,
@@ -160,6 +168,7 @@ class Keypoints3D():
             with_track_id=True,
             image_size=self.resolution,
             norm_pose_2d=False)
+        toc2=time.time()
 
         # Pose processing
         pose_lift_results_vis = []
@@ -186,9 +195,11 @@ class Keypoints3D():
             pose_lift_results_vis.append(res)
 
         # Visualization
+        tic3=time.time()
         if self.num_instances < 0:
             self.num_instances = len(pose_lift_results_vis)
-        img_vis = vis_3d_pose_result(
+        if self.show_3Dkeypoints:
+            img_vis = vis_3d_pose_result(
             self.pose_lift_model,
             result=pose_lift_results_vis,
             img=frame,
@@ -199,15 +210,17 @@ class Keypoints3D():
             thickness=1,
             num_instances=self.num_instances,
             show=False)
-
-        if self.show_3Dkeypoints:
             cv2.imshow('Keypoints',img_vis)
             cv2.waitKey(1)
-        if self.save_video_keypoints:
-            if self.writer is None:
-                self.writer = cv2.VideoWriter(
-                    os.path.join(abs_path_to_pose_est,self.name_video_keypoints), self.fourcc,
-                    self.fps, (img_vis.shape[1], img_vis.shape[0]))
-            self.writer.write(img_vis)
+            if self.save_video_keypoints:
+                if self.writer is None:
+                        self.writer = cv2.VideoWriter(
+                            os.path.join(abs_path_to_pose_est,self.name_video_keypoints), self.fourcc,
+                            self.fps, (img_vis.shape[1], img_vis.shape[0]))
+                        self.writer.write(img_vis)
+        
+        toc3=time.time()
+        if self.verbose:
+            print(f"3D pose est timings: {(toc2-tic2)* 1e3:.1f}ms, visualization{(toc3-tic3)* 1e3:.1f}ms")
         
         return res

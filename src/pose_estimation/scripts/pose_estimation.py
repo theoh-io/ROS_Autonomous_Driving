@@ -92,7 +92,7 @@ def main():
     sub_img= rospy.Subscriber('/Perception/img', Image, callback_img, queue_size=1)
     
     if keypoints_activ:
-        keypoints3D=Keypoints3D(device, resolution, show3D, save_video_keypoints)
+        keypoints3D=Keypoints3D(device, resolution, show3D, save_video_keypoints, verbose=verbose)
 
     #logging
     if keypoints_logging:
@@ -105,10 +105,24 @@ def main():
 
 
     runtime_list=[]
+    transmission_list=[]
     computation_time=0
+
+    transmission_timer=False
+
     while not rospy.is_shutdown():
         #print(bbox)
+        if not transmission_timer:
+            # start timer for img transmission
+            start_transmission = time.perf_counter()
+            transmission_timer=True
+
         if cv_image is not None and keypoints_activ:
+            end_transmission=time.perf_counter()
+            transmission_timer=False
+            if verbose:
+                print(f"transmission time in pose estimation {(end_transmission-start_transmission)* 1e3:.1f}ms")
+                transmission_list.append([end_transmission-start_transmission])
             if bbox:
                 tic1 = time.perf_counter()
                 results_keypoints=keypoints3D.inference_3Dkeypoints(cv_image, bbox)
@@ -125,12 +139,14 @@ def main():
                 if verbose:
                     print(f"Elapsed time for full 3D pose estimation: {computation_time * 1e3:.1f}ms")
                     runtime_list.append(computation_time)
+            
             if computation_time > dt_pose_estimation:
-                rospy.logwarn("Perception computation time higher than node period by " + str((computation_time-dt_pose_estimation)*1e3) + " ms")
+                rospy.logwarn("Pose Estimation computation time higher than node period by " + str((computation_time-dt_pose_estimation)*1e3) + " ms")
             cv_image=None #to avoid running pose estimation on same image
         rate.sleep()
 
     print(f"Average 3D pose runtime: {np.average(runtime_list)*1e3}ms")
+    print(f"Average 3D pose transmission: {np.average(transmission_list)*1e3}ms")
     logger.close()
 
 if __name__ == "__main__":
