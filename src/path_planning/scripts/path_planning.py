@@ -61,6 +61,7 @@ def main():
     PATH_PLANNING_FUNCTION = rospy.get_param("/PATH_PLANNING_FUNCTION")
     print(f"path planning function {PATH_PLANNING_FUNCTION}")
     cyclic_goal = rospy.get_param("/cyclic_goal")
+    verbose = rospy.get_param("/verbose_path")
     # Ros Topic Subscription
     sub_estimation = rospy.Subscriber('/State_Estimation/estimated_state', State, callback_estimation, queue_size = 1)
     if prediction_activated:
@@ -98,6 +99,8 @@ def main():
         goal_x = rospy.get_param("/goal_x")
         goal_y = rospy.get_param("/goal_y")
         goal_global = [goal_x, goal_y]
+        if verbose:
+            print(f"goal is {goal_global}")
         work_area = [rospy.get_param("/workarea_x_min"), rospy.get_param("/workarea_x_max"), rospy.get_param("/workarea_y_min"), rospy.get_param("/workarea_y_max")]
 
     #Same as Default but use arbitrary obstacles positions
@@ -169,7 +172,7 @@ def main():
             goal_local = transformations.Global_to_Local(x0, [goal_global], True)[0]
             #print(f"objects_now_local {objects_now_local}")
             #check if we are close enough to goal then just stay in place
-            print(f"in prediction goal local")
+            #print(f"in prediction goal local")
             if Utils.calculate_distance(goal_local)<0.1:
                 print("GOAL REACHED")
                 goal_local=[0.0, 0.0]

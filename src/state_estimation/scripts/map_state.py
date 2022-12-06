@@ -44,7 +44,10 @@ def main():
     dt_mapping = rospy.get_param("/dt_map_state")
     rate = rospy.Rate(int(1/dt_mapping))
     mapping_activated = rospy.get_param("/mapping_activated")
+    fake_obst = rospy.get_param("/fake_obst")
     verbose = rospy.get_param("/verbose_map")
+
+    fake_obst_list=[[-3, 0.1], [2, 2]]
     
     if mapping_activated:
         sender = Sender()
@@ -93,8 +96,31 @@ def main():
                     list_positions.append([positions[0][idx*2], positions[0][idx*2+1], idx+1])
             if verbose:
                 print(f"list_positions: {list_positions}")
+
+            if fake_obst:
+                if list_positions:
+                    obst_number=len(list_positions)+1
+                    for obst in fake_obst_list:
+                        new_obst=obst+[obst_number]
+                        list_positions.append(new_obst)
+                        obst_number+=1
+                else:
+                    obst_number=1
+                    for obst in fake_obst_list:
+                        new_obst=obst+[obst_number]
+                        if obst_number==1:
+                            list_positions=[new_obst]
+                        else:
+                            list_positions.append(new_obst)
+                        obst_number+=1
+                        #print(list_positions)
+            
             # Mapping function
             map_total, map_state = slam.mapping(state, list_positions)
+
+            
+                    
+
             if verbose:
                 print(f"map total: {map_total}")#, map_state: {map_state}")
             #map_total=[[0.5, 0.5, 1]] #forcing map to create fake obstacles
@@ -102,7 +128,8 @@ def main():
 
         #Tentative handcoding Obstacles
         # else:
-        #     #map_total=[[0.5, 0.1, 1], [1.0, -0.2, 2]] #forcing map to create fake obstacles
+            
+                    #map_total=[[-3, 0.1, 1], [1.0, -2, 2]] #forcing map to create fake obstacles
         #     #print("Hand coded obstacles !!!!!!")
         #     map_total=[[1.8, 0.1, 1]]
 
